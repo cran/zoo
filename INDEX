@@ -1,0 +1,4 @@
+as.zoo                  Coercion to zoo
+index                   Extracting Index From Objects
+plot.zoo                Plotting zoo Objects
+zoo                     Z's Ordered Observations
