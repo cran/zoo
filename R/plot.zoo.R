@@ -1,12 +1,36 @@
-# only change is to allow type to be a list so you can specify a mixture
-# points, lines, steps, etc. one one plot command.
-
-plot.zoo <- function(x, screens = 1,
+plot.zoo <- function(x, y = NULL, screens = 1,
   plot.type = c("multiple", "single"), panel = lines, 
-  xlab = "Index", ylab = NULL, main = NULL, ylim = NULL,
+  xlab = "Index", ylab = NULL, main = NULL, xlim = NULL, ylim = NULL,
+  xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
   col = 1, lty = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, ...)
 {
+  ## if y supplied: scatter plot y ~ x
+  if(!is.null(y)) {
+    if(NCOL(x) > 1 || NCOL(y) > 1) stop("scatter plots only for univariate zoo series")
+    xyzoo <- merge.zoo(x, y, all = FALSE)
+    xy <- coredata(xyzoo)
+    xy <- xy.coords(xy[,1], xy[,2])
+
+    xlab <- if(missing(xlab)) deparse(substitute(x)) else xlab
+    ylab <- if(missing(ylab)) deparse(substitute(y)) else ylab
+    xlim <- if(is.null(xlim)) range(xy$x[is.finite(xy$x)]) else xlim
+    ylim <- if(is.null(ylim)) range(xy$y[is.finite(xy$y)]) else ylim
+    if(is.null(main)) main <- ""
+    do.lab <- if(is.logical(xy.labels)) xy.labels else TRUE
+    if(is.null(xy.lines)) xy.lines <- do.lab
+    ptype <- if(do.lab) "n" else if(missing(type)) "p" else type
+
+    plot.default(xy, type = ptype,col = col, pch = pch, main = main,
+      xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+    if(do.lab) text(xy, col = col,
+      labels = if(!is.logical(xy.labels)) xy.labels else index2char(index(xyzoo)), ...)
+    if(xy.lines) lines(xy, col = col, lty = lty, type = if(do.lab) "c" else "l", ...)
+
+    return(invisible(xyzoo))
+  }
+  ## Else : no y, only x
+
   parm <- function(nams, x, n, m, def, recycle = sum(unnamed) > 0) {
   # if nams are the names of our variables and x is a parameter
   # specification such as list(a = c(1,2), c(3,4)) then 
@@ -83,23 +107,21 @@ plot.zoo <- function(x, screens = 1,
     for(j in seq(along = levels(screens))) {
       range. <- rep(ranges[[j]], length.out = length(time(x)))
       if(j%%nr==0 || j == length(levels(screens))) {
-	args <- list(x.index, range., xlab = "", ylab = ylab[j], ...)
+	args <- list(x.index, range., xlab = "", ylab = ylab[j], xlim = xlim, ...)
 	args$type <- "n"
 	do.call("plot", args)
 	mtext(xlab, side = 1, line = 3)
       } else {      
-        args <- list(x.index, range., axes = FALSE, xlab = "", ylab = ylab[j], ...)
+        args <- list(x.index, range., axes = FALSE, xlab = "", ylab = ylab[j], xlim = xlim, ...)
 	args$type <- "n"
 	do.call("plot", args)
         box()
         axis(2, xpd = NA)
       }
 
-	for(i in which(screens == levels(screens)[j]))
-	      panel(x.index, x[, i], 
-                col = col[[i]], pch = pch[[i]], 
-		lty = lty[i], type = type[[i]], ...)
-	}
+      for(i in which(screens == levels(screens)[j]))
+        panel(x.index, x[, i], col = col[[i]], pch = pch[[i]], lty = lty[i], type = type[[i]], ...)
+    }
   } else {
     if(is.null(ylab)) ylab <- deparse(substitute(x))
     if(is.null(main)) main <- ""
@@ -115,7 +137,7 @@ plot.zoo <- function(x, screens = 1,
     dummy <- rep(range(x, na.rm = TRUE), 
 	length.out = length(index(x)))
 	    
-    args <- list(x.index, dummy, xlab = xlab, ylab = ylab[1], ylim = ylim, ...)
+    args <- list(x.index, dummy, xlab = xlab, ylab = ylab[1], ylim = ylim, xlim = xlim, ...)
     args$type <- "n"
     do.call("plot", args)
     box()

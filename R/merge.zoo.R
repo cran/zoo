@@ -132,7 +132,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     # of all indexes
     indexunion <- do.call("c", indexlist[all])
     
-    indexes <-  if (is.null(indexunion)) indexintersect
+    indexes <-  if(is.null(indexunion)) indexintersect
       else sort.unique(c(indexunion, indexintersect))
     # previously, we used to do:
     # if (is.null(indexunion)) indexunion <- do.call("c", indexlist)[0]

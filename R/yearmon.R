@@ -9,6 +9,7 @@ as.yearmon.integer <- function(x, ...) structure(x, class = "yearmon")
 as.yearmon.dates <- 
 as.yearmon.Date <- 
 as.yearmon.POSIXt <- function(x, ...) as.yearmon(with(as.POSIXlt(x, tz="GMT"), 1900 + year + mon/12))
+as.yearmon.character <- function(x, ...) as.yearmon(as.Date(x, ...))
 
 
 ## coercion from yearmon

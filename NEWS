@@ -1,4 +1,14 @@
-Changes in Version 1.0-3
+Changes in Version 1.0-5
+
+  o added a `y' argument to plot.zoo() that allows to
+    generate scatter plots of univariate "zoo" series
+    (just as plot.ts(x, y = NULL, ...) does)
+    
+  o fixed the usage of %in% in the window() methods,
+    now call MATCH() (rather than match()) directly.
+
+
+Changes in Version 1.0-4
 
   o added a `rev' argument to na.locf() which allows to
     eliminate NAs by NOCB (next observation carried backward).

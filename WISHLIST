@@ -1,6 +1,9 @@
 FEATURES
 ********
 
+  o register S3 methods and use namespaces so that this works:
+     f <- local(function(x) zoo::index(x), baseenv())
+
   o make "zoo" enforce the index entries to be unique (which is 
     assumed in a few functions such as merge.zoo).
 
@@ -17,6 +20,10 @@ FEATURES
     with different time bases since NAs are introduced by merging 
     and they can cause the drawn lines to be undesirably broken.
     (Current workaround is to use na.approx.)
+
+  o more graphical facilities, e.g., a pairs function, make
+    plot.zoo(x, y) work with multivariate series (plotting every
+    combination of plot(x[,i], y[,j]))
 
   o incorporate runmean in package caMassClass
  

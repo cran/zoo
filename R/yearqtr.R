@@ -9,6 +9,7 @@ as.yearqtr.integer <- function(x, ...) structure(x, class = "yearqtr")
 as.yearqtr.dates <-
 as.yearqtr.Date <- 
 as.yearqtr.POSIXt <- function(x, ...) as.yearqtr(as.yearmon(x))
+as.yearqtr.character <- function(x, ...) as.yearqtr(as.Date(x, ...))
 
 ## coercion from yearqtr
 # returned Date is the fraction of the way through the period given by frac

@@ -1,7 +1,7 @@
 window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
 {
   all.indexes <- index.zoo(x)
-  in.index <- all.indexes %in% index
+  in.index <- MATCH(all.indexes, index, nomatch = 0) > 0
 
   if(length(start) == 2 && !is.null(attr(x, "frequency")) && is.numeric(all.indexes)) {
     freq <- attr(x, "frequency")
@@ -14,7 +14,7 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
 
   if(is.null(start)) {
     if(is.null(end)) {
-      wi <- which(all.indexes %in% index)
+      wi <- which(MATCH(all.indexes, index, nomatch = 0) > 0)
       return(x[wi,,])
     } else {
       wi <- which(in.index & all.indexes <= end)
@@ -33,7 +33,7 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
 "window<-.zoo" <- function(x, index = index.zoo(x), start = NULL, end = NULL, ..., value)
 {
   ix <- index.zoo(x)
-  stopifnot(all(index %in% ix))
+  stopifnot(all(MATCH(index, ix, nomatch = 0) > 0))
   
   if(length(start) == 2 && !is.null(attr(x, "frequency")) && is.numeric(ix)) {
     freq <- attr(x, "frequency")
@@ -47,7 +47,7 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
   if (!is.null(start)) index <- index[index >= start]
   if (!is.null(end)) index <- index[index <= end]
 
-  wi <- which(ix %in% index)
+  wi <- which(MATCH(ix, index, nomatch = 0) > 0)
   if (length(dim(x)) == 0)
   	  x[wi] <- value
   else

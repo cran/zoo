@@ -104,7 +104,7 @@ str.zoo <- function(object, ...)
   if(!(all(class(i) == "numeric") ||
        all(class(i) == "integer") ||
        all(class(i) == "logical")))
-    i <- which(x.index %in% i)
+    i <- which(MATCH(x.index, i, nomatch = 0) > 0)
   
   if(length(dim(rval)) == 2) {
 	if (length(i) == 1) drop <- FALSE
