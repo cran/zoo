@@ -18,11 +18,19 @@ na.locf.default <- function(object, na.rm = TRUE, ...) {
 	object[] <- if (length(dim(object)) == 0)
 		na.locf.0(object)
 	else
-		apply(object, 2, na.locf.0)
+		apply(object, dim(object)[length(dim)], na.locf.0)
 	if (na.rm) na.omit(object) else object
 }
 
-## does not work only for zoo objects
+na.locf.data.frame <- function(object, na.rm = TRUE, ...) {
+	object <- na.locf.list(object, na.rm = na.rm, ...)
+	if (na.rm) na.omit(object) else object
+}
+
+na.locf.list <- function(object, na.rm = TRUE, ...)
+	lapply(object, na.locf, na.rm = na.rm, ...)
+
+na.contiguous.data.frame <-
 na.contiguous.zoo <- function(object, ...) 
 {
     if (length(dim(object)) == 2) 
@@ -57,3 +65,5 @@ na.contiguous.zoo <- function(object, ...)
     object
 }
 
+na.contiguous.list <- function(object, ...)
+	lapply(object, na.contiguous)

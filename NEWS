@@ -1,3 +1,24 @@
+Changes in Version 1.0-0
+
+  o This release accompanies the publication in the Journal of Statistical
+    Software ("zoo: S3 Infrastructure for Regular and Irregular Time Series",
+    JSS, 14(6), 1-27) that essentially corresponds to the vignette contained
+    in the package. Please use this paper to cite zoo in publications.
+
+  o aggregate.zoo allows a function as the argument for computing
+    the aggregation groups. The return value is coerced to "zooreg"
+    if it is.regular.
+
+  o extended NA handling for lists and data.frames: na.locf.data.frame,
+    na.locf.list, na.contiguous.data.frame, na.contiguous.list
+    
+  o pair notation, e.g. c(1985,2), for "zooreg" series is now also
+    allowed in window.zoo and window<-.zoo.
+
+  o fixed bug in rapply: result was transposed when by.column = FALSE and
+    a non-scalar function FUN wa used.
+
+
 Changes in Version 0.9-9
 
   o regular "zoo" series: objects of class "zooreg" (inheriting from "zoo")
@@ -18,8 +39,7 @@ Changes in Version 0.9-9
     from factors converted back to "factor".
     
   o [.zoo allows now indexing using observations from the index scale
-    (and not only observation numbers). The [[.zoo method is only for
-    indexing with the index class.
+    (and not only observation numbers).
 
   o rapply, rollmean, rollmax, rollmedian to perform rolling analyses
 

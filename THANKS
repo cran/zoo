@@ -1,14 +1,9 @@
-The authors would like to thank the following people:
-
+The authors would like to thank the following people for ideas,
+testing and feedback regarding zoo:
   Whit Armstrong <Whit.Armstrong@tudor.com>
-  - information on model.frame and ideas on merge.zoo performance
-
   Matthieu Cormec <matthieu.cormec@gmail.com>
-  - testing
-
   Sundar Dorai-Raj <sundar.dorai-raj@pdf.com>
-
+  Kurt Hornik <Kurt.Hornik@R-project.org>
+  Roger Koenker <roger@ysidro.econ.uiuc.edu>
   Ajay Shah <ajayshah@mayin.org>
-
   Jarek Tuszynski <Jaroslaw.W.Tuszynski@saic.com>
-  - performance analysis of R algorithms for rolling analyses

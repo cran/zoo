@@ -1,4 +1,4 @@
-\begin{thebibliography}{7}
+\begin{thebibliography}{8}
 \newcommand{\enquote}[1]{``#1''}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \expandafter\ifx\csname url\endcsname\relax
@@ -44,6 +44,13 @@ Zeileis A (2004).
 \newblock \emph{Report~7}, Department of Statistics and Mathematics,
   Wirtschaftsuniversit\"at Wien, Research Report Series.
 \newblock \urlprefix\url{http://epub.wu-wien.ac.at/}.
+
+\bibitem[{Zeileis and Grothendieck(2005)}]{zoo:Zeileis+Grothendieck:2005}
+Zeileis A, Grothendieck G (2005).
+\newblock \enquote{\pkg{zoo}: \proglang{S3} Infrastructure for Regular and
+  Irregular Time Series.}
+\newblock \emph{Journal of Statistical Software}, \textbf{14}(6), 1--27.
+\newblock \urlprefix\url{http://www.jstatsoft.org/v14/i06/}.
 
 \bibitem[{Zeileis \emph{et~al.}(2002)Zeileis, Leisch, Hornik, and
   Kleiber}]{zoo:Zeileis+Leisch+Hornik:2002}

@@ -1,11 +1,44 @@
 FEATURES
 ********
 
+  o plot(merge(x1, x2)) can generate NAs in x1 or x2 which results in
+    line breaks in the plot.  Even plot(x) may result in an empty plot
+    if there are no adjacent non-NAs.  Need some way of distinguishing
+    between structurally and non-structurally missing items.  Perhaps
+    just an argument that can be set to ignore NAs connecting 
+    successive non-NAs.
+
+  o incorporate runmean in package caMassClass
+ 
+  o allow lag(z, k) to take a vector k. (Look at naming of columns...)
+
+  o allow log to be specified per plot in plot.zoo
+  
+  o performance enhancement when using arithmetic on zoo objects. Check
+    if they have same index first.
+
+  o speedup for indexing strictly regular series. Test with is.regular first.
+	set.seed(1)
+
+	x <- ts(rnorm(5000))
+	xz <- as.zoo(x)
+	system.time({  ################################
+	  for(i in 1:5000) if (is.regular(x)) 
+		x[(i - tsp(x)[1])*frequency(x) + 1] <- 0
+	else
+		window(xz, start = i, end = i) <- 0
+	},
+	gc = TRUE)
+	system.time( for (i in 1:5000) xz[I(i)] <- 0, gc = TRUE )
+	system.time( for (i in 1:5000) window(xz, start=i, end=i) <- 0, 
+		gc = TRUE 
+
   o zoo()
     - support zoo data.frame objects (and zoo list objects)
     - fully support zoo factor objects [limited support already 
       available]
- 
+    - idea: new class "Zoo" that is not a matrix plus attribute
+            but a list with slots "coredata", "index" and "frequency". 
     
   o merge()
     - names not processed correctly when retclass = "list"
@@ -23,22 +56,19 @@ FEATURES
     - regression test suite
     - additional use and testing
 
-  o rapply
-    - position argument with values left, center, right
-
 
 
 INTERFACES
 **********
 
-  o provide fBasics interface routine to the Rmetrics projects
+  o provide fCalendar interface routine to the Rmetrics projects
 
 
 
 DOCUMENTATION & COMMUNICATION
 *****************************
 
-  o JSS paper, R news article based on the vignette
+  o R news article based on the vignette
 
   o some data to include with zoo
 

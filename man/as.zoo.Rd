@@ -9,7 +9,6 @@
 \alias{as.data.frame.zoo}
 \alias{as.list.zoo}
 \alias{as.list.ts}
-\alias{as.its.zoo}
 \alias{as.zoo.ts}
 \alias{as.ts.zoo}
 

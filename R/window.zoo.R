@@ -3,6 +3,15 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
   all.indexes <- index.zoo(x)
   in.index <- all.indexes %in% index
 
+  if(length(start) == 2 && !is.null(attr(x, "frequency")) && is.numeric(all.indexes)) {
+    freq <- attr(x, "frequency")
+    start <- floor(start[1]*freq + (start[2] - 1) + .0001)/freq
+  }
+  if(length(end) == 2 && !is.null(attr(x, "frequency")) && is.numeric(all.indexes)) {
+    freq <- attr(x, "frequency")
+    end <- floor(end[1]*freq + (end[2] - 1) + .0001)/freq
+  }
+
   if(is.null(start)) {
     if(is.null(end)) {
       wi <- which(all.indexes %in% index)
@@ -23,17 +32,27 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
 
 "window<-.zoo" <- function(x, index = index.zoo(x), start = NULL, end = NULL, ..., value)
 {
-	ix <- index.zoo(x)
-	stopifnot(all(index %in% ix))
-	if (!is.null(start)) index <- index[index >= start]
-	if (!is.null(end)) index <- index[index <= end]
+  ix <- index.zoo(x)
+  stopifnot(all(index %in% ix))
+  
+  if(length(start) == 2 && !is.null(attr(x, "frequency")) && is.numeric(ix)) {
+    freq <- attr(x, "frequency")
+    start <- floor(start[1]*freq + (start[2] - 1) + .0001)/freq
+  }
+  if(length(end) == 2 && !is.null(attr(x, "frequency")) && is.numeric(ix)) {
+    freq <- attr(x, "frequency")
+    end <- floor(end[1]*freq + (end[2] - 1) + .0001)/freq
+  }
+  
+  if (!is.null(start)) index <- index[index >= start]
+  if (!is.null(end)) index <- index[index <= end]
 
-	wi <- which(ix %in% index)
-	if (length(dim(x)) == 0)
-		x[wi] <- value
-	else
-		x[wi,] <- value
-	return(x)
+  wi <- which(ix %in% index)
+  if (length(dim(x)) == 0)
+  	  x[wi] <- value
+  else
+  	  x[wi,] <- value
+  return(x)
 }
  
 lag.zoo <- function(x, k = 1, ...)
@@ -74,7 +93,7 @@ lag.zooreg <- function(x, k = 1, ...)
 diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, ...)
 {
     stopifnot(lag >= 1, differences >= 1)
-    if (!arithmetic) x <- log.zoo(x)
+    if (!arithmetic) x <- log(x)
     for(i in 1:differences) {
 	x <- x - lag(x, k = -lag)
     }

@@ -38,19 +38,20 @@ rapply.zoo <- function(data, width, FUN, by = 1, ascending = TRUE, by.column = T
     tt <- index(data)[seq((width-n1), (nr-n1), by)]
 
     res <- if (is.null(dim(cdata)))
-	   zoo(apply( embedi(nr, width, by, ascending), 1, 
+	   zoo(apply(embedi(nr, width, by, ascending), 1, 
                 function(st) FUN(cdata[st], ...)), tt, 
-			if (by==1) attr(data, "frequency"))
+			if (by == 1) attr(data, "frequency"))
     else if (by.column) {
 	    e <- embedi(nr, width, by, ascending)
 	    zoo( sapply( 1:ncol(cdata), function(i)
 			apply( e, 1, function(st) FUN(cdata[st,i], ...) ) ),
 			tt, if (by == 1) attr(data, "frequency")
 	    )
-    } else
-	   zoo(apply( embedi(nr, width, by, ascending), 1, 
-                function(st) FUN(cdata[st,], ...)), tt, 
-			if (by ==1) attr(data, "frequency"))
+    } else {
+           rval <- apply(embedi(nr, width, by, ascending), 1, function(st) FUN(cdata[st,], ...))
+	   if(!is.null(dim(rval))) rval <- t(rval)
+	   zoo(rval, tt, if (by == 1) attr(data, "frequency"))
+    }	   
     res <- if (na.pad) merge(res, zoo(,index(data), attr(data, "frequency"))) else res
     if(by.column && !is.null(dim(cdata))) colnames(res) <- colnames(cdata)
     return(res)

@@ -2,9 +2,9 @@
 \alias{aggregate.zoo}
 \title{Compute Summary Statistics of zoo Objects}
 \description{
-Splits a zoo object into subsets along a coarser index grid,
+Splits a \code{"zoo"} object into subsets along a coarser index grid,
 computes summary statistics for each, and returns the 
-reduced zoo object.
+reduced \code{"zoo"} object.
 }
 
 \usage{
@@ -13,15 +13,18 @@ reduced zoo object.
 
 \arguments{
   \item{x}{an object of class \code{"zoo"}.}
-  \item{by}{index vector the same length as \code{index(x)} which defines
-    aggregation groups and the new index to be associated with each group.}
+  \item{by}{index vector of the same length as \code{index(x)} which defines
+    aggregation groups and the new index to be associated with each group.
+    If \code{by} is a function, then it is applied to \code{index(x)} to
+    obtain the aggregation groups.}
   \item{FUN}{a scalar function to compute the summary statistics
     which can be applied to all subsets.}
   \item{\dots}{further arguments passed to \code{FUN}.}
 }
 
 \value{
-An object of class \code{"zoo"}.
+An object of class \code{"zoo"} or \code{"zooreg"} (if the resulting
+series \code{\link{is.regular}}).
 }
 
 \seealso{\code{\link{zoo}}}
@@ -38,9 +41,22 @@ x2 <- aggregate(x, x.date2, mean)
 plot(x)
 lines(x2, col = 2)
 
+## aggregate a daily time series to a quarterly series
+# create zoo series
+tt <- as.Date("2000-1-1") + 0:300
+z.day <- zoo(0:300, tt)
+
+# function which returns corresponding first "Date" of quarter
+first.of.quarter <- function(tt) as.Date(as.yearqtr(tt))
+
+# average z over quarters
+# 1. via "yearqtr" index (regular)
+# 2. via "Date" index (not regular)
+z.qtr1 <- aggregate(z.day, as.yearqtr, mean)
+z.qtr2 <- aggregate(z.day, first.of.quarter, mean)
+
 
 ## aggregate on month and extend to monthly time series
-# test data
 if(require(chron)) {
 y <- zoo(matrix(11:15,nr=5,nc=2), chron(c(15,20,80,100,110)))
 colnames(y) <- c("A", "B")
@@ -57,19 +73,5 @@ yrt2 <- range(time(y2))
 y0 <- zoo(,seq(from = yrt2[1], to = yrt2[2], by = "month"))
 merge(y2, y0)
 }
-
-
-## aggregate a daily time series to a quarterly series
-# create zoo series
-tt <- as.Date("2000-1-1") + 0:300
-z.day <- zoo(0:300, tt)
-
-# function which returns corresponding first of quarter
-first.of.quarter <- function(tt) with(as.POSIXlt(tt), 
-  as.Date(paste(1900+year, 3*(mon\%/\%3) + 1, 1, sep = "-")))
-
-# average z over quarters
-z.qtr <- aggregate(z.day, first.of.quarter(tt), mean)
-
 }
 \keyword{ts}

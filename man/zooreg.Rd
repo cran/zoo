@@ -7,6 +7,7 @@
 \alias{cycle.zooreg}
 \alias{cycle.zoo}
 \alias{as.zooreg}
+\alias{as.zooreg.default}
 \alias{as.zooreg.ts}
 \alias{as.ts.zooreg}
 \alias{as.zoo.zooreg}

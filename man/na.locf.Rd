@@ -1,5 +1,7 @@
 \name{na.locf}
 \alias{na.locf}
+\alias{na.locf.data.frame}
+\alias{na.locf.list}
 \alias{na.locf.default}
 \title{Last Observation Carried Forward}
 \description{

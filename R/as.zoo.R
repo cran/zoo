@@ -27,12 +27,13 @@ as.zoo.its <- function(x, ...)
 
 as.zoo.zoo <- function(x, ...) x
 
-as.its.zoo <- function(x) {
-	stopifnot(require(its))
-	index <- index(x)
-	stopifnot(inherits(index, "POSIXct"))
-	its(coredata(x), index)
-}
+## This should be in its now.
+## as.its.zoo <- function(x) {
+## 	stopifnot(require(its))
+## 	index <- index(x)
+## 	stopifnot(inherits(index, "POSIXct"))
+## 	its(coredata(x), index)
+## }
 
 as.vector.zoo <- function(x, mode = "any")
 	as.vector(as.matrix(x), mode = mode)
@@ -91,6 +92,11 @@ as.list.ts <- function(x, ...) {
 as.zooreg <- function(x, ...)
 {
   UseMethod("as.zooreg")
+}
+
+as.zooreg.default <- function(x, ...)
+{
+  as.zooreg(as.zoo(x, ...))
 }
 
 as.zooreg.ts <- as.zoo.ts <- function(x, ...)

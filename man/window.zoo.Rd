@@ -31,6 +31,7 @@ object) or it is replaced.
 \seealso{\code{\link{zoo}}}
 
 \examples{
+## zoo example
 x.date <- as.Date(paste(2003, rep(1:4, 4:1), seq(1,19,2), sep = "-"))
 x <- zoo(matrix(rnorm(20), ncol = 2), x.date)
 x
@@ -40,5 +41,10 @@ window(x, index = x.date[1:6], start = as.Date("2003-02-01"))
 window(x, index = x.date[c(4, 8, 10)])
 window(x, index = x.date[c(4, 8, 10)]) <- matrix(1:6, ncol = 2)
 x
+
+## zooreg example (with plain numeric index)
+z <- zooreg(rnorm(10), start = 2000, freq = 4)
+window(z, start = 2001.75)
+window(z, start = c(2001, 4))
 }
 \keyword{ts}
