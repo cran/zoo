@@ -1,0 +1,48 @@
+\name{na.approx}
+\alias{na.approx}
+\alias{na.approx.default}
+\title{Replace NA by Interpolation}
+\description{
+Generic function for replacing each \code{NA} with interpolated
+values.
+}
+\usage{
+na.approx(object, \dots) 
+\method{na.approx}{default}(object, along = index(object), na.rm = TRUE, \dots) 
+}
+\arguments{
+  \item{object}{object in which \code{NA}s are to be replaced}
+  \item{along}{variable to use for interpolation. Has to be numeric, is
+    otherwise coerced to numeric.}
+  \item{na.rm}{logical. Should leading \code{NA}s be removed?}
+  \item{\dots}{further arguments passed to methods.}
+}
+
+\details{
+  By default the index associated with \code{object} is used
+  for interpolation. Note, that if this calls \code{index.default}
+  this gives an equidistant spacing \code{1:NROW(object)}. If \code{object}
+  is a matrix or data.frame, the interpolation is done separately for
+  each column.
+}
+
+\value{
+An object in which each \code{NA} in the input object is replaced
+by interpolating the non-\code{NA} values before and after it.
+Leading \code{NA}s are omitted (if \code{na.rm = TRUE}) or not replaced (if \code{na.rm = FALSE}). 
+}
+
+\seealso{\code{\link{zoo}}}
+
+\examples{
+
+z <- zoo(c(2,NA,1,4,5,2), c(1,3,4,6,7,8))
+
+## use underlying time scale for interpolation
+na.approx(z) 
+## use equidistant spacing
+na.approx(z, 1:6)
+
+na.approx(zoo(c(NA,9,3,2,3,2)))
+}
+\keyword{ts}

@@ -1,347 +1,108 @@
-zoo <- function(x = NA, order.by = index(x))
+zoo <- function (x, order.by = index(x)) 
 {
-  index <- order(order.by)
-  order.by <- order.by[index]
-
-  if(is.vector(x))
-    x <- rep(x, length.out = length(index))[index]
-  else if(is.matrix(x))
-    x <- (x[rep(1:NROW(x), length.out = length(index)), , drop = FALSE])[index, , drop = FALSE]
-  else if(is.data.frame(x))
-    x <- (x[rep(1:NROW(x), length.out = length(index)), , drop = FALSE])[index, , drop = FALSE]  
-  else
-    stop(paste(dQuote("x"), "has to be a vector or matrix"))
-
-  attr(x, "index") <- order.by
-  class(x) <- "zoo"
-  return(x)
+    index <- ORDER(order.by)
+    order.by <- order.by[index]
+    if (missing(x) || is.null(x)) 
+        x <- numeric()
+    else if (is.vector(x)) 
+        x <- rep(x, length.out = length(index))[index]
+    else if (is.factor(x))         
+        x <- factor(rep(as.character(x), length.out = length(index))[index], labels = levels(x))
+    else if (is.matrix(x) || is.data.frame(x)) 
+        x <- (x[rep(1:NROW(x), length.out = length(index)), , 
+            drop = FALSE])[index, , drop = FALSE]
+    else stop(paste(dQuote("x"), ": attempt to define illegal zoo object"))
+    attr(x, "oclass") <- attr(x, "class")
+    attr(x, "index") <- order.by
+    class(x) <- "zoo"
+    return(x)
 }
 
-"[.zoo" <- function(x, i, j, drop = NULL, ...)
+print.zoo <-
+function (x, style = ifelse(length(dim(x)) == 0, "horizontal", 
+    "vertical"), quote = FALSE, ...) 
 {
-  if(!is.zoo(x)) stop("method is only for zoo objects")
-  x.index <- index(x)
-  attr(x, "index") <- NULL
-  nclass <- class(x)[-(1:which(class(x) == "zoo"))]
-  if(length(nclass) < 1) nclass <- NULL 
-  class(x) <- nclass
-  if(NCOL(x) < 2) {
-    x <- as.matrix(x)
-    if(is.null(drop)) drop <- TRUE
-  } else {
-    if(is.null(drop)) drop <- FALSE
-  }
-  if(missing(i)) i <- 1:nrow(x)
-  if(missing(j)) j <- 1:ncol(x)
-  return(zoo(x[i, j, drop = drop, ...], x.index[i]))
+    style <- match.arg(style, c("horizontal", "vertical", "plain"))
+    if (is.null(dim(x)) && length(x) == 0) style <- "plain"
+    if (length(dim(x)) > 0 && style == "horizontal") style <- "plain"
+    if (style == "vertical") {
+        y <- format(eval(as.matrix(x), parent.frame(n = 3)))
+        if (length(colnames(x)) < 1) {
+            colnames(y) <- rep("", NCOL(x))
+        }
+        rownames(y) <- index2char(index(x))
+        print(y, quote = quote, ...)
+    }
+    else if (style == "horizontal") {
+        y <- as.vector(x)
+        names(y) <- index2char(index(x))
+        print(y, quote = quote, ...)
+    }
+    else {
+        x.index <- index(x)
+        attr(x, "index") <- NULL
+        cat("Data:\n")
+        print(unclass(x))
+        cat("\nIndex:\n")
+        print(x.index)
+    }
+    invisible(x)
 }
 
-print.zoo <- function(x, ...)
+summary.zoo <- function(object, ...) 
 {
-  if(!is.zoo(x)) stop("method is only for zoo objects")
-  x.index <- index(x)
-  attr(x, "index") <- NULL
-  nclass <- class(x)[-(1:which(class(x) == "zoo"))]
-  if(length(nclass) < 1) nclass <- NULL 
-  class(x) <- nclass
-  cat("Value:\n")
-  print(x)
-  cat("\nIndex:\n")
-  print(x.index)
-  invisible(x)
+	y <- as.data.frame(object)
+	if (length(colnames(object)) < 1) {
+		lab <- deparse(substitute(object))
+		colnames(y) <- if (NCOL(object) == 1) lab
+		  else paste(lab, 1:NCOL(object), sep=".")
+	}
+	summary(cbind(data.frame(Index = index(object)), y), ...)
 }
+
 
 is.zoo <- function(object)
   inherits(object, "zoo")
-
-
-
-index <- function(x, ...)
-{
-  UseMethod("index")
-}
-
-index.default <- function(x, ...)
-{
-  seq(length = NROW(x))
-}
-
-index.zoo <- function(x, ...)
-{
-  attr(x, "index")
-}
-
-time.zoo <- function(x, ...)
-{
-  index(x)
-}
-
-
-
-as.zoo <- function(x, ...)
-{
-  UseMethod("as.zoo")
-}
-
-as.zoo.default <- function(x, ...)
-{
-  zoo(structure(x, dim = dim(x)), index(x))
-}
-  
-as.zoo.ts <- function(x, ...)
-{
-  rval <- as.vector(x)
-  dim(rval) <- dim(x)
-  zoo(rval, time(x))
-}  
-
-as.zoo.irts <- function(x, ...)
-{
-  zoo(x$value, x$time)
-}
-
-
-
-plot.zoo <- function(x,
-  plot.type = c("multiple", "single"), panel = lines,
-  xlab = "Index", ylab = NULL, main = NULL, ylim = NULL,
-  oma = c(6, 0, 5, 0), col = 1, lty = 1, nc, ...)
-{
-  plot.type <- match.arg(plot.type)
-  nser <- NCOL(x)
-  x.index <- index(x)
-  if(is.ts(x.index)) x.index <- as.vector(x.index)
-
-  if(plot.type == "multiple" && nser > 1) {
-    if(is.null(main)) main <- deparse(substitute(x))
-    if(is.null(ylab)) ylab <- colnames(x)
-    if(is.null(ylab)) ylab <- paste("Series", 1:nser)
-    ylab <- rep(ylab, length.out = nser)
-    col <- rep(col, length.out = nser)
-    lty <- rep(lty, length.out = nser)
-
-    panel <- match.fun(panel)
-    if(nser > 10) stop("Can't plot more than 10 series")
-    if(missing(nc)) nc <- if(nser >  4) 2 else 1
-    oldpar <- par("mar", "oma", "mfcol")
-    on.exit(par(oldpar))
-    par(mar = c(0, 5.1, 0, 2.1), oma = oma)
-    nr <- ceiling(nser / nc)
-    par(mfcol = c(nr, nc))
-    for(i in 1:nser) {
-      if(i%%nr==0 || i == nser) {
-        plot(x.index, x[, i], xlab= "", ylab= ylab[i], type = "n", ...)
-	mtext(xlab, side = 1, line = 3)
-      } else {      
-        plot(x.index, x[, i], axes = FALSE, xlab= "", ylab= ylab[i], type = "n", ...)
-        box()
-        axis(2, xpd = NA)
-      }
-      panel(x.index, x[, i], col = col[i], lty = lty[i], ...)
-    }
-    par(oldpar)
-  } else {
-    if(is.null(ylab)) ylab <- deparse(substitute(x))
-    if(is.null(main)) main <- ""
-    if(is.null(ylim)) ylim <- range(x)
-    
-    col <- rep(col, length.out = nser)
-    lty <- rep(lty, length.out = nser)
-    dummy <- rep(range(x), length.out = length(index(x)))
-	    
-    plot(x.index, dummy, xlab= xlab, ylab= ylab[1], type = "n", ylim = ylim, ...)
-    box()
-    y <- as.matrix(x)
-    for(i in 1:nser) {
-      panel(x.index, y[, i], col = col[i], lty = lty[i], ...)
-    }
-  }
-  title(main)
-  return(invisible(x))
-}
-
-lines.zoo <- function(x, type = "l", ...)
-{
-  if(NCOL(x) == 1) lines(index(x), x, type = type, ...)
-    else stop("Can't plot lines for multivariate zoo object")
-}
 
 str.zoo <- function(object, ...)
 {
   str(unclass(object), ...)
 }
 
-window.zoo <- function(x, start = NULL, end = NULL, ...)
+"[.zoo" <- function(x, i, j, drop = TRUE, ...)
 {
-  indexes <- index(x)
-
-  if(is.null(start)) {
-    if(is.null(end)) {
-      return(x)
-    } else {
-      wi <- which(indexes <= end)
-      return(x[wi,,])
-    }
-  } else {
-    if(is.null(end)) {
-      wi <- which(indexes >= start)
-    } else {
-      wi <- which(indexes >= start & indexes <= end)
-    }
-    return(x[wi,,])
-  }
+  if(!is.zoo(x)) stop("method is only for zoo objects")
+  x.index <- index(x)
+  attr(x, "index") <- NULL
+  nclass <- class(x)[-(1:which(class(x) == "zoo"))]
+  if(length(nclass) < 1) nclass <- NULL 
+  class(x) <- nclass
+  if(missing(i)) i <- 1:NROW(x)
+  if(length(dim(x)) == 2) {
+	# we had previously just j to all cols if missing 
+	# but that did not work for zero columns
+	# so we now process the two cases separately
+        if(missing(j)) 
+		zoo(x[i, , drop = drop, ...], x.index[i])
+	else
+		zoo(x[i, j, drop = drop, ...], x.index[i])
+   } else
+	zoo(x[i], x.index[i])
 }
 
-rbind.zoo <- function(..., deparse.level = 1)
-{  
-  args <- list(...)
-  indexes <- do.call("c", lapply(args, index))
-
-  my.table <- function(x) {
-    x <- x[order(x)]
-    table(match(x,x))
-  }
-  if(max(my.table(indexes)) > 1) stop("indexes overlap")
-
-  ncols <- sapply(args, NCOL)  
-  if(!all(ncols == ncols[1])) stop("number of columns differ")
-
-  if(ncols[1] > 1)
-    zoo(do.call("rbind", lapply(args, unclass)), indexes)
-  else
-    zoo(do.call("c", lapply(args, unclass)), indexes)
+head.zoo <- function(x, n = 6, ...) {
+	if (length(dim(x)) == 0)
+		x[seq(length = min(n, length(x)))]
+	else
+		x[seq(length = min(n, nrow(x))),, drop = FALSE]
+}
+ 
+tail.zoo <- function(x, n = 6, ...) {
+	if (length(dim(x)) == 0)
+		x[seq(to = length(x), length = min(n, length(x)))]
+	else
+		x[seq(to = nrow(x), length = min(n, nrow(x))),, drop = FALSE]
 }
 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL)
-{
-  args <- list(...)
-  if(!all(unlist(lapply(args, is.zoo)))) stop("all arguments must be zoo objects")
-
-  if(is.null(suffixes)) {
-    makeNames <- function(l) {
-      nm <- names(l)
-      fixup <- if (is.null(nm)) 
-	  seq(along = l)
-      else nm == ""
-      dep <- sapply(l[fixup], function(x) deparse(x)[1])
-      if (is.null(nm)) 
-	  return(dep)
-      if (any(fixup)) 
-	  nm[fixup] <- dep
-      nm
-    }
-    suffixes <- makeNames(as.list(substitute(list(...)))[-1])
-  }
-  if(length(suffixes) != length(args)) {
-    warning("length of suffixes and does not match number of merged objects")
-    suffixes <- rep(suffixes, length.out = length(args))
-  }
-
-  all <- rep(all, length(args))
-  indexlist <- lapply(args, index)
-  indexclasses <- sapply(indexlist, function(x) class(x)[1])
-  if(!all(indexclasses == indexclasses[1]))
-    warning(paste("Index vectors are of different classes:", paste(indexclasses, collapse = " ")))
-  indexes <- do.call("c", indexlist)
-
-  sort.unique <- function(x) {
-    x <- x[match(x,x) == seq(length = length(x))]
-    x[order(x)]
-  }
-  my.table <- function(x) {
-    x <- x[order(x)]
-    table(match(x,x))
-  }
-
-  indexintersect <- sort.unique(indexes)[my.table(indexes) == length(args)]
-  indexunion <- do.call("c", indexlist[all])
-  if(is.null(indexunion)) indexunion <- indexes[0] 
-
-  indexes <- sort.unique(c(indexunion, indexintersect))
-  match0 <- function(a, b, nomatch = 0, ...) match(a, b, nomatch = nomatch, ...)
-
-  f <- function(a) {
-    if (length(a) == 0) return(matrix(nr = length(indexes), nc = 0))
-    z <- matrix(fill, length(indexes), NCOL(a))
-    z[match0(index(a), indexes),] <- a[match0(indexes, index(a)),, drop = FALSE]
-    return(z)
-  }
-
-  rval <- do.call("cbind", lapply(args, f))
-
-  ## rval is essentially finished now. But now we try to 
-  ## produce some sensible column names...a bit fussy...
-  
-  if (length(unlist(sapply(args, colnames))) > 0) {
-
-    fixcolnames <- function(i) {
-      a <- args[[i]]
-      if(length(a) == 0) return(NULL)
-      if(NCOL(a) < 2) {
-  	return("")
-      } else {
-  	rval <- colnames(a)
-  	if(is.null(rval)) { 
-  	  rval <- paste(1:NCOL(a), suffixes[i], sep = ".")
-  	} else {
-  	  rval[rval == ""] <- as.character(which(rval == ""))
-  	}
-  	return(rval)
-      }
-    }
-  
-    zoocolnames <- lapply(seq(along = args), fixcolnames)
-  
-    zcn <- unlist(zoocolnames)
-    fixme <- lapply(zoocolnames, function(x) x %in% zcn[duplicated(zcn)])
-    f <- function(i) { 
-      rval <- zoocolnames[[i]]
-      rval[rval == ""] <- suffixes[i]
-      rval 
-    }
-    zoocolnames <- lapply(seq(along = args), f)
-
-    f <- function(i) 
-            ifelse(fixme[[i]], 
-        	  paste(zoocolnames[[i]], suffixes[i], sep = "."), 
-        	  zoocolnames[[i]])
-    if(any(duplicated(unlist(zoocolnames))))
-      zoocolnames <- lapply(seq(along = args), f)
-    colnames(rval) <- make.unique(unlist(zoocolnames))
-      
-  } else {
-  
-    fixcolnames <- function(a) {
-      if(length(a) == 0) return(NULL)
-      if(NCOL(a) < 2) return("")
-        else return(paste(".", 1:NCOL(a), sep = ""))
-    }  
-
-    zoocolnames <- lapply(args, fixcolnames)
-    zoocolnames <- unlist(lapply(seq(along = args),
-      function(i) if(is.null(zoocolnames[[i]])) NULL else paste(suffixes[i], zoocolnames[[i]], sep = "")))
-    colnames(rval) <- make.unique(zoocolnames)
-  }
-	  
-  zoo(rval, indexes)
-}
-
-aggregate.zoo <- function(x, by, FUN, ...)
-{
-  my.unique <- function(x) x[match(x,x) == seq(length = length(x))]
-  if (!is.list(by)) by <- list(by)
-  stopifnot( length(time(x)) == length(by[[1]]) )
-  df <- aggregate(unclass(x), by, FUN, ...)[,-1]
-  if (is.matrix(x)) df <- as.matrix(df)
-  return(zoo(df, my.unique(by[[1]])))
-}
-
-
-
-
-
-
-
-
-
-
+index2char <- function(x, ...) UseMethod("index2char")
+index2char.default <- function(x, ...) as.character(x)

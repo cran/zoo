@@ -1,0 +1,44 @@
+\name{window.zoo}
+\alias{window.zoo}
+\alias{window<-.zoo}
+\title{Extract/Replacing the Time Windows of Objects}
+\description{
+Methods for extracting time windows
+of \code{"zoo"} objects and replacing it.
+}
+
+\usage{
+\method{window}{zoo}(x, index = index.zoo(x), start = NULL, end = NULL, \dots)
+\method{window}{zoo}(x, index = index.zoo(x), start = NULL, end = NULL, \dots) <- value
+}
+
+\arguments{
+  \item{x}{an object.}
+  \item{index}{the index/time window which should be extracted.}
+  \item{start}{an index/time value. Only the indexes in \code{index}
+    which are greater or equal to \code{start} are used.}
+  \item{end}{an index/time value. Only the indexes in \code{index}
+    which are lower or equal to \code{end} are used.}
+  \item{value}{a suitable value object for use with \code{window(x)}.}
+  \item{\dots}{currently not used.}
+}
+
+\value{
+Either the time window of the object is extracted (and hence return a \code{"zoo"}
+object) or it is replaced.
+}
+
+\seealso{\code{\link{zoo}}}
+
+\examples{
+x.date <- as.Date(paste(2003, rep(1:4, 4:1), seq(1,19,2), sep = "-"))
+x <- zoo(matrix(rnorm(20), ncol = 2), x.date)
+x
+
+window(x, start = as.Date("2003-02-01"), end = as.Date("2003-03-01"))
+window(x, index = x.date[1:6], start = as.Date("2003-02-01"))
+window(x, index = x.date[c(4, 8, 10)])
+window(x, index = x.date[c(4, 8, 10)]) <- matrix(1:6, ncol = 2)
+x
+}
+\keyword{ts}

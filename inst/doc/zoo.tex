@@ -1,0 +1,1085 @@
+\documentclass{Z}
+%% need no \usepackage{Sweave}
+
+\author{Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
+        Gabor Grothendieck}
+\Plainauthor{Achim Zeileis, Gabor Grothendieck}
+
+\title{\pkg{zoo}: An \proglang{S3} Class and Methods for
+  Indexed Totally Ordered Observations}
+\Plaintitle{zoo: An S3 Class and Methods for
+  Indexed Totally Ordered Observations}
+%% \Shorttitle{\pkg{zoo}: \proglang{S3} Infrastructure for Indexed Totally Ordered Observations}
+
+\Keywords{totally ordered observations, irregular time series,
+  \proglang{S3}, \proglang{R}}
+\Plainkeywords{totally ordered observations, irregular time series, S3, R}
+
+\Abstract{
+  \pkg{zoo} is an \proglang{R} package providing an \proglang{S3}
+  class with methods for indexed totally ordered observations, such as
+  irregular time series. Its key design goals are independence of a
+  particular index/time/date class and consistency with base
+  \proglang{R} and the \code{"ts"} class for
+  regular time series. This paper describes how these are achieved
+  within \pkg{zoo} and provides several illustrations 
+  of the available methods for \code{"zoo"} objects which include
+  plotting, merging and binding, several mathematical operations,
+  extracting and replacing data and index, coercion and \code{NA}
+  handling.
+}
+
+\begin{document}
+
+
+%\VignetteIndexEntry{zoo: An S3 Class and Methods for Indexed Totally Ordered Observations}
+%\VignetteDepends{zoo,tseries,fBasics,strucchange,quantreg,DAAG}
+%\VignetteKeywords{totally ordered observations, irregular time series, S3, R}
+%\VignettePackage{zoo}
+
+
+
+\section{Introduction} \label{sec:intro}
+
+The \proglang{R} system for statistical computing
+\citep[\url{http://www.R-project.org/}]{zoo:R:2004}
+ships with a a class for regularly spaced time series,
+\code{"ts"} in package \pkg{stats}, but has no native class for
+irregularly spaced time series. With the increased interest in
+computational finance with \proglang{R} over the last years
+several implementations of classes for irregular time series 
+emerged which are aimed particularly at finance applications.
+These include the \proglang{S3} classes \code{"timeSeries"}
+in package \pkg{fBasics} from the \pkg{Rmetrics} bundle \citep{zoo:fBasics:2004}
+and \code{"irts"} in package \pkg{tseries} \citep{zoo:tseries:2004}
+and the \proglang{S4} class \code{"its"} in package \pkg{its} \citep{zoo:its:2004}.
+With these packages available, why would anybody want yet another 
+package providing infrastructure for irregular time series?
+The above mentioned implementations have in common that they are restricted to a particular
+class for the time scale: the former implementation comes with its own time class
+\code{"timeDate"} built on top of the \code{"POSIXt"} classes
+available in base \proglang{R} whereas the latter two use \code{"POSIXct"} directly.
+And this was the starting point for the \pkg{zoo} project: the first author
+of the present paper needed
+more general support for ordered observations, independent of a particular
+index class, for the package \pkg{strucchange}
+\citep{zoo:Zeileis+Leisch+Hornik:2002}. Hence the package was called
+\pkg{zoo} which stands for \underline{Z}'s \underline{o}rdered \underline{o}bservations.
+Since the first release, a major part of the additions to \pkg{zoo}
+were provided by the second author of this paper, so that the name
+of the package does not really reflect the authorship anymore.
+Nevertheless, independence of a particular index class remained
+the most important design goal. While the package evolved to its current
+status, a second key design goal became more and more clear: to provide
+methods to standard generic functions for the \code{"zoo"} class that 
+are similar to those for the \code{"ts"} class (and base \proglang{R} in
+general) such that the usage of \pkg{zoo} is rather intuitive because
+few additional commands have to be learned.
+This paper describes how these design goals are implemented in \pkg{zoo}.
+The resulting package provides the \code{"zoo"} class which offers an
+extensive (and still growing) set of standard and new methods for working
+on indexed observations and `talks' to the classes \code{"ts"}, \code{"its"},
+\code{"irts"} and \code{"timeSeries"}.
+
+The remainder of the paper is organized as follows:
+Section~\ref{sec:zoo-class} explains how \code{"zoo"} objects are created
+and illustrates how the corresponding methods for plotting, merging and
+binding, several mathematical operations, extracting and replacing data
+and index, coercion and \code{NA} handling can be used. Section~\ref{sec:combining}
+outlines how other packages can build on this basic infrastructure.
+Section~\ref{sec:summary} gives a few summarizing remarks and an outlook
+on future developments. Finally, an appendix provides a reference card that
+gives an overview of the functionality contained in \pkg{zoo}.
+
+\section[The class "zoo" and its methods]{The class \code{"zoo"} and its methods}
+\label{sec:zoo-class}
+
+
+\subsection[Creation of "zoo" objects]{Creation of \code{"zoo"} objects}
+\label{sec:zoo}
+
+The simple idea for the creation of \code{"zoo"} objects is to have
+some vector or matrix of observations \code{x} which are totally ordered
+by some index vector. In time series applications, this index is a measure of
+time but every other numeric, character or even more abstract vector that
+provides a total ordering of the observations is also suitable. Objects
+of class \code{"zoo"} are created by the function
+\begin{Scode}
+zoo(x, order.by)
+\end{Scode}
+where \code{x} is the vector or matrix of observations\footnote{In principle,
+more general objects can be indexed, but currently \pkg{zoo} does not support this.
+Development plans are that \pkg{zoo} should eventually support indexed factors,
+data frames and lists.} and \code{order.by}
+is the index by which the observations should be ordered. It has to be
+of the same length as \code{NROW(x)}, i.e., either the same length as \code{x}
+for vectors or the same number of rows for matrices. (This constraint is
+not imposed for zero length vectors.)   The \code{"zoo"} object
+created is essentially the vector/matrix as before but has an additional
+\code{"index"} attribute in which the index is stored.\footnote{There is some
+limited support for indexed factors available in which case the \code{"zoo"}
+object also has an attribute \code{"oclass"} with the original class
+of \code{x}. This feature is still under development and might change in future
+versions.} Both the observations in the vector/matrix \code{x}
+and the index \code{order.by} can, in principle, be of arbitrary classes. However, most of the
+following methods (plotting, aggregating, mathematical operations) for \code{"zoo"}
+objects are typically only useful for numeric observations \code{x}. Special
+effort in the design was put into independence from a particular class for
+the index vector. In \pkg{zoo}, it is assumed that combination \code{c()},
+querying the \code{length()}, value matching \code{MATCH()}, subsetting \code{[,},
+and, of course, ordering \code{ORDER()} work when applied to the index. 
+This is the case, e.g., for standard numeric and character vectors and for
+vectors of classes \code{"Date"}, \code{"POSIXct"} or \code{"times"}
+from package \pkg{chron}, but not for the class \code{"dateTime"} in \pkg{fBasics}.
+In the last case, the solution is to provide methods for the above mentioned
+functions so that indexing \code{"zoo"} objects with \code{"dateTime"} vectors works
+(see Section~\ref{sec:fBasics} for an example).
+To achieve this  independence of the index class, new generic functions for
+ordering (\code{ORDER()}) and value matching (\code{MATCH()}) are introduced
+as the corresponding base functions \code{order()} and \code{match()} are 
+non-generic. The default methods simply call the corresponding base functions, i.e.,
+no new method needs to be introduced for a particular index class if the 
+non-generic functions \code{order()} and \code{match()} work for this class.
+
+To illustrate the usage of \code{zoo}, we first load the package and set the
+random seed to make the examples in this paper exactly reproducible.
+
+\begin{Schunk}
+\begin{Sinput}
+> library(zoo)
+> set.seed(1071)
+\end{Sinput}
+\end{Schunk}
+
+Then, we create two vectors \code{z1} and \code{z2} with \code{"POSIXct"} 
+indexes, one with random observations
+\begin{Schunk}
+\begin{Sinput}
+> z1.index <- ISOdatetime(2004, rep(1:2, 5), sample(28, 10), 0, 
++     0, 0)
+> z1.data <- rnorm(10)
+> z1 <- zoo(z1.data, z1.index)
+\end{Sinput}
+\end{Schunk}
+and one with a sine wave
+\begin{Schunk}
+\begin{Sinput}
+> z2.index <- as.POSIXct(paste(2004, rep(1:2, 5), sample(1:28, 
++     10), sep = "-"))
+> z2.data <- sin(2 * 1:10/pi)
+> z2 <- zoo(z2.data, z2.index)
+\end{Sinput}
+\end{Schunk}
+Furthermore, we create a matrix \code{Z} with random observations and a \code{"Date"}
+index
+\begin{Schunk}
+\begin{Sinput}
+> Z.index <- as.Date(sample(12450:12500, 10))
+> Z.data <- matrix(rnorm(30), ncol = 3)
+> colnames(Z.data) <- c("Aa", "Bb", "Cc")
+> Z <- zoo(Z.data, Z.index)
+\end{Sinput}
+\end{Schunk}
+In the examples above, the generation of indexes looks a bit awkward
+due to the fact the indexes need to be randomly generated (and there 
+are no special functions for random indexes because these is rarely 
+needed in practice). In ``real world'' applications, the indexes
+are typically part of the raw data set read into \proglang{R} so the
+code would be even simpler. See Section~\ref{sec:combining}
+for such examples.\footnote{Note, that in the code above a new \code{as.Date}
+method, provided in \pkg{zoo}, is used to convert days 
+since 1970-01-01 to class \code{"Date"}. See the respective help page 
+for more details.}
+
+Methods to several standard generic functions are available for
+\code{"zoo"} objects, such as \code{print}, \code{summary}, \code{str}, \code{head},
+\code{tail} and \code{[} (subsetting), a few of which are illustrated in
+the following. 
+
+There are three printing code styles for \code{"zoo"} objects: vectors are by default
+printed in \code{"horizontal"} style
+\begin{Schunk}
+\begin{Sinput}
+> z1
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
+ 0.74675994  0.02107873 -0.29823529  0.68625772  1.94078850  1.27384445 
+ 2004-02-12  2004-02-16  2004-02-20  2004-02-24 
+ 0.22170438 -2.07607585 -1.78439244 -0.19533304 
+\end{Soutput}
+\begin{Sinput}
+> z1[3:7]
+\end{Sinput}
+\begin{Soutput}
+2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+-0.2982353  0.6862577  1.9407885  1.2738445  0.2217044 
+\end{Soutput}
+\end{Schunk}
+and matrices in \code{"vertical"} style
+\begin{Schunk}
+\begin{Sinput}
+> Z
+\end{Sinput}
+\begin{Soutput}
+           Aa          Bb          Cc         
+2004-02-02  1.25543390  0.68157316 -0.63292049
+2004-02-08 -1.49458326  1.32341223 -1.49442269
+2004-02-09 -1.87462247 -0.87329289  0.62733971
+2004-02-21 -0.14538608  0.45234903 -0.14597401
+2004-02-22  0.22542418  0.53838938  0.23136133
+2004-02-29  1.20695518  0.31814222 -0.01129202
+2004-03-05 -1.20861025  1.42379785 -0.81614483
+2004-03-10 -0.11039563  1.34774254  0.95522468
+2004-03-14  0.84202385 -2.73842019  0.23150695
+2004-03-20 -0.19019104  0.12308872 -1.51862157
+\end{Soutput}
+\begin{Sinput}
+> Z[1:3, 2:3]
+\end{Sinput}
+\begin{Soutput}
+           Bb         Cc        
+2004-02-02  0.6815732 -0.6329205
+2004-02-08  1.3234122 -1.4944227
+2004-02-09 -0.8732929  0.6273397
+\end{Soutput}
+\end{Schunk}
+Additionally, there is a \code{"plain"} style which simply first prints the data 
+and then the index.
+
+Summaries and most other methods for \code{"zoo"} objects are carried out
+column wise, reflecting the rectangular structure. In addition,
+a summary of the index is provided.
+
+\begin{Schunk}
+\begin{Sinput}
+> summary(z1)
+\end{Sinput}
+\begin{Soutput}
+     Index                           z1          
+ Min.   :2004-01-05 00:00:00   Min.   :-2.07608  
+ 1st Qu.:2004-01-20 12:00:00   1st Qu.:-0.27251  
+ Median :2004-02-01 12:00:00   Median : 0.12139  
+ Mean   :2004-02-01 09:36:00   Mean   : 0.05364  
+ 3rd Qu.:2004-02-15 00:00:00   3rd Qu.: 0.73163  
+ Max.   :2004-02-24 00:00:00   Max.   : 1.94079  
+\end{Soutput}
+\begin{Sinput}
+> summary(Z)
+\end{Sinput}
+\begin{Soutput}
+     Index                  Aa                Bb                Cc          
+ Min.   :2004-02-02   Min.   :-1.8746   Min.   :-2.7384   Min.   :-1.51862  
+ 1st Qu.:2004-02-12   1st Qu.:-0.9540   1st Qu.: 0.1719   1st Qu.:-0.77034  
+ Median :2004-02-25   Median :-0.1279   Median : 0.4954   Median :-0.07863  
+ Mean   :2004-02-25   Mean   :-0.1494   Mean   : 0.2597   Mean   :-0.25739  
+ 3rd Qu.:2004-03-08   3rd Qu.: 0.6879   3rd Qu.: 1.1630   3rd Qu.: 0.23147  
+ Max.   :2004-03-20   Max.   : 1.2554   Max.   : 1.4238   Max.   : 0.95522  
+\end{Soutput}
+\end{Schunk}
+
+ 
+\subsection{Plotting}
+\label{sec:plot}
+
+The \code{plot} method for \code{"zoo"} objects, in particular for
+multivariate \code{"zoo"} series, is based on the corresponding
+method for (multivariate) regular time series. It relies on \code{plot}
+and \code{lines} methods being available for the index class which can
+plot the index against the observations.
+
+By default the \code{plot} method creates a panel for each series
+\begin{Schunk}
+\begin{Sinput}
+> plot(Z)
+\end{Sinput}
+\end{Schunk}
+but can also display all series in a single panel
+\begin{Schunk}
+\begin{Sinput}
+> plot(Z, plot.type = "single", col = 2:4)
+\end{Sinput}
+\end{Schunk}
+In both cases additional graphical parameters like color \code{col},
+plotting character \code{pch} and line type \code{lty} can be
+expanded to the number of series. But the \code{plot} method for
+\code{"zoo"} objects offers some more flexibility in specification
+of graphical parameters as in
+\begin{Schunk}
+\begin{Sinput}
+> plot(Z, type = "b", lty = 1:3, pch = list(Aa = 1:5, Bb = 2, Cc = 4), 
++     col = list(Bb = 2, 4))
+\end{Sinput}
+\end{Schunk}
+The argument \code{lty} behaves as before and sets every series in another
+line type. The \code{pch} argument is a named list that assigns to each series
+a different vector of plotting characters each of which is expanded to the 
+number of observations. Such a list does not necessarily have to include the names of all
+series, but can also specify a subset. For the remaining series the default parameter
+is then used which can again be changed: e.g., in the above example the \code{col} argument
+is set to display the series \code{"Bb"} in red and all remaining series in blue.
+The results of the multiple panel plots are depicted in Figure~\ref{fig:plot13} and the
+single panel plot in \ref{fig:plot2}.
+
+\begin{figure}[tbh]
+\begin{center}
+\includegraphics{zoo-plot2-repeat}
+\caption{\label{fig:plot2} Example of a single panel plot}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics{zoo-plot1-repeat}
+\includegraphics{zoo-plot3-repeat}
+\caption{\label{fig:plot13} Examples of multiple panel plots}
+\end{center}
+\end{figure}
+
+
+\subsection{Merging and binding}
+\label{sec:merge}
+
+As for many rectangular data formats in \proglang{R}, there are
+both methods for combining the rows and columns of \code{"zoo"}
+objects respectively. For the \code{rbind} method the number of
+columns of the combined objects has to be identical and the
+indexes may not overlap.
+\begin{Schunk}
+\begin{Sinput}
+> rbind(z1[5:10], z1[2:3])
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-14  2004-01-19  2004-01-27  2004-02-07  2004-02-12  2004-02-16 
+ 0.02107873 -0.29823529  1.94078850  1.27384445  0.22170438 -2.07607585 
+ 2004-02-20  2004-02-24 
+-1.78439244 -0.19533304 
+\end{Soutput}
+\end{Schunk}
+The \code{cbind} method by default combines the columns by the union of
+the indexes and fills the created gaps by \code{NA}s.\footnote{Note,
+that \code{cbind} currently is inferior to \code{merge} regarding the
+column naming of the resulting object.}
+\begin{Schunk}
+\begin{Sinput}
+> cbind(z1, z2)
+\end{Sinput}
+\begin{Soutput}
+           z1          z2         
+2004-01-03          NA  0.94306673
+2004-01-05  0.74675994 -0.04149429
+2004-01-14  0.02107873          NA
+2004-01-17          NA  0.59448077
+2004-01-19 -0.29823529 -0.52575918
+2004-01-24          NA -0.96739776
+2004-01-25  0.68625772          NA
+2004-01-27  1.94078850          NA
+2004-02-07  1.27384445          NA
+2004-02-08          NA  0.95605566
+2004-02-12  0.22170438 -0.62733473
+2004-02-13          NA -0.92845336
+2004-02-16 -2.07607585          NA
+2004-02-20 -1.78439244          NA
+2004-02-24 -0.19533304          NA
+2004-02-25          NA  0.56060280
+2004-02-26          NA  0.08291711
+\end{Soutput}
+\end{Schunk}
+In fact, the \code{cbind} method is synonymous with the \code{merge}
+method except that the latter provides additional arguments
+which allow for combining the columns by the intersection
+of the indexes using the argument \code{all = FALSE}
+\begin{Schunk}
+\begin{Sinput}
+> merge(z1, z2, all = FALSE)
+\end{Sinput}
+\begin{Soutput}
+           z1          z2         
+2004-01-05  0.74675994 -0.04149429
+2004-01-19 -0.29823529 -0.52575918
+2004-02-12  0.22170438 -0.62733473
+\end{Soutput}
+\end{Schunk}
+Additionally, the filling pattern can be changed in \code{merge},
+the naming of the
+columns can be modified and the return class of the result can
+be specified. In the case of merging of objects with 
+different index classes, \proglang{R} gives a warning and tries to
+coerce the indexes. Merging objects with different index classes is
+generally discouraged---if it is used nevertheless, it is the
+responsibility of the user to ensure that the result is as intended.
+
+Another function which performs operations along a subset of indexes
+is \code{aggregate}, which is discussed in this section although
+it does not combine several objects. Using the \code{aggregate} method, \code{"zoo"} objects
+are split into subsets along a coarser index grid,
+summary statistics are computed for each and then the 
+reduced object is returned. In the following example,
+first a function is set up which returns for a given \code{"Date"}
+value the corresponding first of the month. This function is then
+used to compute the coarser grid for the \code{aggregate} call: in
+the first example the mean of the observations in the month
+is returned, in the second example the first observation.
+%%FIXME: maybe also firstofquarter, see man pages
+
+\begin{Schunk}
+\begin{Sinput}
+> firstofmonth <- function(x) as.Date(sub("..$", "01", format(x)))
+> aggregate(Z, firstofmonth(Z.index), mean)
+\end{Sinput}
+\begin{Soutput}
+           Aa          Bb          Cc         
+2004-02-01  0.53820841  0.04508597 -0.12412352
+2004-03-01 -1.18080051  0.58156655 -0.45730045
+\end{Soutput}
+\begin{Sinput}
+> aggregate(Z, firstofmonth(Z.index), head, 1)
+\end{Sinput}
+\begin{Soutput}
+           Aa         Bb         Cc        
+2004-02-01  1.2554339  0.6815732 -0.6329205
+2004-03-01 -1.4945833  1.3234122 -1.4944227
+\end{Soutput}
+\end{Schunk}
+
+
+\subsection{Mathematical operations}
+\label{sec:Ops}
+
+To allow for standard mathematical operations among \code{"zoo"}
+objects, \pkg{zoo} extends group generic functions \code{Ops}.
+These perform the operations only for the intersection of the
+indexes of the objects. As an example, the summation and logical
+comparison with $<$ of \code{z1} and \code{z2} yield
+\begin{Schunk}
+\begin{Sinput}
+> z1 + z2
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-02-12 
+ 0.7052657 -0.8239945 -0.4056304 
+\end{Soutput}
+\begin{Sinput}
+> z1 < z2
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-02-12 
+     FALSE      FALSE      FALSE 
+\end{Soutput}
+\end{Schunk}
+
+Additionally, methods for transposing \code{t} of \code{"zoo"}
+objects---which coerces to a matrix before, see below---and 
+computing cumulative quantities such as
+\code{cumsum}, \code{cumprod}, \code{cummin}, \code{cummax}
+which are all applied column wise.
+\begin{Schunk}
+\begin{Sinput}
+> cumsum(Z)
+\end{Sinput}
+\begin{Soutput}
+           Aa         Bb         Cc        
+2004-02-02  1.2554339  0.6815732 -0.6329205
+2004-02-08 -0.2391494  2.0049854 -2.1273432
+2004-02-09 -2.1137718  1.1316925 -1.5000035
+2004-02-21 -2.2591579  1.5840415 -1.6459775
+2004-02-22 -2.0337337  2.1224309 -1.4146162
+2004-02-29 -0.8267785  2.4405731 -1.4259082
+2004-03-05 -2.0353888  3.8643710 -2.2420530
+2004-03-10 -2.1457844  5.2121135 -1.2868283
+2004-03-14 -1.3037606  2.4736933 -1.0553214
+2004-03-20 -1.4939516  2.5967820 -2.5739429
+\end{Soutput}
+\end{Schunk}
+
+
+\subsection{Extracting and replacing the data and the index}
+\label{sec:window}
+
+\pkg{zoo} provides several generic functions and methods
+to work on the data contained in a \code{"zoo"} object, the
+index (or time) attribute associated to it, and on both data and
+index.
+
+The data stored in \code{"zoo"} objects can be extracted by
+\code{coredata} which strips off all \code{"zoo"}-specific attributes and 
+it can be replaced using \code{coredata<-}. Both are new generic
+functions\footnote{The \code{coredata} functionality is similar in spirit to the \code{core}
+function in \pkg{its} and \code{value} in \pkg{tseries}. However, the 
+focus of those functions is somewhat narrower and we try to provide 
+more general purpose generic functions. See the respective manual
+page for more details.}
+with methods for \code{"zoo"} objects as illustrated in the following
+example.
+\begin{Schunk}
+\begin{Sinput}
+> coredata(z1)
+\end{Sinput}
+\begin{Soutput}
+ [1]  0.74675994  0.02107873 -0.29823529  0.68625772  1.94078850  1.27384445
+ [7]  0.22170438 -2.07607585 -1.78439244 -0.19533304
+\end{Soutput}
+\begin{Sinput}
+> coredata(z1) <- 1:10
+> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         1          2          3          4          5          6          7 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         10 
+\end{Soutput}
+\end{Schunk}
+
+The index associated with a \code{"zoo"} object can be extracted
+by \code{index} and modified by \code{index<-}. As the interpretation
+of the index as ``time'' in time series applications is natural,
+there are also synonymous methods \code{time} and \code{time<-}. 
+Hence, the commands \code{index(z2)} and \code{time(z2)}
+return equivalent results.
+\begin{Schunk}
+\begin{Sinput}
+> index(z2)
+\end{Sinput}
+\begin{Soutput}
+ [1] "2004-01-03 CET" "2004-01-05 CET" "2004-01-17 CET" "2004-01-19 CET"
+ [5] "2004-01-24 CET" "2004-02-08 CET" "2004-02-12 CET" "2004-02-13 CET"
+ [9] "2004-02-25 CET" "2004-02-26 CET"
+\end{Soutput}
+\end{Schunk}
+The index scale of \code{z2} can be changed to that of \code{z1} by
+\begin{Schunk}
+\begin{Sinput}
+> index(z2) <- index(z1)
+> z2
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
+ 0.94306673 -0.04149429  0.59448077 -0.52575918 -0.96739776  0.95605566 
+ 2004-02-12  2004-02-16  2004-02-20  2004-02-24 
+-0.62733473 -0.92845336  0.56060280  0.08291711 
+\end{Soutput}
+\end{Schunk}
+
+The start and the end of the index/time vector can be queried by
+\code{start} and \code{end}:
+\begin{Schunk}
+\begin{Sinput}
+> start(z1)
+\end{Sinput}
+\begin{Soutput}
+[1] "2004-01-05 CET"
+\end{Soutput}
+\begin{Sinput}
+> end(z1)
+\end{Sinput}
+\begin{Soutput}
+[1] "2004-02-24 CET"
+\end{Soutput}
+\end{Schunk}
+
+
+To work on both data and index/time, \pkg{zoo} provides
+\code{window} and \code{window<-} methods for \code{"zoo"} objects.
+In both cases the window is specified by
+\begin{Scode}
+window(x, index, start, end)
+\end{Scode}
+where \code{x} is the \code{"zoo"} object, \code{index} is a set
+of indexes to be selected (by default the full index of \code{x})
+and \code{start} and \code{end} can be used to restrict the 
+\code{index} set. 
+\begin{Schunk}
+\begin{Sinput}
+> window(Z, start = as.Date("2004-03-01"))
+\end{Sinput}
+\begin{Soutput}
+           Aa         Bb         Cc        
+2004-03-05 -1.2086102  1.4237978 -0.8161448
+2004-03-10 -0.1103956  1.3477425  0.9552247
+2004-03-14  0.8420238 -2.7384202  0.2315069
+2004-03-20 -0.1901910  0.1230887 -1.5186216
+\end{Soutput}
+\begin{Sinput}
+> window(Z, index = index(Z)[5:8], end = as.Date("2004-03-01"))
+\end{Sinput}
+\begin{Soutput}
+           Aa          Bb          Cc         
+2004-02-22  0.22542418  0.53838938  0.23136133
+2004-02-29  1.20695518  0.31814222 -0.01129202
+\end{Soutput}
+\end{Schunk}
+
+The first example selects all observations starting from 2004-03-01
+whereas the second selects from the from the 5th to 8th observation
+those up to 2004-03-01.
+
+The same syntax can be used for the corresponding replacement function.
+\begin{Schunk}
+\begin{Sinput}
+> window(z1, end = as.POSIXct("2004-02-01")) <- 9:5
+> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          8          7          6          5          6          7 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         10 
+\end{Soutput}
+\end{Schunk}
+
+Two methods that are standard in time series applications
+are \code{lag} and \code{diff}. These are available with the same
+arguments as the \code{"ts"} methods.\footnote{\code{diff} also
+has an additional argument that also allows for geometric and
+not only allows arithmetic differences. Furthermore, note the sign
+of the lag in \code{lag}: by default it is positive and shifts the 
+observations \emph{forward}, to obtain the more standard \emph{backward}
+shift the lag has to be negative.}
+
+\begin{Schunk}
+\begin{Sinput}
+> lag(z1, k = -1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 2004-02-16 
+         9          8          7          6          5          6          7 
+2004-02-20 2004-02-24 
+         8          9 
+\end{Soutput}
+\begin{Sinput}
+> merge(z1, lag(z1, k = 1))
+\end{Sinput}
+\begin{Soutput}
+           z1 lag(z1, k = 1)
+2004-01-05  9  8            
+2004-01-14  8  7            
+2004-01-19  7  6            
+2004-01-25  6  5            
+2004-01-27  5  6            
+2004-02-07  6  7            
+2004-02-12  7  8            
+2004-02-16  8  9            
+2004-02-20  9 10            
+2004-02-24 10 NA            
+\end{Soutput}
+\begin{Sinput}
+> diff(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 2004-02-16 
+        -1         -1         -1         -1          1          1          1 
+2004-02-20 2004-02-24 
+         1          1 
+\end{Soutput}
+\end{Schunk}
+
+
+
+\subsection[Coercion to and from "zoo"]{Coercion to and from \code{"zoo"}}
+\label{sec:as.zoo}
+
+Coercion to and from \code{"zoo"} objects is available for objects of
+various classes, in particular \code{"ts"}, \code{"irts"} and \code{"its"}
+objects can be coerced to \code{"zoo"} using the  respective \code{as.zoo}
+method. The reverse coercion is available for \code{"its"} and for \code{"irts"}
+(the latter in package \code{tseries}).
+Furthermore, \code{"zoo"} objects can be coerced to vectors, matrices, lists and
+data frames (the latter dropping the index/time attribute). A simple example is
+\begin{Schunk}
+\begin{Sinput}
+> as.data.frame(Z)
+\end{Sinput}
+\begin{Soutput}
+           Aa         Bb          Cc
+1   1.2554339  0.6815732 -0.63292049
+2  -1.4945833  1.3234122 -1.49442269
+3  -1.8746225 -0.8732929  0.62733971
+4  -0.1453861  0.4523490 -0.14597401
+5   0.2254242  0.5383894  0.23136133
+6   1.2069552  0.3181422 -0.01129202
+7  -1.2086102  1.4237978 -0.81614483
+8  -0.1103956  1.3477425  0.95522468
+9   0.8420238 -2.7384202  0.23150695
+10 -0.1901910  0.1230887 -1.51862157
+\end{Soutput}
+\end{Schunk}
+
+
+\subsection[NA handling]{\code{NA} handling}
+\label{sec:NA}
+
+Four methods for dealing with \code{NA}s (missing observations) 
+in the observations are applicable to \code{"zoo"} objects:
+\code{na.omit}, \code{na.contiguous}, \code{na.approx} and \code{na.locf}.
+\code{na.omit}---or its default method to be more precise---returns a \code{"zoo"}
+object with incomplete observations removed. \code{na.contiguous}
+extracts the longest consecutive stretch of non-missing values.
+This function is currently made generic in \pkg{zoo}
+with a \code{"zoo"} method and the \pkg{stats} function
+as the default.\footnote{\code{na.contiguous}
+will be generic in base \proglang{R} from version 2.1.0 on.}
+Furthermore, new generic functions
+\code{na.approx} and \code{na.locf} and corresponding default methods are introduced in \pkg{zoo}.
+The former replaces \code{NA}s by linear interpolation (using the
+function \code{approx}) and the name of the latter
+stands for \underline{l}ast \underline{o}bservation \underline{c}arried
+\underline{f}orward. It replaces missing observations by the most recent
+non-\code{NA} prior to it. Leading \code{NA}s, which cannot be replaced
+by precious observations, are removed in both functions by default.
+
+\begin{Schunk}
+\begin{Sinput}
+> z1[sample(1:10, 3)] <- NA
+> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9         NA          7          6          5          6         NA 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         NA 
+\end{Soutput}
+\begin{Sinput}
+> na.omit(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-16 2004-02-20 
+         9          7          6          5          6          8          9 
+\end{Soutput}
+\begin{Sinput}
+> na.contiguous(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-19 2004-01-25 2004-01-27 2004-02-07 
+         7          6          5          6 
+\end{Soutput}
+\begin{Sinput}
+> na.approx(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+  9.000000   7.714286   7.000000   6.000000   5.000000   6.000000   7.111111 
+2004-02-16 2004-02-20 
+  8.000000   9.000000 
+\end{Soutput}
+\begin{Sinput}
+> na.approx(z1, 1:NROW(z1))
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          8          7          6          5          6          7 
+2004-02-16 2004-02-20 
+         8          9 
+\end{Soutput}
+\begin{Sinput}
+> na.locf(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          9          7          6          5          6          6 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9          9 
+\end{Soutput}
+\end{Schunk}
+
+As the above example illustrates, \code{na.approx} uses by default
+the underlying time scale for interpolation. This can be changed, e.g.,
+to an equidistant spacing, by setting the second argument of
+\code{na.approx}.
+
+\section[Combining zoo with other packages]{Combining \pkg{zoo} with other packages}
+\label{sec:combining}
+
+The main purpose of the package \pkg{zoo} is to provide basic infrastructure for
+working with indexed totally ordered observations that can be either employed by
+users directly or can be a basic ingredient on top of which other packages can
+build. The latter is illustrated with a few brief examples involving the packages
+\pkg{strucchange}, \pkg{tseries}, \pkg{fBasics} and \pkg{stats} in this section.
+
+\subsection[strucchange: Empirical fluctuation processes]{\pkg{strucchange}: Empirical fluctuation processes}
+\label{sec:strucchange}
+
+The package \pkg{strucchange} provides a collection of methods for testing,
+monitoring and dating structural changes, in particular in linear regression models.
+Tests for structural change assess whether the parameters of a model remain
+constant over an ordering with respect to a specified variable, usually time.
+To adequatly store and visualize empirical fluctuation processes which 
+capture instabilities over this ordering, a data type for indexed ordered
+observations is required. This was the motivation for starting the \pkg{zoo}
+project.
+
+A simple example for the need of \code{"zoo"} objects in \pkg{strucchange}
+which is not (easily) be implemented by other irregular time series classes
+available on CRAN is described in the following. We assess the constancy of the
+electrical resistance over the apparent juice content of kiwi fruits.\footnote{A different
+approach would be to test whether the slope of a regression of electrical resistance
+on juice content changes with increasing juice content, i.e., to test for
+instabilities in \code{ohms ~ juice} instead of \code{ohms ~ 1}. Both lead to 
+similar results.} The data
+set \code{fruitohms} is contained in the \pkg{DAAG} package \citep{zoo:DAAG:2004}.
+The fitted \code{ocus} object contains the OLS-based CUSUM process for the mean
+of the electrical resistance (variable \code{ohms}) indexed by the juice
+content (variable \code{juice}).
+
+\begin{Schunk}
+\begin{Sinput}
+> library(strucchange)
+> library(DAAG)
+\end{Sinput}
+\begin{Soutput}
+Loading required package: leaps 
+Loading required package: oz 
+\end{Soutput}
+\begin{Sinput}
+> data(fruitohms)
+> ocus <- gefp(ohms ~ 1, order.by = ~juice, data = fruitohms)
+\end{Sinput}
+\end{Schunk}
+
+This OLS-based CUSUM process can be visualized using the \code{plot} method
+for \code{"gefp"} objects which builds on the \code{"zoo"} method and yields in
+this case the plot in Figure~\ref{fig:strucchange} showing the process which
+crosses its 5\% critical value and 
+thus signals a significant decrease in the mean electrical resistance over the
+juice content. for more information on the package \pkg{strucchange} and the 
+function \code{gefp} see \cite{zoo:Zeileis+Leisch+Hornik:2002} and 
+\cite{zoo:Zeileis:2004}.
+
+\begin{figure}
+\begin{center}
+\begin{Schunk}
+\begin{Sinput}
+> plot(ocus)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{zoo-strucchange2}
+\caption{\label{fig:strucchange} Empirical M-fluctuation process for \code{fruitohms} data}
+\end{center}
+\end{figure}
+
+
+\subsection[tseries: Historical financial data]{\pkg{tseries}: Historical financial data}
+\label{sec:tseries}
+
+A typical application for irregular time series which became increasingly
+important over the last years in computational statistics and finance is
+daily (or higher frequent) financial data. The package \pkg{tseries} provides
+the function \code{get.hist.quote} for obtaining historical financial data
+by querying Yahoo! Finance at \url{http://finance.yahoo.com/},
+an online portal quoting data provided by Reuters. The following code
+queries the quotes of Lucent Technologies starting from 2001-01-01:
+
+\begin{Schunk}
+\begin{Sinput}
+> library(tseries)
+> LU <- get.hist.quote(instrument = "LU", start = "2001-01-01", 
++     end = "2004-09-30", origin = "1970-01-01")
+\end{Sinput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Soutput}
+time series starts 2001-01-02
+\end{Soutput}
+\end{Schunk}
+
+In the returned \code{LU} object the irregular data is stored by extending
+it in a regular grid and filling the gaps with \code{NA}s. The time is stored
+in days starting from an \code{origin}, in this case specified to be 1970-01-01, the
+origin used by the \code{Date} class.
+This series can be transformed easily into an irregular \code{"zoo"} series 
+using a \code{"Date"} index. The log-difference returns for Lucent 
+Technologies is depicted in Figure~\ref{fig:tseries}.
+
+\begin{Schunk}
+\begin{Sinput}
+> LU <- as.zoo(LU)
+> index(LU) <- as.Date(index(LU))
+> LU <- na.omit(LU)
+\end{Sinput}
+\end{Schunk}
+
+\begin{figure}
+\begin{center}
+\begin{Schunk}
+\begin{Sinput}
+> plot(diff(log(LU)))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{zoo-tseries3}
+\caption{\label{fig:tseries} Log-difference returns for Lucent Technologies}
+\end{center}
+\end{figure}
+
+
+\subsection[fBasics: Indexes of class "timeDate"]{\pkg{fBasics}: Indexes of class \code{"timeDate"}}
+\label{sec:fBasics}
+
+Although the methods in \pkg{zoo} work out of the box for many index classes,
+it might be necessary for some index classes to provide \code{c}, \code{length},
+\code{ORDER} and \code{MATCH} methods such that the methods in \pkg{zoo} 
+work properly. An example for such an index class which requires a bit more
+attention is \code{"timeDate"} from the \pkg{fBasics} package.
+
+But after the necessary methods have been defined
+\begin{Schunk}
+\begin{Sinput}
+> length.timeDate <- function(x) prod(x@Dim)
+> ORDER.timeDate <- function(x, ...) order(as.POSIXct(x), ...)
+> MATCH.timeDate <- function(x, table, nomatch = NA, ...) match(as.POSIXct(x), 
++     as.POSIXct(table), nomatch = NA, ...)
+\end{Sinput}
+\end{Schunk}
+the class \code{"timeDate"} can be used for indexing \code{"zoo"} objects.
+The following example illustrates how \code{z2} can be transformed
+to use the \code{"timeDate"} class.
+\begin{Schunk}
+\begin{Sinput}
+> library(fBasics)
+> z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
+> z2td
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
+ 0.94306673 -0.04149429  0.59448077 -0.52575918 -0.96739776  0.95605566 
+ 2004-02-12  2004-02-16  2004-02-20  2004-02-24 
+-0.62733473 -0.92845336  0.56060280  0.08291711 
+\end{Soutput}
+\end{Schunk}
+
+\subsection[stats: (Dynamic) regression modelling]{\pkg{stats}: (Dynamic) regression modelling}
+\label{sec:stats}
+
+\code{zoo} provides a facility for extending regression functions such
+as \code{lm} to handle time series.  One simply encloses the \code{formula}
+argument in \code{I(...)} and ensures that all variables in
+the formula are of class \code{"zoo"} or all are of class \code{"ts"}.
+
+Basic regression functions, like \code{lm} or \code{glm}, in which regression
+relationships are specified via a \code{formula} only have limited
+support for time series regression. The reason is that \code{lm(formula, ...)}
+calls the generic function \code{model.frame(formula, ...)} to create a 
+a data frame with the variables required. This dispatches to \code{model.frame.formula}
+which does not deal specifically with (various types of) time series data.
+Therefore, it would be desirable to dispatch to a specialized \code{model.frame}
+method depending on the type of the dependent variable. As this is a non-standard
+dispatch, \pkg{zoo} provides the following mechanism: In the call to the regression 
+function, the \code{formula} is insulated by \code{I()}, e.g., as in
+\code{lm(I(formula), ...)}, leaving \code{formula} unaltered but returning an object
+of class \code{"AsIs"}. Then, \code{model.frame.AsIs} is called which examines the
+dependent variable of the \code{formula} and then dispatches to \code{model.frame.foo}
+if this is of class \code{"foo"}. In \pkg{zoo}, the methods \code{model.frame.zoo}
+and \code{model.frame.ts} are provided which are able to create model frames
+from formulas in which \emph{all} variables are of class \code{"zoo"} or \code{"ts"},
+respectively. The advantage of \code{model.frame.zoo} is that it aligns
+the variables along a common index, it allows the usage of \code{lag} and
+\code{diff} in the model specification and works with the \code{NA} handling methods
+described in Section~\ref{sec:NA}. Therefore, dynamic linear regression models
+can be fit easily using the standard \code{lm} function by just insulating
+\code{I(formula)} in the corresponding call\footnote{In addition to \code{lm}
+and \code{glm}, this approach works for many other regression functions including
+\code{randomForest} ensembles from \pkg{randomForest},
+\code{svm} support vector machines from \pkg{e1071},
+\code{lqs} resistant regression from \pkg{MASS},
+\code{nnet} neural networks from \pkg{nnet},
+\code{rq} quantile regression from \pkg{quantreg},
+and possibly many others.}.
+
+A simple example based on artificial data is given below: the lag of a dependent
+variable is explained by the first differences of a numeric regressor and an
+explanatory factor. Note, that the variables have different indexes. First, a linear
+regression model is fitted, then a quantile regression is carried out for the same
+equation.
+
+\begin{Schunk}
+\begin{Sinput}
+> yz <- zoo(1:20)^2
+> xz <- zoo(1:18)^2
+> fz <- zoo(gl(4, 5))
+> lm(I(lag(yz) ~ diff(xz) + fz))
+\end{Sinput}
+\begin{Soutput}
+Call:
+lm(formula = I(lag(yz) ~ diff(xz) + fz))
+
+Coefficients:
+(Intercept)     diff(xz)           fz  
+    -68.275       10.092        8.922  
+\end{Soutput}
+\begin{Sinput}
+> library(quantreg)
+> rq(I(lag(yz) ~ diff(xz) + fz))
+\end{Sinput}
+\begin{Soutput}
+Call:
+rq(formula = I(lag(yz) ~ diff(xz) + fz))
+
+Coefficients:
+(Intercept)    diff(xz)          fz 
+  -58.50000    11.64286   -10.28571 
+
+Degrees of freedom: 17 total; 14 residual
+\end{Soutput}
+\end{Schunk}
+
+See the help page of \code{model.frame.zoo} for more examples
+and additional information. Furthermore, note that this feature is under 
+development and might subject to changes in future versions.
+
+
+
+\section{Summary and outlook} \label{sec:summary}
+
+The package \pkg{zoo} provides an \proglang{S3} class and methods
+for indexed totally ordered observations, such as irregular time series.
+Its key design goals are independence of a particular index class 
+and compatibility with standard generics similar to the behaviour of 
+the corresponding \code{"ts"} methods. This paper describes how
+these are implemented in \pkg{zoo} and illustrates the usage of 
+the methods for plotting, merging and
+binding, several mathematical operations, extracting and replacing data
+and index, coercion and \code{NA} handling.
+
+An indexed object of class \code{"zoo"} can be thought of as data plus index
+where the data are essentially vectors or matrices and the index can be
+a vector of (in principle) arbitrary class. Therefore, objects of classes
+\code{"ts"}, \code{"its"}, \code{"irts"} and \code{"timeSeries"} can easily
+be transformed into \code{"zoo"} objects---the reverse transformation is also possible 
+provided that the index fulfills the restrictions of the respective class.
+Hence, the \code{"zoo"} class can also be used as the basis for other
+classes of indexed and objects and more specific functionality can be built on
+top of it.
+
+Whereas a lot of effort was put into achieving independence of a particular
+index class, the types of data that can be indexed with \code{"zoo"} are currently
+limited to vectors and matrices, typically containing numeric values. Although,
+there is some limited support available for indexed factors, one important 
+direction for future development of \pkg{zoo} is to add better support for other
+objects that can also naturally be indexed including specifically factors, data
+frames and lists.
+
+
+
+\section*{Computational details}
+
+The results in this paper were obtained using \proglang{R}
+2.0.0 with the packages
+\pkg{zoo} 0.9--1,
+\pkg{strucchange} 1.2--7,
+\pkg{fBasics} 200.10058,
+\pkg{tseries} 0.9--24,
+\pkg{randomForest} 4.5--1 and
+\pkg{DAAG} 0.37.
+\proglang{R} itself and all packages used are available from
+CRAN at \url{http://CRAN.R-project.org/}.
+
+
+\bibliography{zoo}
+
+\begin{appendix}
+\section{Reference card}
+\input{zooref-raw}
+\end{appendix}
+
+\end{document}

@@ -1,3 +1,66 @@
+Changes in Version 0.9-1
+
+  o new generic functions ORDER() and MATCH() (with
+    order() and match() as the default) so that zoo()
+    can handle  arbitrary index/time classes when
+    suitable methods for the generic function c(),
+    length(), order(), match() and subsetting [, are
+    supplied.
+
+  o improved printing of "zoo" objects and added
+    a summary() method.
+    
+  o extended coercion functionality to and from
+    "zoo" objects. "its" objects can be coerced to
+    "zoo" and vice versa. "zoo" objects can be 
+    coerced to vector, matrix, data.frame or list.
+    
+  o added functionality to extract/assign to
+    the coredata() of a "zoo" object.
+    
+  o added/improved functionality to extract/assign
+    to the window() of a "zoo" object.
+    
+  o added/improved functionality to extract/assign
+    to the index() or time() of a "zoo" object.
+    
+  o added lag(), diff(), start(), end(), head(),
+    tail() methods.
+
+  o improved plot.zoo() by more flexible expansion
+    of plotting parameters such as col, lty and pch.
+
+  o added a cbind() method for "zoo" objects (almost
+    synonymous with merge())
+  
+  o NA handling for "zoo" objects via na.omit(),
+    na.contiguous(), na.approx() and na.locf().
+
+  o na.locf() generic function with default method (suitable
+    for "zoo" objects) which implements Last Observation
+    Carried Forward.
+  
+  o na.approx() generic function with default method (suitable
+    for "zoo" objects) which implements elimination of NAs
+    by interpolation.
+  
+  o added mathematical methods: group generic functions
+    for "zoo" objects, t(), cumsum(), cumprod(), cummin(),
+    and cummax().
+
+  o added model.frame.AsIs and model.frame.zoo to support
+    regression based on zoo objects, in particular with lm()
+    (but also many other regression functions).
+
+  o Zero length vector zoo objects may have non-zero index vectors 
+    intended to be used in merge to extend zoo objects. zoo
+    changed to enable the creation of such objects by omitting
+    first argument.
+
+  o added a vignette explaining the new features
+  
+
+
 Changes in Version 0.2-0
 
   o zoo() now has defaults for both arguments x and order.by,
@@ -15,3 +78,4 @@ Changes in Version 0.2-0
        by another value than NA.
        
   o improved documentation with extended examples
+

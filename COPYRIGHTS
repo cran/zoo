@@ -1,9 +1,13 @@
 COPYRIGHT STATUS
 ----------------
 
-This code is
+This bulk of this code is
 
-  Copyright (C) 2004 Achim Zeileis
+  Copyright (C) 2004 Achim Zeileis, Gabor Grothendieck
+
+and R/na.approx.R which is
+
+  Copyright (C) 2004 Achim Zeileis, Gabor Grothendieck, Sundar Dorai-Raj
 
 All code is subject to the GNU General Public License, Version 2. See
 the file COPYING for the exact conditions under which you may

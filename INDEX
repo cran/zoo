@@ -1,6 +1,0 @@
-aggregate.zoo           Compute Summary Statistics of zoo Objects
-as.zoo                  Coercion to zoo
-index                   Extracting Index From Objects
-merge.zoo               Merge Two or More zoo Objects
-plot.zoo                Plotting zoo Objects
-zoo                     Z's Ordered Observations
