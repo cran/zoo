@@ -29,9 +29,9 @@ zoo <- function(x, order.by)
   class(x) <- nclass
   if(NCOL(x) < 2) {
     x <- as.matrix(x)
-    drop <- TRUE
+    if(is.null(drop)) drop <- TRUE
   } else {
-    drop <- FALSE
+    if(is.null(drop)) drop <- FALSE
   }
   if(missing(i)) i <- 1:nrow(x)
   if(missing(j)) j <- 1:ncol(x)
@@ -131,9 +131,10 @@ plot.zoo <- function(x,
     nr <- ceiling(nser / nc)
     par(mfcol = c(nr, nc))
     for(i in 1:nser) {
-      if(i%%nr==0 || i == nser)
+      if(i%%nr==0 || i == nser) {
         plot(x.index, x[, i], xlab= "", ylab= ylab[i], type = "n", ...)
-      else {      
+	mtext(xlab, side = 1, line = 3)
+      } else {      
         plot(x.index, x[, i], axes = FALSE, xlab= "", ylab= ylab[i], type = "n", ...)
         box()
         axis(2, xpd = NA)
@@ -147,6 +148,7 @@ plot.zoo <- function(x,
     if(is.null(ylim)) ylim <- range(x)
     
     col <- rep(col, length.out = nser)
+    lty <- rep(lty, length.out = nser)
     dummy <- rep(range(x), length.out = length(index(x)))
 	    
     plot(x.index, dummy, xlab= xlab, ylab= ylab[1], type = "n", ylim = ylim, ...)
@@ -166,3 +168,120 @@ lines.zoo <- function(x, type = "l", ...)
     else stop("Can't plot lines for multivariate zoo object")
 }
 
+str.zoo <- function(object, ...)
+{
+  str(unclass(object), ...)
+}
+
+window.zoo <- function(x, start = NULL, end = NULL, ...)
+{
+  indexes <- index(x)
+
+  if(is.null(start)) {
+    if(is.null(end)) {
+      return(x)
+    } else {
+      wi <- which(indexes <= end)
+      return(x[wi,,])
+    }
+  } else {
+    if(is.null(end)) {
+      wi <- which(indexes >= start)
+    } else {
+      wi <- which(indexes >= start & indexes <= end)
+    }
+    return(x[wi,,])
+  }
+}
+
+rbind.zoo <- function(..., deparse.level = 1)
+{  
+  args <- list(...)
+  indexes <- do.call("c", lapply(args, index))
+
+  my.table <- function(x) {
+    x <- x[order(x)]
+    table(match(x,x))
+  }
+  if(max(my.table(indexes)) > 1) stop("indexes overlap")
+
+  ncols <- sapply(args, NCOL)  
+  if(!all(ncols == ncols[1])) stop("number of columns differ")
+
+  if(ncols[1] > 1)
+    zoo(do.call("rbind", lapply(args, unclass)), indexes)
+  else
+    zoo(do.call("c", lapply(args, unclass)), indexes)
+}
+
+merge.zoo <- function(x, y, ..., all = TRUE)
+{
+  args <- list(x, y, ...)
+  if(!all(unlist(lapply(args, is.zoo)))) stop("all arguments must be zoo objects")
+
+  makeNames <- function(l) {
+      nm <- names(l)
+      fixup <- if (is.null(nm)) 
+	  seq(along = l)
+      else nm == ""
+      dep <- sapply(l[fixup], function(x) deparse(x)[1])
+      if (is.null(nm)) 
+	  return(dep)
+      if (any(fixup)) 
+	  nm[fixup] <- dep
+      nm
+  }
+  zoonames <- makeNames(as.list(substitute(list(x, y, ...)))[-1])
+
+  all <- rep(all, length(args))
+  indexlist <- lapply(args, index)
+  indexclasses <- sapply(indexlist, function(x) class(x)[1])
+  if(!all(indexclasses == indexclasses[1]))
+    warning("not all indexes are of the same class")
+  indexes <- do.call("c", indexlist)
+
+  sort.unique <- function(x) {
+    x <- x[match(x,x) == seq(length = length(x))]
+    x[order(x)]
+  }
+  my.table <- function(x) {
+    x <- x[order(x)]
+    table(match(x,x))
+  }
+
+  indexintersect <- sort.unique(indexes)[my.table(indexes) == length(args)]
+  indexunion <- do.call("c", indexlist[all])
+  if(is.null(indexunion)) indexunion <- indexes[0] 
+
+  indexes <- sort.unique(c(indexunion, indexintersect))
+  match0 <- function(a, b, nomatch = 0, ...) match(a, b, nomatch = nomatch, ...)
+
+  f <- function(a) {
+    z <- matrix(NA, length(indexes), NCOL(a))
+    z[match0(index(a), indexes),] <- a[match0(indexes, index(a)),, drop = FALSE]
+    z
+  }
+
+  rval <- do.call("cbind", lapply(args, f))
+  
+  fixcolnames <- function(a) {
+    if(NCOL(a) < 2) {
+      return("")
+    } else {
+      rval <- colnames(a)
+      if(is.null(rval)) { 
+        rval <- as.character(1:NCOL(a))
+      } else {
+        rval[rval == ""] <- as.character(which(rval == ""))
+      }
+      rval <- paste(".", rval, sep = "")
+      return(rval)
+    }
+  }
+  
+  zoocolnames <- lapply(args, fixcolnames)
+  zoocolnames <- unlist(lapply(seq(along = args), function(i) paste(zoonames[i], zoocolnames[[i]], sep = "")))
+  colnames(rval) <- zoocolnames
+  
+  zoo(rval, indexes)
+}

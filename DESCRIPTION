@@ -1,11 +1,10 @@
 Package: zoo
-Version: 0.1-1
-Date: 2004-02-18
+Version: 0.1-2
+Date: 2004-04-07
 Title: Z's ordered observations
-Author: Achim Zeileis
+Author: Achim Zeileis, Gabor Grothendieck
 Maintainer: Achim Zeileis <Achim.Zeileis@wu-wien.ac.at>
 Description: A class with methods for totally ordered indexed observations
              such as irregular time series.
-Depends: R (>= 1.5.0)
+Depends: R (>= 1.7.0)
 License: GPL
-

@@ -2,3 +2,4 @@ as.zoo                  Coercion to zoo
 index                   Extracting Index From Objects
 plot.zoo                Plotting zoo Objects
 zoo                     Z's Ordered Observations
+zoo.intersect           Bind Two or More zoo Objects
