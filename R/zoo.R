@@ -49,7 +49,8 @@ print.zoo <- function (x, style = ifelse(length(dim(x)) == 0,
     if (is.null(dim(x)) && length(x) == 0) style <- "plain"
     if (length(dim(x)) > 0 && style == "horizontal") style <- "plain"
     if (style == "vertical") {
-        y <- format(eval(as.matrix(x), parent.frame(n = 3)))
+        # y <- format(eval(as.matrix(x), parent.frame(n = 3)))
+	y <- as.matrix(coredata(x))
         if (length(colnames(x)) < 1) {
             colnames(y) <- rep("", NCOL(x))
         }

@@ -1,6 +1,9 @@
 FEATURES
 ********
 
+  o make "zoo" enforce the index entries to be unique (which is 
+    assumed in a few functions such as merge.zoo).
+
   o provide a [<-.zoo method that is fully consistent with [.zoo
     so that the following works:
       a <- zoo(matrix(1:10,5,2), 2001:2005)

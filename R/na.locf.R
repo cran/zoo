@@ -1,10 +1,13 @@
 na.locf <- function(object, na.rm = TRUE, ...)
 	UseMethod("na.locf")
 
-na.locf.default <- function(object, na.rm = TRUE, ...) {
+na.locf.default <- function(object, na.rm = TRUE, rev = FALSE, ...) {
 	na.locf.0 <- function(x) {
 	      L <- !is.na(x)
-	      idx <- c(NA,which(L))[cumsum(L)+1]
+	      idx <- if (rev)
+	         rev(c(NA,rev(which(L)))[cumsum(rev(L))+1])
+              else
+	         c(NA,which(L))[cumsum(L)+1]
 	      # na.index(x,i) returns x[i] except if i[j] is NA then
 	      # x[i[j]] is NA too
 	      na.index <- function(x, i) {
@@ -21,14 +24,6 @@ na.locf.default <- function(object, na.rm = TRUE, ...) {
 		apply(object, length(dim(object)), na.locf.0)
 	if (na.rm) na.omit(object) else object
 }
-
-na.locf.data.frame <- function(object, na.rm = TRUE, ...) {
-	object <- na.locf.list(object, na.rm = na.rm, ...)
-	if (na.rm) na.omit(object) else object
-}
-
-na.locf.list <- function(object, na.rm = TRUE, ...)
-	lapply(object, na.locf, na.rm = na.rm, ...)
 
 na.contiguous.data.frame <-
 na.contiguous.zoo <- function(object, ...) 

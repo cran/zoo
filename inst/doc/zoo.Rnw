@@ -852,7 +852,7 @@ But after the necessary methods have been defined
 length.timeDate <- function(x) prod(x@Dim)
 ORDER.timeDate <- function(x, ...) order(as.POSIXct(x), ...)
 MATCH.timeDate <- function(x, table, nomatch = NA, ...)
-  match(as.POSIXct(x), as.POSIXct(table), nomatch = NA, ...)
+  match(as.POSIXct(x), as.POSIXct(table), nomatch = nomatch, ...)
 @
 the class \code{"timeDate"} can be used for indexing \code{"zoo"} objects.
 The following example illustrates how \code{z2} can be transformed

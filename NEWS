@@ -1,5 +1,11 @@
 Changes in Version 1.0-3
 
+  o added a `rev' argument to na.locf() which allows to
+    eliminate NAs by NOCB (next observation carried backward).
+
+
+Changes in Version 1.0-3
+
   o added a barplot.zoo() method
 
   o fixed frequency.zoo() which returned NA instead of NULL
@@ -11,6 +17,7 @@ Changes in Version 1.0-3
     from daily series.
     
   o added an na.pad argument to diff.zoo() method
+
 
 Changes in Version 1.0-2
 
@@ -35,6 +42,7 @@ Changes in Version 1.0-1
   o argument k= can be vector in lag.zoo (suggested by Roger Koenker)
 
   o na.locf.default bug fixed
+
 
 Changes in Version 1.0-0
 
@@ -158,7 +166,6 @@ Changes in Version 0.9-1
 
   o added a vignette explaining the new features
   
-
 
 Changes in Version 0.2-0
 
