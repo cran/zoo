@@ -1,0 +1,17 @@
+Changes in Version 0.2-0
+
+  o zoo() now has defaults for both arguments x and order.by,
+    which mimic the default behaviour of ts().
+
+  o added new aggregate.zoo() method for computing summary
+    statistics of "zoo" objects along a coarser index grid.
+
+  o improved merge.zoo() in three directions:
+    1. handling of "zoo" objects with zero columns,
+    2. naming of columns in the merged "zoo" object
+       which behaves more like merge.data.frame();
+       a corresponding suffixes argument has also been added,
+    3. introced a fill argument which allows to fill gaps
+       by another value than NA.
+       
+  o improved documentation with extended examples
