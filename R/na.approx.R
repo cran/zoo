@@ -1,4 +1,3 @@
-
 na.approx <- function(object, ...) UseMethod("na.approx")
 
 # interpolates object along along which defaults to index(object)

@@ -1,5 +1,6 @@
 \name{coredata}
 \alias{coredata}
+\alias{coredata.default}
 \alias{coredata.zoo}
 \alias{coredata.ts}
 \alias{coredata.its}

@@ -31,10 +31,5 @@ na.locf(bz)
 
 cz <- zoo(c(NA,9,3,2,3,2))
 na.locf(cz)
-
-# Apply na.locf to independent variables but not reponse
-
-lm(I(lag(az) ~ na.locf(bz) + diff(na.locf(cz))))
-
 }
 \keyword{ts}

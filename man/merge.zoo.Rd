@@ -1,6 +1,7 @@
 \name{merge.zoo}
 \alias{merge.zoo}
 \alias{rbind.zoo}
+\alias{c.zoo}
 \alias{cbind.zoo}
 \title{Merge Two or More zoo Objects}
 \description{
@@ -10,11 +11,11 @@ versions of database \emph{join} operations.
 
 \usage{
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
-  retclass = c("zoo", "list"))
+  retclass = c("zoo", "list", "data.frame"))
 }
 
 \arguments{
-  \item{\dots}{two or more objects of class \code{"zoo"}.}
+  \item{\dots}{two or more objects, usually of class \code{"zoo"}.}
   \item{all}{logical vector having the same length as the number of \code{"zoo"}
     objects to be merged (otherwise expanded).}
   \item{fill}{an element for filling gaps in merged \code{"zoo"}
@@ -33,6 +34,13 @@ of several objects along the union of the dates
 for \code{all = TRUE}, the default,
 or the intersection of their dates for \code{all = FALSE}
 filling up the created gaps (if any) with the \code{fill} pattern.
+
+The first argument must be a \code{zoo} object.   If any of the remaining
+arguments are plain vectors or matrices with the same length or number
+of rows as the first argument then such arguments are coerced to \code{"zoo"}
+using \code{as.zoo}.  If they are plain but have length 1 then they are
+merged after all non-scalars such that their column is filled with the
+value of the scalar.
 
 \code{all} can be a vector of the same length as the number of \code{"zoo"}
 objects to merged (if not, it is expanded): All indexes
@@ -55,11 +63,16 @@ The default \code{cbind} method is essentially the default \code{merge}
 method, but does not support the \code{retclass} argument.
 The \code{rbind}
 method combines the dates of the \code{"zoo"} objects (duplicate dates are
-not allowed) and combines the rows of the objects.
+not allowed) and combines the rows of the objects. Furthermore, the
+\code{c} method is identical to the \code{rbind} method.
 }
 
 \value{
-An object of class \code{"zoo"}.
+An object of class \code{"zoo"} if \code{retclass="zoo"}, an object of
+class \code{"list"} if \code{retclass="list"} or modified arguments as
+explained above if \code{retclass=NULL}.   If the result is an object
+of class \code{"zoo"} then its frequency is the common frequency of its
+zoo arguments, if they have a common frequency.
 }
 
 \seealso{\code{\link{zoo}}}
@@ -93,5 +106,7 @@ z0 <- zoo(, 1:4)
 merge(z, z0)
 # same but with zero fill
 merge(z, z0, fill = 0)
+
+merge(z, coredata(z),  1)
 }
 \keyword{ts}

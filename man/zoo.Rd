@@ -1,5 +1,6 @@
 \name{zoo}
 \alias{zoo}
+\alias{range.zoo}
 \alias{print.zoo}
 \alias{as.zoo.factor}
 \alias{summary.zoo}
@@ -20,6 +21,10 @@
 
 \alias{index2char}
 \alias{index2char.default}
+\alias{index2char.numeric}
+
+\alias{head.ts}
+\alias{tail.ts}
 
 \title{Z's Ordered Observations}
 \description{
@@ -28,13 +33,18 @@ totally ordered observations which includes irregular
 time series.
 }
 \usage{
-zoo(x, order.by = index(x))
-\method{print}{zoo}(x, style = <<see below>>, quote = FALSE, \dots) 
+zoo(x, order.by = index(x), frequency = NULL)
+\method{print}{zoo}(x, style = , quote = FALSE, \dots) 
 }
 \arguments{
   \item{x}{a numeric vector, matrix or a factor.}
   \item{order.by}{a vector by which the observations in \code{x}
     are ordered.}
+  \item{frequency}{numeric indicating frequency of \code{order.by}.
+    If specified, it is checked whether \code{order.by} and \code{frequency}
+    comply. If so, a regular \code{"zoo"} series is returned, i.e.,
+    an object of class \code{c("zooreg", "zoo")}. See below and
+    \code{\link{zooreg}} for more details.}
   \item{style}{a string specifying the printing style which can be
     \code{"horizontal"} (the default for vectors), \code{"vertical"}
     (the default for matrices) or \code{"plain"} (which first prints
@@ -57,7 +67,9 @@ be arbitrary, but currently there is only support for vectors and matrices
 and partial support for factors.
 
 \code{zoo} is particularly aimed at irregular time series of numeric
-vectors/matrices. \code{zoo}'s key design goals are independence of a particular
+vectors/matrices, but it also supports regular time series (i.e.,
+series with a certain \code{frequency}).
+\code{zoo}'s key design goals are independence of a particular
 index/date/time class and consistency 
 with \code{ts} and base R by providing methods to standard generics. Therefore,
 standard functions can be used to work with \code{"zoo"} objects and 
@@ -75,13 +87,38 @@ generic functions should be created by the user. Note, that to achieve this,
 new generic functions \code{\link{ORDER}} and \code{\link{MATCH}} are created in
 the \code{zoo} package with default methods corresponding to
 the non-generic base functions \code{\link[base]{order}} 
-and \code{\link[base]{match}}.
+and \code{\link[base]{match}}. Furthermore, for certain (but not for all)
+operations the index class should have an \code{as.numeric} method (in 
+particular for regular series) and an \code{as.character} method might improve
+printed output (see also below).
+
+If a \code{frequency} is specified when creating a series via \code{zoo}, the
+object returned is actually of class \code{"zooreg"} which inherits from \code{"zoo"}.
+This is a subclass of \code{"zoo"} which relies on having a \code{"zoo"} series
+with an additional \code{"frequency"} attribute (which has to comply with the
+index of that series). Regular \code{"zooreg"} series can also be created by
+\code{\link{zooreg}}, the \code{zoo} analogue of \code{\link{ts}}. See the 
+respective help page and \code{\link{is.regular}} for further details.
 
 Methods to standard generics for \code{"zoo"} objects currently
 include: \code{print} (see above), \code{summary}, \code{str}, \code{head},
 \code{tail}, \code{[} (subsetting), \code{rbind}, \code{cbind}, \code{merge}
 (see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}),
 \code{plot} and \code{lines} (see \code{\link{plot.zoo}}).
+
+To \dQuote{prettify} printed output of \code{"zoo"} series the generic 
+function \code{index2char} is used for turning index values into character
+values. It defaults to using \code{as.character} but can be customized
+if a different printed display should be used (although this should not
+be necessary, usually).
+
+The subsetting method \code{[} work essentially like the
+corresponding functions for vectors or matrices respectively, i.e., takes
+indexes of type \code{"numeric"}, \code{"integer"} or \code{"logical"}. But
+additionally, it can be used to index with observations from the index class of
+the series. If the index class of the series is one of the three classes above,
+the corresponding index has to be encapsulated in \code{I()} to enforce usage of
+the index class (see examples).
 
 Additionally, \code{zoo} provides several generic functions and methods
 to work (a) on the data contained in a \code{"zoo"} object, (b) the
@@ -95,7 +132,7 @@ using \code{coredata<-}. Both are new generic functions with methods for
 
 (b) The index associated with a \code{"zoo"} object can be extracted
 by \code{index} and modified by \code{index<-}. As the interpretation
-of the index as ``time'' in time series applications is more natural,
+of the index as \dQuote{time} in time series applications is more natural,
 there are also synonymous methods \code{time} and \code{time<-}. The
 start and the end of the index/time vector can be queried by
 \code{start} and \code{end}. See \code{\link{index}}.
@@ -125,9 +162,12 @@ which extracts the longest consecutive stretch of non-missing values
 in a \code{"zoo"} object and \code{\link{na.approx}} which uses
 linear interpolation to fill in \code{NA} values. 
 
-%% Three methods are available for running computations: \code{\link{runmean}}
-%% calculates running means, \code{\link{runmax}} calculates running maxima
-%% and \code{\link{runmed}} calculates running medians.
+A typical task to be performed on ordered observations is to evaluate some
+function, e.g., computing the mean, in a window of observations that is moved
+over the full sample period. The generic function \code{\link{rapply}}
+provides this functionality for arbitrary functions and more efficient versions
+\code{\link{rollmean}}, \code{\link{rollmax}}, \code{\link{rollmedian}} are
+available for the mean, maximum and median respectively.
 }
 
 \value{
@@ -135,7 +175,7 @@ A vector or matrix with an \code{"index"} attribute of the same
 dimension (\code{NROW(x)}) by which \code{x} is ordered.
 }
 
-\seealso{\code{\link{plot.zoo}}, \code{\link{index}}, \code{\link{merge.zoo}}}
+\seealso{\code{\link{zooreg}}, \code{\link{plot.zoo}}, \code{\link{index}}, \code{\link{merge.zoo}}}
 
 \examples{
 ## simple creation and plotting
@@ -144,11 +184,19 @@ x <- zoo(rnorm(5), x.Date)
 plot(x)
 time(x)
 
-## subsetting
-x[1:3]
+## subsetting with numeric indexes
+x[c(2, 4)]
+## subsetting with index class
+x[as.Date("2003-02-01") + c(2, 8)]
 
 ## different classes of indexes/times can be used, e.g. numeric vector
 x <- zoo(rnorm(5), c(1, 3, 7, 9, 14))
+## subsetting with numeric indexes then uses observation numbers
+x[c(2, 4)]
+## subsetting with index class can be enforced by I()
+x[I(c(3, 9))]
+
+## visualization
 plot(x)
 ## or POSIXct
 y.POSIXct <- ISOdatetime(2003, 02, c(1, 3, 7, 9, 14), 0, 0, 0)

@@ -13,22 +13,34 @@ rbind.zoo <- function(..., deparse.level = 1)
   if(!all(ncols == ncols[1])) stop("number of columns differ")
 
   if(ncols[1] > 1)
-    zoo(do.call("rbind", lapply(args, unclass)), indexes)
+    rval <- zoo(do.call("rbind", lapply(args, coredata)), indexes)
   else
-    zoo(do.call("c", lapply(args, unclass)), indexes)
+    rval <- zoo(do.call("c", lapply(args, coredata)), indexes)
+
+  freq <- if(!("zooreg" %in% unlist(sapply(args, class)))) NULL
+            else {
+	      freq <- c(frequency(rval), unlist(sapply(args, frequency)))
+	      if((length(freq) == (length(args)+1)) && 
+	         identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
+		 max(freq) else NULL
+	    }
+  if(!is.null(freq)) {
+    attr(rval, "frequency") <- freq
+    class(rval) <- c("zooreg", class(rval))
+  }
+  return(rval)
 }
 
-#Z# I think restricting cbind (as opposed to merge) might be a good
-#Z# idea, along the lines of:
- 
+c.zoo <- function(...) {
+    rbind.zoo(...)
+}
+
 cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL)
 {
   merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo")
 }
 
-#Z# instead of:
-#Z# cbind.zoo <- 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c("zoo", "list"))
+merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c("zoo", "list", "data.frame"))
 {
     if (!is.null(retclass)) retclass <- match.arg(retclass)
     # cl are calls to the args and args is a list of the arguments
@@ -38,8 +50,33 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 
     parent <- parent.frame()
 
-    # ensure all ... args are of class zoo
-    stopifnot(all(sapply(args, is.zoo)))
+    is.plain <- function(x) 
+	all(class(x) %in% c("array", "integer", "numeric", "factor", "matrix"))
+
+    is.scalar <- function(x) is.plain(x) && length(x) == 1
+
+    # ensure all ... plain args are of length 1 or have same NROW as arg 1
+    stopifnot(all(sapply(args, function(x) is.zoo(x) || !is.plain(x) ||
+      (is.plain(x) && (NROW(x) == NROW(args[[1]]) || is.scalar(x))))))
+
+    scalars <- sapply(args, is.scalar)
+
+    if(!is.zoo(args[[1]])) args[[1]] <- as.zoo(args[[1]])
+    for(i in seq(along = args))
+        if (is.plain(args[[i]]))  
+            args[[i]] <- zoo(args[[i]], index(args[[1]]), attr(args[[1]], "frequency"))
+	else if (!is.zoo(args[[i]]))
+            args[[i]] <- as.zoo(args[[i]])
+
+    ## retain frequency	if all series have integer multiples of the same frequency
+    ## and at least one of the original objects is a "zooreg" object	
+    freq <- if(!("zooreg" %in% unlist(sapply(args, class)))) NULL
+        else {
+	  freq <- unlist(sapply(args, frequency))
+	  if((length(freq) == length(args)) && 
+	     identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
+	     max(freq) else NULL
+	}
 
     # use argument names if suffixes not specified
     if (is.null(suffixes)) {
@@ -97,29 +134,45 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     if (is.null(indexunion)) indexunion <- do.call("c", indexlist)[0]
     indexes <- sort.unique(c(indexunion, indexintersect))
 
+    ## check whether resulting objects still got the same frequency
+    freq <- c(frequency(zoo(,indexes)), freq)
+    freq <- if((length(freq) == 2) && identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
+       max(freq) else NULL
+
     # the f function does the real work
     # it takes a zoo object, a, and fills in a matrix corresponding to
-    # indexes with the values in a.  ret.zoo is TRUE if it is to return
+    # indexes with the values in a. ret.zoo is TRUE if it is to return
     # a zoo object.  If ret.zoo is FALSE it simply returns with the matrix
     # just calculated.  
     # match0 is convenience wrapper for MATCH with nomatch=0 default
     match0 <- function(a, b, nomatch = 0, ...) MATCH(a, b, nomatch = nomatch, ...)
-    f <- if (any(all)) 
+    f <- if (any(all)) {
        function(a, ret.zoo = TRUE) {
         if (length(a) == 0 && length(dim(a)) == 0)
-		return( if (ret.zoo) zoo(,indexes) else numeric() )
+	   return(if(ret.zoo) {
+	            rval <- zoo(, indexes)
+	            attr(rval, "frequency") <- freq
+	            if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
+		    rval
+		  } else numeric())
         z <- matrix(fill, length(indexes), NCOL(a))
 	if (length(dim(a)) > 0)
-           z[match0(index(a), indexes), ] <- 
-		a[match0(indexes, index(a)),,drop = FALSE]        
+           z[match0(index(a), indexes), ] <- a[match0(indexes, index(a)), , drop = FALSE]        
         else {
            z[match0(index(a), indexes), ] <- a[match0(indexes, index(a))]
-           z <- z[,1,drop=TRUE]
+           z <- z[, 1, drop=TRUE]
         }
- 	if (ret.zoo) zoo(z,indexes) else z
+ 	if (ret.zoo) {
+	  z <- zoo(z, indexes)
+	  attr(z, "oclass") <- attr(a, "oclass")
+	  attr(z, "levels") <- attr(a, "levels")
+	  attr(z, "frequency") <- freq
+	  if(!is.null(freq)) class(z) <- c("zooreg", class(z))
+	}
+	return(z)
       }
     
-    else
+    } else {
     # if all contains only FALSE elements then the following f is used
     # instead of the prior f for performance purposes.  If all contains
     # only FALSE then the resulting index is the intersection of the
@@ -129,15 +182,18 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 	if (!ret.zoo) class(a) <- NULL
 	if (length(dim(a)) == 0) {
 		if (length(a) == 0) {
-			if (ret.zoo) zoo(,indexes) else numeric()
+		   rval <- if(ret.zoo) zoo(, indexes) else numeric()
 		} else
-			a[match0(indexes, attr(a,"index"))]
+		   rval <- as.zoo(a[match0(indexes, attr(a, "index"))])
 	} else
-		a[match0(indexes, attr(a,"index")),,drop=FALSE]
+		rval <- as.zoo(a[match0(indexes, attr(a, "index")), , drop=FALSE])
+        if(is.zoo(rval) && !is.null(freq)) {
+	  attr(rval, "frequency") <- freq
+	  class(rval) <- unique(c("zooreg", class(rval)))
+	}
+	return(rval)
       }
-
-
-
+    }
 
     # if retclass is NULL do not provide a return value but instead
     # update each argument that is a variable, i.e. not an expression,
@@ -153,11 +209,38 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 	invisible(return(NULL))
     } 
 
-    # apply f to each arg put result of performing this on all args in list rval
+    # apply f to each arg, put result of doing this on all args in list rval
     # and then cbind that list together to produce the required matrix
-    rval <- lapply(args, f, ret.zoo = retclass == "list")
+    rval <- lapply(args, f, ret.zoo = retclass %in% c("list", "data.frame"))
+    for(i in which(scalars)) rval[[i]] <- rval[[i]][] <- zoo(coredata(rval[[i]])[1], index(rval[[1]]), freq)
     names(rval) <- suffixes
-    if (retclass == "list") return(rval)
+    if (retclass == "list") { 
+	return(rval)
+    }
+    if (retclass == "data.frame") {
+      ## transform list to data.frame
+      ## this is simple if all list elements are vectors, but with
+      ## matrices a bit more effort seems to be needed:
+      charindex <- index2char(index(rval[[1]]), frequency = freq)
+      nam1 <- names(rval)
+      rval <- lapply(rval, as.list)
+      todf <- function(x) {
+        class(x) <- "data.frame"
+        attr(x, "row.names") <- charindex
+        return(x)
+      }
+      rval <- lapply(rval, todf)
+      ## name processing
+      nam2 <- sapply(rval, function(z) 1:NCOL(z))
+      for(i in 1:length(nam2)) nam2[[i]] <- paste(names(nam2)[i], nam2[[i]], sep = ".")
+      nam1 <- unlist(ifelse(sapply(rval, NCOL) > 1, nam2, nam1))
+      rval <- do.call("cbind", rval)
+      names(rval) <- nam1
+      ## turn zoo factors into plain factors
+      is.zoofactor <- function(x) !is.null(attr(x, "oclass")) && attr(x, "oclass") == "factor"
+      for(i in 1:NCOL(rval)) if(is.zoofactor(rval[,i])) rval[,i] <- coredata(rval[,i])
+      return(rval)
+    }
     # remove zero length arguments
     rval <- rval[sapply(rval, function(x) length(x) > 0)]
     # if there is more than one non-zero length argument then cbind them
@@ -168,12 +251,14 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     else
 	rval[[1]]
     # return if vector since remaining processing is only for column names
-    if (length(dim(rval)) == 0) return(rval)
+    if (length(dim(rval)) == 0) {
+      rval <- zoo(rval, indexes)
+      attr(rval, "frequency") <- freq
+      if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
+      return(rval)
+    }
 
-    #
     # processing from here on is to compute nice column names
-    #
-
     if (length(unlist(sapply(args, colnames))) > 0) {
         fixcolnames <- function(a) {
             if (length(a) == 0) 
@@ -186,8 +271,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
                   rval <- paste(1:NCOL(a), suffixes[i], sep = ".")
                 }
                 else {
-                  rval[rval == ""] <- as.character(which(rval == 
-                    ""))
+                  rval[rval == ""] <- as.character(which(rval == ""))
                 }
                 return(rval)
             }
@@ -221,6 +305,9 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 	)
         colnames(rval) <- make.unique(zoocolnames)
     }
-    zoo(rval, indexes)
+    rval <- zoo(rval, indexes)
+    attr(rval, "frequency") <- freq
+    if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
+    return(rval)
 }
 

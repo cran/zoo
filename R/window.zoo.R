@@ -55,10 +55,26 @@ lag.zoo <- function(x, k = 1, ...)
    return(xx)
 }
 
+lag.zooreg <- function(x, k = 1, ...)
+{
+   nr <- NROW(x)
+   freq <- attr(x, "frequency")
+   
+   if (k != round(k)) warning("k is not an integer")
+   k <- round(k)
+
+   ix <- index(x)
+   ix <- if(identical(class(ix), "numeric") | identical(class(ix), "integer"))
+     floor(freq*ix - k + .0001)/freq else ix - k/freq
+   index(x) <- ix
+   
+   return(x)
+}
+
 diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, ...)
 {
     stopifnot(lag >= 1, differences >= 1)
-    if (!arithmetic) x <- log(x)
+    if (!arithmetic) x <- log.zoo(x)
     for(i in 1:differences) {
 	x <- x - lag(x, k = -lag)
     }

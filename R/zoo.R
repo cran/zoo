@@ -1,4 +1,4 @@
-zoo <- function (x, order.by = index(x)) 
+zoo <- function (x, order.by = index(x), frequency = NULL) 
 {
     index <- ORDER(order.by)
     order.by <- order.by[index]
@@ -12,15 +12,37 @@ zoo <- function (x, order.by = index(x))
         x <- (x[rep(1:NROW(x), length.out = length(index)), , 
             drop = FALSE])[index, , drop = FALSE]
     else stop(paste(dQuote("x"), ": attempt to define illegal zoo object"))
+
+    if(!is.null(frequency)) {
+        d <- try(diff(as.numeric(order.by)))
+	ok <- if(class(d) == "try-error") FALSE
+	else {	    
+            deltat <- min(d)
+	    dd <- d/deltat
+	    if(identical(all.equal(dd, round(dd)), TRUE)) {	    
+                freq <- 1/deltat
+                if(freq > 1 && identical(all.equal(freq, round(freq)), TRUE)) freq <- round(freq)
+  	        identical(all.equal(frequency %% freq, 0), TRUE)
+	    } else {
+	        FALSE
+	    }
+	}
+	if(!ok) {
+	  warning(paste(dQuote("order.by"), "and", dQuote("frequency"),
+	          "do not match:", dQuote("frequency"), "ignored"))
+	  frequency <- NULL
+	}
+    }
+
     attr(x, "oclass") <- attr(x, "class")
     attr(x, "index") <- order.by
-    class(x) <- "zoo"
+    attr(x, "frequency") <- frequency
+    class(x) <- if(is.null(frequency)) "zoo" else c("zooreg", "zoo")
     return(x)
 }
 
-print.zoo <-
-function (x, style = ifelse(length(dim(x)) == 0, "horizontal", 
-    "vertical"), quote = FALSE, ...) 
+print.zoo <- function (x, style = ifelse(length(dim(x)) == 0,
+    "horizontal", "vertical"), quote = FALSE, ...) 
 {
     style <- match.arg(style, c("horizontal", "vertical", "plain"))
     if (is.null(dim(x)) && length(x) == 0) style <- "plain"
@@ -30,19 +52,18 @@ function (x, style = ifelse(length(dim(x)) == 0, "horizontal",
         if (length(colnames(x)) < 1) {
             colnames(y) <- rep("", NCOL(x))
         }
-        rownames(y) <- index2char(index(x))
+        rownames(y) <- index2char(index(x), frequency = attr(x, "frequency"))
         print(y, quote = quote, ...)
     }
     else if (style == "horizontal") {
         y <- as.vector(x)
-        names(y) <- index2char(index(x))
+        names(y) <- index2char(index(x), frequency = attr(x, "frequency"))
         print(y, quote = quote, ...)
     }
     else {
         x.index <- index(x)
-        attr(x, "index") <- NULL
         cat("Data:\n")
-        print(unclass(x))
+        print(coredata(x))
         cat("\nIndex:\n")
         print(x.index)
     }
@@ -73,21 +94,31 @@ str.zoo <- function(object, ...)
 {
   if(!is.zoo(x)) stop("method is only for zoo objects")
   x.index <- index(x)
-  attr(x, "index") <- NULL
-  nclass <- class(x)[-(1:which(class(x) == "zoo"))]
-  if(length(nclass) < 1) nclass <- NULL 
-  class(x) <- nclass
-  if(missing(i)) i <- 1:NROW(x)
-  if(length(dim(x)) == 2) {
-	# we had previously just j to all cols if missing 
-	# but that did not work for zero columns
-	# so we now process the two cases separately
+  rval <- coredata(x)
+  if(missing(i)) i <- 1:NROW(rval)
+
+  ## also support that i can be index:
+  ## if i is not numeric/integer/logical, it is interpreted to be the index
+  if(!(all(class(i) == "numeric") ||
+       all(class(i) == "integer") ||
+       all(class(i) == "logical")))
+    i <- which(x.index %in% i)
+  
+  if(length(dim(rval)) == 2) {
+	if (length(i) == 1) drop <- FALSE
         if(missing(j)) 
-		zoo(x[i, , drop = drop, ...], x.index[i])
-	else
-		zoo(x[i, j, drop = drop, ...], x.index[i])
-   } else
-	zoo(x[i], x.index[i])
+		rval <- zoo(rval[i, , drop = drop, ...], x.index[i])
+	  else
+		rval <- zoo(rval[i, j, drop = drop, ...], x.index[i])
+  } else
+	rval <- zoo(rval[i], x.index[i])
+
+  attr(rval, "oclass") <- attr(x, "oclass")
+  attr(rval, "levels") <- attr(x, "levels")
+  attr(rval, "frequency") <- attr(x, "frequency")
+  if(!is.null(attr(rval, "frequency"))) class(rval) <- c("zooreg", class(rval))
+
+  return(rval)
 }
 
 head.zoo <- function(x, n = 6, ...) {
@@ -104,5 +135,5 @@ tail.zoo <- function(x, n = 6, ...) {
 		x[seq(to = nrow(x), length = min(n, nrow(x))),, drop = FALSE]
 }
 
-index2char <- function(x, ...) UseMethod("index2char")
-index2char.default <- function(x, ...) as.character(x)
+range.zoo <- function(..., na.rm = FALSE)
+    range(sapply(list(...), coredata), na.rm = na.rm)

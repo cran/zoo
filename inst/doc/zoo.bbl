@@ -1,0 +1,56 @@
+\begin{thebibliography}{7}
+\newcommand{\enquote}[1]{``#1''}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem[{Heywood(2004)}]{zoo:its:2004}
+Heywood G (2004).
+\newblock \emph{\pkg{its}: Irregular Time Series}.
+\newblock Portfolio \& Risk Advisory Group and Commerzbank Securities.
+\newblock \proglang{R} package version 1.0.4.
+
+\bibitem[{Maindonald and Braun(2004)}]{zoo:DAAG:2004}
+Maindonald J, Braun WJ (2004).
+\newblock \emph{\pkg{DAAG}: Data Analysis and Graphics}.
+\newblock \proglang{R} package version 0.46,
+  \urlprefix\url{http://www.stats.uwo.ca/DAAG/}.
+
+\bibitem[{{\proglang{R} Development Core Team}(2005)}]{zoo:R:2005}
+{\proglang{R} Development Core Team} (2005).
+\newblock \emph{\proglang{R}: {A} Language and Environment for Statistical
+  Computing}.
+\newblock \proglang{R} Foundation for Statistical Computing, Vienna, Austria.
+\newblock {ISBN} 3-900051-00-3, \urlprefix\url{http://www.R-project.org/}.
+
+\bibitem[{Trapletti(2005)}]{zoo:tseries:2005}
+Trapletti A (2005).
+\newblock \emph{\pkg{tseries}: Time Series Analysis and Computational Finance}.
+\newblock \proglang{R} package version 0.9-25.
+
+\bibitem[{Wuertz(2004)}]{zoo:fCalendar:2004}
+Wuertz D (2004).
+\newblock \emph{\pkg{Rmetrics}: {A}n Environment and Software Collection for
+  Teaching Financial Engineering and Computational Finance}.
+\newblock \proglang{R} package \pkg{fCalendar}, version 201.10059,
+  \urlprefix\url{http://www.Rmetrics.org/}.
+
+\bibitem[{Zeileis(2004)}]{zoo:Zeileis:2004}
+Zeileis A (2004).
+\newblock \enquote{Implementing a Class of Structural Change Tests: {A}n
+  Econometric Computing Approach.}
+\newblock \emph{Report~7}, Department of Statistics and Mathematics,
+  Wirtschaftsuniversit\"at Wien, Research Report Series.
+\newblock \urlprefix\url{http://epub.wu-wien.ac.at/}.
+
+\bibitem[{Zeileis \emph{et~al.}(2002)Zeileis, Leisch, Hornik, and
+  Kleiber}]{zoo:Zeileis+Leisch+Hornik:2002}
+Zeileis A, Leisch F, Hornik K, Kleiber C (2002).
+\newblock \enquote{\pkg{strucchange}: {A}n \proglang{R} Package for Testing for
+  Structural Change in Linear Regression Models.}
+\newblock \emph{Journal of Statistical Software}, \textbf{7}(2), 1--38.
+\newblock \urlprefix\url{http://www.jstatsoft.org/v07/i02/}.
+
+\end{thebibliography}

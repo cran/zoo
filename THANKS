@@ -1,7 +1,14 @@
-The authors would like to thank the following people for their help and
-assistance:
+The authors would like to thank the following people:
+
+  Whit Armstrong <Whit.Armstrong@tudor.com>
+  - information on model.frame and ideas on merge.zoo performance
+
+  Matthieu Cormec <matthieu.cormec@gmail.com>
+  - testing
+
+  Sundar Dorai-Raj <sundar.dorai-raj@pdf.com>
 
   Ajay Shah <ajayshah@mayin.org>
-  Whit Armstrong <Whit.Armstrong@tudor.com>
+
   Jarek Tuszynski <Jaroslaw.W.Tuszynski@saic.com>
-  Sundar Dorai-Raj <sundar.dorai-raj@pdf.com>
+  - performance analysis of R algorithms for rolling analyses

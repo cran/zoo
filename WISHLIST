@@ -2,62 +2,34 @@ FEATURES
 ********
 
   o zoo()
-    - support zoo data.frame objects
+    - support zoo data.frame objects (and zoo list objects)
     - fully support zoo factor objects [limited support already 
       available]
  
     
   o merge()
-    - merge.zoo to accept non-zoo arguments (other than first)
-      if all zoo args have same index and all args have same
-      NROW value.  In that case the non-zoo args are to be given
-      the common index by default.
-
-    - allow a scalar non-zoo element as an argument to merge.zoo in
-      which case it cbinds a constant zoo column to the same merge
-      that would have been created without the scalar. [GG: Not sure we
-      really need this but I put it down so I would not forget.]
-
     - names not processed correctly when retclass = "list"
 
-
-  o formulas
-    - allow for a simplified model language like
-        d(y) ~ l(y, 1)
-      instead of
-        diff(y) ~ lag(y, k = -1)
-      [maybe: define these in the zoo, but do not export?]
-
         
-  o [.zoo [<-.zoo
-    - allow indexing by index, i.e., datetime argument
-
-
   o misc functions
-    - rapply: a function for applying functions to rolling windows
-      [prototype ready but not yet in release version]
-
     - interface to additional statistical routines such as the ones
       referenced in:
       http://CRAN.R-project.org/doc/contrib/Ricci-refcard-ts.pdf
-
-    - irregular to regular conversion routines [prototypes for     
-      functions functions like as.ts.zoo(), is.regular() are ready
-      but not yet in release version]
+      [Z: with as.ts.zoo() most of the functions work directly
+       by coercing the first argument to "ts"]
 
 
   o QA
     - regression test suite
-
     - additional use and testing
+
+  o rapply
+    - position argument with values left, center, right
 
 
 
 INTERFACES
 **********
-
-  o move as.its.zoo over to its [Z: Whit will do this as the new
-    maintainer of its]
 
   o provide fBasics interface routine to the Rmetrics projects
 
@@ -73,8 +45,3 @@ DOCUMENTATION & COMMUNICATION
   o more examples for the help files
 
   o FAQ
-  
-  o what facilities does the R project provide to subprojects for 
-    mailing lists, web space, wiki, forum, etc.
-
-  o additional developers

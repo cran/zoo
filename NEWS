@@ -1,3 +1,44 @@
+Changes in Version 0.9-9
+
+  o regular "zoo" series: objects of class "zooreg" (inheriting from "zoo")
+    can be used to store strictly regular series (similar to "ts" objects)
+    or series with an underlying regularity (as before but with observations
+    omitted). They have a frequency attribute that can be used for conversion
+    between "zoo" and "ts". The function is.regular() can be used for 
+    checking the regularity of a series.
+
+  o improved merge() method: merge.zoo now accepts non-zoo arguments
+    (other than first) if all non-zoo args have the same NROW value
+    as the first argument (or are scalar). In that case the non-zoo
+    args are given the index of the first series. Scalars are added
+    for the full index of the merged series.
+
+  o merge() zoo can now optionally return a "data.frame" that contains
+    the numeric columns as "zoo" series and the "zoo" objects created
+    from factors converted back to "factor".
+    
+  o [.zoo allows now indexing using observations from the index scale
+    (and not only observation numbers). The [[.zoo method is only for
+    indexing with the index class.
+
+  o rapply, rollmean, rollmax, rollmedian to perform rolling analyses
+
+  o extended functionality to plot.zoo type argument
+
+  o when plot.zoo used with one series list(...) can be omitted from 
+    various plotting parameter arguments
+
+  o print.zoo documentation fix for R 2.1.0
+
+  o yearmon and yearqtr datetime classes
+
+  o head.ts, tail.ts
+
+  o c.zoo, range.zoo
+
+  o coredata.default, coredata.ts
+
+
 Changes in Version 0.9-1
 
   o new generic functions ORDER() and MATCH() (with

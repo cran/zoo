@@ -9,7 +9,7 @@ Plotting method for objects of class \code{"zoo"}.
 \method{plot}{zoo}(x, plot.type = c("multiple", "single"),
   panel = lines, xlab = "Index", ylab = NULL, main = NULL,
   ylim = NULL, oma = c(6, 0, 5, 0), col = 1, lty = 1,
-  pch = 1, nc, \dots)
+  pch = 1, type = "l", nc, \dots)
 \method{lines}{zoo}(x, type = "l", \dots)
 }
 \arguments{
@@ -20,8 +20,8 @@ Plotting method for objects of class \code{"zoo"}.
   \item{panel}{a \code{function(x, y, col, lty, \dots)}  which gives the
      action to be carried out in each panel of the display for
     \code{plot.type = "multiple"}.}
-  \item{xlab, ylab, main, ylim, oma, type}{graphical arguments, see \code{\link{par}}.}
-  \item{col, lty, pch}{graphical arguments that can be vectors or 
+  \item{xlab, ylab, main, ylim, oma}{graphical arguments, see \code{\link{par}}.}
+  \item{col, lty, pch, type}{graphical arguments that can be vectors or 
     (named) lists. See the details for more information.}
   \item{nc}{the number of columns to use when \code{plot.type = "multiple"}.
     Defaults to \code{1} for up to \code{4} series, otherwise to \code{2}.}

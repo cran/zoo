@@ -1,8 +1,8 @@
 \name{index}
 \alias{index}
-\alias{index}
 \alias{index.default}
 \alias{index.zoo}
+\alias{index.ts}
 \alias{time.zoo}
 \alias{index<-}
 \alias{index<-.zoo}
@@ -72,7 +72,5 @@ end(x)
 ## query index of a usual matrix
 xm <- matrix(rnorm(10), ncol = 2)
 index(xm)
-
-
 }
 \keyword{ts}

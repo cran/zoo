@@ -1,4 +1,3 @@
-
 Ops.zoo <- function (e1, e2) 
 {
     e <- if (missing(e2)) {
@@ -12,7 +11,7 @@ Ops.zoo <- function (e1, e2)
         NextMethod(.Generic)
     }
     if (is.null(attr(e, "index"))) 
-	zoo(e, index(e1))
+	zoo(e, index(e1), attr(e1, "frequency"))
     else
 	e
 }
@@ -22,31 +21,31 @@ t.zoo <- function(x)
  
 cumsum.zoo <- function(x) 
 {
-	if (length(dim(x)) == 0) x[] <- cumsum(x)
-	  else x[] <- apply(x, 2, cumsum)
+	if (length(dim(x)) == 0) x[] <- cumsum(coredata(x))
+	  else x[] <- apply(coredata(x), 2, cumsum)
 	return(x)
 }
 
 
 cumprod.zoo <- function(x) 
 {
-	if (length(dim(x)) == 0) x[] <- cumprod(x)
-	  else x[] <- apply(x, 2, cumprod)
+	if (length(dim(x)) == 0) x[] <- cumprod(coredata(x))
+	  else x[] <- apply(coredata(x), 2, cumprod)
 	return(x)
 }
 
 
 cummin.zoo <- function(x) 
 {
-	if (length(dim(x)) == 0) x[] <- cummin(x)
-	  else x[] <- apply(x, 2, cummin)
+	if (length(dim(x)) == 0) x[] <- cummin(coredata(x))
+	  else x[] <- apply(coredata(x), 2, cummin)
 	return(x)
 }
 
 
 cummax.zoo <- function(x) 
 {
-	if (length(dim(x)) == 0) x[] <- cummax(x)
-	  else x[] <- apply(x, 2, cummax)
+	if (length(dim(x)) == 0) x[] <- cummax(coredata(x))
+	  else x[] <- apply(coredata(x), 2, cummax)
 	return(x)
 }
