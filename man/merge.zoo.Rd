@@ -7,11 +7,11 @@ versions of database "join" operations.
 }
 
 \usage{
-\method{merge}{zoo}(x, y, \dots, all = TRUE)
+\method{merge}{zoo}(\dots, all = TRUE)
 }
 
 \arguments{
-  \item{x, y, \dots}{two or more objects of class \code{"zoo"}.}
+  \item{\dots}{two or more objects of class \code{"zoo"}.}
   \item{all}{logical vector of the same length as the number of \code{"zoo"}
     objects which should be merged (otherwise expanded). All indexes
     (times) of the objects corresponding to TRUE are included, for those

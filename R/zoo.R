@@ -214,9 +214,10 @@ rbind.zoo <- function(..., deparse.level = 1)
     zoo(do.call("c", lapply(args, unclass)), indexes)
 }
 
-merge.zoo <- function(x, y, ..., all = TRUE)
+merge.zoo <- function(..., all = TRUE)
 {
-  args <- list(x, y, ...)
+  ## args <- list(x, y, ...)
+  args <- list(...)
   if(!all(unlist(lapply(args, is.zoo)))) stop("all arguments must be zoo objects")
 
   makeNames <- function(l) {
@@ -231,7 +232,8 @@ merge.zoo <- function(x, y, ..., all = TRUE)
 	  nm[fixup] <- dep
       nm
   }
-  zoonames <- makeNames(as.list(substitute(list(x, y, ...)))[-1])
+  ## zoonames <- makeNames(as.list(substitute(list(x, y, ...)))[-1])
+  zoonames <- makeNames(as.list(substitute(list(...)))[-1])
 
   all <- rep(all, length(args))
   indexlist <- lapply(args, index)
