@@ -57,6 +57,10 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
  
 lag.zoo <- function(x, k = 1, ...)
 {
+   if (length(k) > 1) {
+	if (is.null(names(k))) names(k) <- deparse(substitute(x)) 
+	return(do.call("merge.zoo", lapply(k, lag.zoo, x = x, ...)))
+   }
    nr <- NROW(x)
    if (k != round(k)) {
 	k <- round(k)
@@ -76,6 +80,10 @@ lag.zoo <- function(x, k = 1, ...)
 
 lag.zooreg <- function(x, k = 1, ...)
 {
+   if (length(k) > 1) {
+	if (is.null(names(k))) names(k) <- deparse(substitute(x)) 
+	return(do.call("merge.zoo", lapply(k, lag.zoo, x = x, ...)))
+   }
    nr <- NROW(x)
    freq <- attr(x, "frequency")
    

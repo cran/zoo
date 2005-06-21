@@ -1,0 +1,268 @@
+\documentclass{Z}
+\DeclareGraphicsExtensions{.pdf,.eps}
+\newcommand{\mysection}[1]{\subsubsection[#1]{\textbf{#1}}}
+
+%% need no \usepackage{Sweave}
+
+\author{Ajay Shah\\Ministry of Finance, New Delhi \And
+        Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
+        Gabor Grothendieck\\GKX Associates Inc.}
+\Plainauthor{Ajay Shah, Achim Zeileis, Gabor Grothendieck}
+
+\title{\pkg{zoo} Quick Reference}
+\Plaintitle{zoo Quick Reference}
+
+\Keywords{irregular time series, daily data, weekly data, returns}
+
+\Abstract{
+  This vignette gives a brief overview of (some of) the functionality contained
+  in \pkg{zoo} including several nifty code snippets when dealing
+  with (daily) financial data. For a more complete overview of the
+  package's functionality and extensibility see 
+  \cite{zoo:Zeileis+Grothendieck:2005} (contained as vignette ``zoo'' in the
+  package), the manual pages and the reference card.  
+}
+
+\begin{document}
+
+\SweaveOpts{engine=R,eps=FALSE}
+%\VignetteIndexEntry{zoo Quick Reference}
+%\VignetteDepends{zoo,tseries}
+%\VignetteKeywords{irregular time series, daily data, weekly data, returns}
+%\VignettePackage{zoo}
+
+
+<<preliminaries, echo=FALSE, results=hide>>=
+library(zoo)
+library(tseries)
+online <- FALSE ## if set to FALSE the local copy of
+                ## is used instead of get.hist.quote()
+options(prompt = "R> ")
+@
+
+\mysection{Read a series from a text file}
+
+To read in data in a text file, \code{read.table()} and associated
+functions can 
+be used as usual with \code{zoo()} being called subsequently.
+The convenience function \code{read.zoo} is a simple wrapper to these
+functions that assumes the index is in the first column of the file
+and the remaining columns are data.
+
+Data in \code{demo1.txt}, where each row looks like
+\begin{verbatim}
+   23 Feb 2005|43.72
+\end{verbatim}
+can be read in via
+<<read.zoo>>=
+inrusd <- read.zoo("demo1.txt", sep = "|", format="%d %b %Y")
+@
+The \code{format} argument causes the first column to be transformed
+to an index of class \code{"Date"}.
+
+The data in \code{demo2.txt} look like
+\begin{verbatim}
+   Daily,24 Feb 2005,2055.30,4337.00
+\end{verbatim}
+and requires more attention because of the format of
+the first column.
+<<read.table>>=
+tmp <- read.table("demo2.txt", sep = ",")
+z <- zoo(tmp[, 3:4], as.Date(as.character(tmp[, 2]), format="%d %b %Y"))
+colnames(z) <- c("Nifty", "Junior")
+@
+
+\mysection{Query dates}
+
+To return all dates corresponding to a series
+\code{index(z)} or equivalently 
+<<extract dates>>=
+time(z)
+@
+can be used. The first and last date can be obtained by
+<<start and end>>=
+start(z)
+end(inrusd)
+@
+
+\mysection{Convert back into a plain matrix}
+
+To strip off the dates and just return a plain vector/matrix
+\code{coredata} can be used
+<<convert to plain matrix>>=
+plain <- coredata(z)
+str(plain)
+@
+
+\mysection{Union and intersection}
+
+Unions and intersections of series can be computed by \code{merge}. The
+intersection are those days where both series have time points:
+<<intersection>>=
+m <- merge(inrusd, z, all = FALSE)
+@
+whereas the union uses all dates and fills the gaps where one
+series has a time point but the other does not 
+with \code{NA}s (by default):
+<<union>>=
+m <- merge(inrusd, z)
+@
+
+\code{cbind(inrusd, z)} is almost equivalent to the \code{merge}
+call, but may lead to inferior naming in some situations 
+hence \code{merge} is preferred
+
+To combine a series with its lag, use
+<<merge with lag>>=
+merge(inrusd, lag(inrusd, -1))
+@
+
+\mysection{Visualization}
+
+By default, the \code{plot} method generates a graph for each
+series in \code{m}
+\begin{center}
+\setkeys{Gin}{width=0.7\textwidth}
+<<plotting1,fig=TRUE,height=8,width=6>>=
+plot(m)
+@
+\end{center}
+
+but several series can also be plotted in a single window.
+\begin{center}
+\setkeys{Gin}{width=0.7\textwidth}
+<<plotting2,fig=TRUE,height=4,width=6>>=
+plot(m[, 2:3], plot.type = "single", col = c("red", "blue"), lwd = 2)
+@
+\end{center}
+
+\mysection{Select (a few) observations}
+
+Selections can be made for a range of dates of interest
+<<select range of dates>>=
+window(z, start = as.Date("2005-02-15"), end = as.Date("2005-02-28"))
+@
+and also just for a single date
+<<select one date>>=
+m[as.Date("2005-03-10")]
+@
+
+\mysection{Handle missing data}
+
+Various methods for dealing with \code{NA}s are available, including
+linear interpolation
+<<impute NAs by interpolation>>=
+interpolated <- na.approx(m)
+@
+`last observation carried forward',
+<<impute NAs by LOCF>>=
+m <- na.locf(m)
+m
+@
+and others.
+
+\mysection{Prices and returns}
+
+To compute log-difference returns in \%, the following
+convenience function is defined
+<<compute returns>>=
+prices2returns <- function(x) 100*diff(log(x))
+@
+which can be used to convert all columns (of prices) into returns.
+<<column-wise returns>>=
+r <- prices2returns(m)
+@
+
+A 10-day rolling window standard deviations (for all columns) can
+be computed by
+<<rolling standard deviations>>=
+rapply(r, width = 10, FUN = sd)
+@
+
+To go from a daily series to the series of just the last-traded-day of each month
+\code{aggregate} can be used
+<<last day of month>>=
+prices2returns(aggregate(m, as.yearmon, tail, 1))
+@
+
+Analogously, the series can be aggregated to the last-traded-day of each week
+employing a convenience function \code{nextfri} that computes for each \code{"Date"}
+the next friday.
+<<last day of week>>=
+nextfri <- function(x) 7 * ceiling(as.numeric(x - 1)/7) + as.Date(1)
+prices2returns(aggregate(na.locf(m), nextfri, tail, 1))
+@
+
+\mysection{Query Yahoo! Finance}
+
+When connected to the internet, Yahoo! Finance can be easily queried using
+the \code{get.hist.quote} function in
+<<tseries>>=
+library(tseries)
+@
+
+<<data handling if offline, echo=FALSE, results=hide>>=
+if(online) {
+  sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31", origin = "1970-01-01")
+  sunw <- na.omit(as.zoo(sunw))
+  attr(sunw, "na.action") <- NULL
+  time(sunw) <- as.Date(time(sunw))
+
+  sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
+    origin = as.Date(0), compression = "m", quote = "Close")
+  sunw2 <- na.omit(as.zoo(sunw2[, 1]))
+  attr(sunw2, "na.action") <- NULL
+  time(sunw2) <- as.Date(time(sunw2))
+} else {
+  load("sunw.rda")
+}
+@
+
+As, currently, \code{get.hist.quote} only returns \verb/"ts"/ series filled with
+\code{NA}s, some effort has to be taken to transform the result to a \verb/"zoo"/
+series (which will be available directly in future versions of \code{get.hist.quote}.
+
+A daily series can be obtained by:
+<<get.hist.quote daily series, eval=FALSE>>=
+sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31", origin = "1970-01-01")
+@
+which can subsequently be transformed easily to a \verb/"zoo"/ series with \verb/"Date"/
+dates:
+<<transform to zoo with Date index, eval=FALSE>>=
+sunw <- na.omit(as.zoo(sunw))
+attr(sunw, "na.action") <- NULL
+time(sunw) <- as.Date(time(sunw))
+@
+For making the coercion to \verb/"Date"/ so simple, the \code{origin} argument above
+has to be set to the origin of the \verb/"Date"/ class, either by \verb/origin = "1970-01-01"/
+or by \verb/origin = as.Date(0)/.
+
+A monthly series can be obtained and transformed by
+<<get.hist.quote monthly series, eval=FALSE>>=
+sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
+  origin = as.Date(0), compression = "m", quote = "Close")
+sunw2 <- na.omit(as.zoo(sunw2[, 1]))
+attr(sunw2, "na.action") <- NULL
+time(sunw2) <- as.Date(time(sunw2))
+@
+
+Here, \verb/"yearmon"/ dates might be even more useful:
+<<change index to yearmon>>=
+time(sunw2) <- as.yearmon(time(sunw2))
+@
+
+The same series can equivalently be computed from the daily series via
+<<compute same series via aggregate>>=
+sunw3 <- aggregate(sunw[, "Close"], as.yearmon, tail, 1)
+@
+
+The corresponding returns can be computed via
+<<compute returns>>=
+r <- prices2returns(sunw3)
+@
+where \code{r} is still a \verb/"zoo"/ series.
+
+\bibliography{zoo}
+
+\end{document}
+

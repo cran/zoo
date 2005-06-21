@@ -1,3 +1,19 @@
+Changes in Version 1.0-1
+
+  o Convenience function read.zoo() for reading "zoo" series directly
+    from plain text files.
+    
+  o New vignette `zoo-quickref' with a quick reference particularly
+    aimed at (daily) financial series (contributed by Ajay Shah).
+
+  o plot.zoo now has screens=, widths= and heights= arguments for controlling
+    which series are plotted in which graphs and widths and heights of graphs.
+    The ylim= argument has been enhanced.
+
+  o argument k= can be vector in lag.zoo (suggested by Roger Koenker)
+
+  o na.locf.default bug fixed
+
 Changes in Version 1.0-0
 
   o This release accompanies the publication in the Journal of Statistical
@@ -16,7 +32,7 @@ Changes in Version 1.0-0
     allowed in window.zoo and window<-.zoo.
 
   o fixed bug in rapply: result was transposed when by.column = FALSE and
-    a non-scalar function FUN wa used.
+    a non-scalar function FUN was used.
 
 
 Changes in Version 0.9-9

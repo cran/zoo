@@ -7,7 +7,11 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
     if (frequency > 1 && abs(frequency - round(frequency)) < ts.eps)
     	frequency <- round(frequency)
 
+    ## check data and choose default
     if (missing(data) || is.null(data)) data <- NA
+    if(!(is.vector(data) || is.factor(data) || is.matrix(data) || is.data.frame(data)))
+      stop(paste(dQuote("data"), ": attempt to define illegal zoo object"))
+    if(is.matrix(data) || is.data.frame(data)) data <- as.matrix(data)
 
     ## if no index (i.e., order.by) is specified: behave as ts()
     ## else: behave as zoo()

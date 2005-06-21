@@ -305,7 +305,8 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 	)
         colnames(rval) <- make.unique(zoocolnames)
     }
-    rval <- zoo(rval, indexes)
+    # rval <- zoo(rval, indexes)
+    rval <- zoo(coredata(rval), indexes)
     attr(rval, "frequency") <- freq
     if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
     return(rval)

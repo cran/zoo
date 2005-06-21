@@ -23,6 +23,8 @@ Methods for computing lags and differences of \code{"zoo"} objects.
 \details{
 These methods for \code{"zoo"} objects behave analogously to the default
 methods. The only additional argument is \code{arithmetic} in \code{diff}.
+Also, \code{"k"} can be a vector of lags in which case the names of
+\code{"k"}, if any, are used in naming the result.
 }
 
 \value{

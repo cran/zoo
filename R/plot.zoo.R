@@ -1,10 +1,11 @@
 # only change is to allow type to be a list so you can specify a mixture
 # points, lines, steps, etc. one one plot command.
 
-plot.zoo <- function(x,
+plot.zoo <- function(x, screens = 1,
   plot.type = c("multiple", "single"), panel = lines, 
   xlab = "Index", ylab = NULL, main = NULL, ylim = NULL,
-  oma = c(6, 0, 5, 0), col = 1, lty = 1, pch = 1, type = "l", nc, ...)
+  oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
+  col = 1, lty = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, ...)
 {
   parm <- function(nams, x, n, m, def, recycle = sum(unnamed) > 0) {
   # if nams are the names of our variables and x is a parameter
@@ -40,48 +41,69 @@ plot.zoo <- function(x,
   nser <- NCOL(x)
   x.index <- index(x)
   if(is.ts(x.index)) x.index <- as.vector(x.index)
-  cn <- if (is.null(colnames(x))) paste("V", seq(NCOL(x)), sep = "")
+  cn <- if (is.null(colnames(x))) paste("V", seq(length = nser), sep = "")
 	else colnames(x)
 
-  if(plot.type == "multiple" && nser > 1) {
+  screens <- parm(cn, screens, NROW(x), nser, 1)
+  screens <- as.factor(unlist(screens))[drop = TRUE]
+  ngraph <- length(levels(screens))
+  if(nser > 1 && (plot.type == "multiple" || ngraph > 1)) {
+    if (ngraph == 1) { 
+	screens <- as.factor(seq(nser))
+	ngraph <- nser
+    }
     if(is.null(main)) main <- deparse(substitute(x))
-    if(is.null(ylab)) ylab <- colnames(x)
-    if(is.null(ylab)) ylab <- paste("Series", 1:nser)
-    ylab <- rep(ylab, length.out = nser)
+    if(is.null(ylab)) ylab <- colnames(x)[!duplicated(screens)]
+    if(is.null(ylab)) ylab <- paste("Series", which(!duplicated(screens)))
+    ylab <- rep(ylab, length.out = ngraph)
     lty <- rep(lty, length.out = nser)
     col <- parm(cn, col, NROW(x), nser, 1)
     pch <- parm(cn, pch, NROW(x), nser, par("pch"))
     type <- parm(cn, type, NROW(x), nser, "l")
-
+    if (!is.null(ylim)) {
+        if (is.list(ylim)) ylim <- lapply(ylim, range, na.rm = TRUE)
+	else ylim <- list(range(ylim, na.rm = TRUE))
+	ylim <- lapply(parm(cn, ylim, 2, nser, NULL), function(x) 
+		if (is.null(x) || length(na.omit(x)) ==0) NULL 
+		else range(x, na.rm = TRUE))
+    }
     panel <- match.fun(panel)
-    if(nser > 10) stop("Can't plot more than 10 series")
-    if(missing(nc)) nc <- if(nser >  4) 2 else 1
-    oldpar <- par("mar", "oma", "mfcol")
-    on.exit(par(oldpar))
-    par(mar = c(0, 5.1, 0, 2.1), oma = oma)
-    nr <- ceiling(nser / nc)
-    par(mfcol = c(nr, nc))
-    for(i in 1:nser) {
-      if(i%%nr==0 || i == nser) {
-	args <- list(x.index, x[,i], xlab = "", ylab = ylab[i], ...)
+    if(missing(nc)) nc <- if(ngraph >  4) 2 else 1
+    oldpar <- par(no.readonly = TRUE)
+    on.exit({ par(oldpar) })
+    nr <- ceiling(ngraph / nc)
+    layout(matrix(seq(nr*nc), nr), widths = widths, heights = heights)
+    par(mar = mar, oma = oma)
+    ranges <- if (is.null(ylim))
+	by(1:ncol(x), screens, function(idx) range(x[,idx], na.rm = TRUE))
+        else by(1:ncol(x), screens, function(idx) 
+		if (is.null(ylim[[idx]])) range(x[,idx], na.rm = TRUE)
+		else ylim[[idx]])
+    for(j in seq(along = levels(screens))) {
+      range. <- rep(ranges[[j]], length.out = length(time(x)))
+      if(j%%nr==0 || j == length(levels(screens))) {
+	args <- list(x.index, range., xlab = "", ylab = ylab[j], ...)
 	args$type <- "n"
 	do.call("plot", args)
 	mtext(xlab, side = 1, line = 3)
       } else {      
-        args <- list(x.index, x[,i], axes = FALSE, xlab = "", ylab = ylab[i], ...)
+        args <- list(x.index, range., axes = FALSE, xlab = "", ylab = ylab[j], ...)
 	args$type <- "n"
 	do.call("plot", args)
         box()
         axis(2, xpd = NA)
       }
-      panel(x.index, x[, i], col = col[[i]], pch = pch[[i]], lty = lty[i], 
-		type = type[[i]], ...)
-    }
-    par(oldpar)
+
+	for(i in which(screens == levels(screens)[j]))
+	      panel(x.index, x[, i], 
+                col = col[[i]], pch = pch[[i]], 
+		lty = lty[i], type = type[[i]], ...)
+	}
   } else {
     if(is.null(ylab)) ylab <- deparse(substitute(x))
     if(is.null(main)) main <- ""
     if(is.null(ylim)) ylim <- range(x, na.rm = TRUE)
+	else ylim <- range(c(ylim, recursive = TRUE), na.rm = TRUE)
 
     lty <- rep(lty, length.out = nser)
     col <- parm(cn, col, NROW(x), nser, 1)
@@ -101,7 +123,7 @@ plot.zoo <- function(x,
 		type = type[[i]], ...)
     }
   }
-  title(main)
+  title(main, outer = TRUE)
   return(invisible(x))
 }
 
@@ -110,3 +132,4 @@ lines.zoo <- function(x, type = "l", ...)
   if(NCOL(x) == 1) lines(index(x), x, type = type, ...)
     else stop("Can't plot lines for multivariate zoo object")
 }
+

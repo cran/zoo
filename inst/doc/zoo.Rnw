@@ -983,7 +983,7 @@ CRAN at \url{http://CRAN.R-project.org/}.
 
 \begin{appendix}
 \section{Reference card}
-\input{zooref-raw}
+\input{zoo-refcard-raw}
 \end{appendix}
 
 \end{document}

@@ -36,7 +36,11 @@ coredata.its <- function(x, ...)
 "coredata<-.zoo" <- function(x, value)
 {
   stopifnot(length(x) == length(value))
-  x[] <- value
+  if(!(is.vector(value) || is.factor(value) || is.matrix(value) || is.data.frame(value)))
+    stop(paste(dQuote("value"), ": attempt to assign illegal coredata to zoo object"))
+  if(is.matrix(value) || is.data.frame(value)) value <- as.matrix(value)
+    
+  x[] <- value  
   attr(x, "oclass") <- attr(value, "class")
   return(x)
 }

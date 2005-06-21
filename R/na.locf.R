@@ -18,7 +18,7 @@ na.locf.default <- function(object, na.rm = TRUE, ...) {
 	object[] <- if (length(dim(object)) == 0)
 		na.locf.0(object)
 	else
-		apply(object, dim(object)[length(dim)], na.locf.0)
+		apply(object, length(dim(object)), na.locf.0)
 	if (na.rm) na.omit(object) else object
 }
 
