@@ -343,44 +343,28 @@ When connected to the internet, Yahoo! Finance can be easily queried using
 the \code{get.hist.quote} function in
 \begin{Schunk}
 \begin{Sinput}
-R> library(tseries)
+R> library("tseries")
 \end{Sinput}
 \end{Schunk}
 
 
-As, currently, \code{get.hist.quote} only returns \verb/"ts"/ series filled with
-\code{NA}s, some effort has to be taken to transform the result to a \verb/"zoo"/
-series (which will be available directly in future versions of \code{get.hist.quote}.
+From version 0.9-30 on, \code{get.hist.quote} by default returns \verb/"zoo"/ series with
+a \verb/"Date"/ attribute (in previous versions these had to be transformed from \verb/"ts"/
+`by hand').
 
 A daily series can be obtained by:
 \begin{Schunk}
 \begin{Sinput}
 R> sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", 
-+     end = "2004-12-31", origin = "1970-01-01")
++     end = "2004-12-31")
 \end{Sinput}
 \end{Schunk}
-which can subsequently be transformed easily to a \verb/"zoo"/ series with \verb/"Date"/
-dates:
-\begin{Schunk}
-\begin{Sinput}
-R> sunw <- na.omit(as.zoo(sunw))
-R> attr(sunw, "na.action") <- NULL
-R> time(sunw) <- as.Date(time(sunw))
-\end{Sinput}
-\end{Schunk}
-For making the coercion to \verb/"Date"/ so simple, the \code{origin} argument above
-has to be set to the origin of the \verb/"Date"/ class, either by \verb/origin = "1970-01-01"/
-or by \verb/origin = as.Date(0)/.
 
 A monthly series can be obtained and transformed by
 \begin{Schunk}
 \begin{Sinput}
 R> sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", 
-+     end = "2004-12-31", origin = as.Date(0), compression = "m", 
-+     quote = "Close")
-R> sunw2 <- na.omit(as.zoo(sunw2[, 1]))
-R> attr(sunw2, "na.action") <- NULL
-R> time(sunw2) <- as.Date(time(sunw2))
++     end = "2004-12-31", compression = "m", quote = "Close")
 \end{Sinput}
 \end{Schunk}
 

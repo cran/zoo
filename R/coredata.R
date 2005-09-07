@@ -24,6 +24,7 @@ coredata.irts <- function(x, ...)
 
 coredata.its <- function(x, ...)
 {
+  stopifnot("package:its" %in% search() || require("its", quietly = TRUE))
   return(x@.Data)
 }
 
@@ -63,6 +64,7 @@ coredata.its <- function(x, ...)
 
 "coredata<-.its" <- function(x, value)
 {
+  stopifnot("package:its" %in% search() || require("its", quietly = TRUE))
   stopifnot(length(x@.Data) == length(value))
   dim(value) <- dim(x@.Data)
   x@.Data[] <- as.matrix(value)

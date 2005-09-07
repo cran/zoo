@@ -67,9 +67,11 @@ as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE)
 	}
 	## before we used 1:NROW(y) as the default:
 	## if (!is.null(row.names)) row.names(y) <- row.names
-	row.names(y) <- if(is.null(row.names))
-	  index2char(index(x), frequency = attr(x, "frequency"))
-	  else row.names
+	row.names(y) <- if (is.null(row.names)) {
+	  tmp <- index2char(index(x), frequency = attr(x, "frequency"))
+	  ## added check for duplicated names
+	  if (!any(duplicated(tmp))) tmp
+        } else row.names
 	return(y)
 }
 

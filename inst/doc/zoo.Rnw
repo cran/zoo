@@ -4,7 +4,7 @@
 %% need no \usepackage{Sweave}
 
 \author{Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
-        Gabor Grothendieck}
+        Gabor Grothendieck\\GKX Associates Inc.}
 \Plainauthor{Achim Zeileis, Gabor Grothendieck}
 
 \title{\pkg{zoo}: An \proglang{S3} Class and Methods for
@@ -47,10 +47,10 @@
 
 
 <<preliminaries,echo=FALSE,results=hide>>=
-library(zoo)
-library(tseries)
-library(strucchange)
-library(fCalendar)
+library("zoo")
+library("tseries")
+library("strucchange")
+library("fCalendar")
 online <- FALSE ## if set to FALSE the local copy of LU.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
@@ -60,7 +60,7 @@ options(prompt = "R> ")
 
 The \proglang{R} system for statistical computing
 \citep[\url{http://www.R-project.org/}]{zoo:R:2005}
-ships with a a class for regularly spaced time series,
+ships with a class for regularly spaced time series,
 \code{"ts"} in package \pkg{stats}, but has no native class for
 irregularly spaced time series. With the increased interest in
 computational finance with \proglang{R} over the last years
@@ -188,7 +188,7 @@ To illustrate the usage of \code{zoo()}, we first load the package and set the
 random seed to make the examples in this paper exactly reproducible.
 
 <<zoo-prelim>>=
-library(zoo)
+library("zoo")
 set.seed(1071)
 @
 
@@ -440,7 +440,7 @@ series, but can also specify a subset. For the remaining series the default para
 is then used which can again be changed: e.g., in the above example the \code{col} argument
 is set to display the series \code{"Bb"} in red and all remaining series in blue.
 The results of the multiple panel plots are depicted in Figure~\ref{fig:plot13} and the
-single panel plot in \ref{fig:plot2}.
+single panel plot in Figure~\ref{fig:plot2}.
 
 
 \subsection{Merging and binding}
@@ -504,7 +504,7 @@ reduced object is returned. In the following example,
 first a function is set up which returns for a given \code{"Date"}
 value the corresponding first of the month. This function is then
 used to compute the coarser grid for the \code{aggregate} call: in
-the first example, the grouping is computed explicitely by \verb/firstofmonth(Z.index)/
+the first example, the grouping is computed explicitely by \verb/firstofmonth(index(Z))/
 and the mean of the observations in the month
 is returned---in the second example, only the function that computes 
 the grouping (when applied to \verb/index(Z)/) is supplied and
@@ -512,8 +512,8 @@ the first observation is used for aggregation.
 
 <<aggregate>>=
 firstofmonth <- function(x) as.Date(sub("..$", "01", format(x)))
-aggregate(Z, firstofmonth(Z.index), mean)
-aggregate(Z, firstofmonth(Z.index), head, 1)
+aggregate(Z, firstofmonth(index(Z)), mean)
+aggregate(Z, firstofmonth, head, 1)
 @
 
 
@@ -565,7 +565,7 @@ z1
 @
 
 The index associated with a \code{"zoo"} object can be extracted
-by \code{index} and modified by \code{index<-}. As the interpretation
+by \code{index} and modified by \mbox{\code{index<-}.} As the interpretation
 of the index as ``time'' in time series applications is natural,
 there are also synonymous methods \code{time} and \code{time<-}. 
 Hence, the commands \code{index(z2)} and \code{time(z2)}
@@ -617,7 +617,8 @@ are \code{lag} and \code{diff}. These are available with the same
 arguments as the \code{"ts"} methods.\footnote{\code{diff} also
 has an additional argument that also allows for geometric and
 not only allows arithmetic differences. Furthermore, note the sign
-of the lag in \code{lag}: by default it is positive and shifts the 
+of the lag in \code{lag} which behaves like the \code{"ts"} method, i.e.,
+by default it is positive and shifts the 
 observations \emph{forward}, to obtain the more standard \emph{backward}
 shift the lag has to be negative.}
 
@@ -736,7 +737,7 @@ The package \pkg{strucchange} provides a collection of methods for testing,
 monitoring and dating structural changes, in particular in linear regression models.
 Tests for structural change assess whether the parameters of a model remain
 constant over an ordering with respect to a specified variable, usually time.
-To adequatly store and visualize empirical fluctuation processes which 
+To adequately store and visualize empirical fluctuation processes which 
 capture instabilities over this ordering, a data type for indexed ordered
 observations is required. This was the motivation for starting the \pkg{zoo}
 project.
@@ -755,9 +756,9 @@ of the electrical resistance (variable \code{ohms}) indexed by the juice
 content (variable \code{juice}).
 
 <<strucchange1>>=
-library(strucchange)
-library(DAAG)
-data(fruitohms)
+library("strucchange")
+library("DAAG")
+data("fruitohms")
 ocus <- gefp(ohms ~ 1, order.by = ~ juice, data = fruitohms)
 @
 
@@ -783,9 +784,14 @@ function \code{gefp} see \cite{zoo:Zeileis+Leisch+Hornik:2002} and
 \subsection[tseries: Historical financial data]{\pkg{tseries}: Historical financial data}
 \label{sec:tseries}
 
+\emph{This section war written when \pkg{tseries} did not yet support \code{"zoo"}
+series directly. For historical reasons and completeness, the example is still
+included but for practical purposes it is not relevant anymore because,
+from version 0.9-30 on, \code{get.hist.quote} returns a \code{"zoo"} series by default.}
+
 A typical application for irregular time series which became increasingly
 important over the last years in computational statistics and finance is
-daily (or higher frequent) financial data. The package \pkg{tseries} provides
+daily (or higher frequency) financial data. The package \pkg{tseries} provides
 the function \code{get.hist.quote} for obtaining historical financial data
 by querying Yahoo! Finance at \url{http://finance.yahoo.com/},
 an online portal quoting data provided by Reuters. The following code
@@ -793,15 +799,15 @@ queries the quotes of Lucent Technologies starting from 2001-01-01
 until 2004-09-30:
 
 <<tseries1,eval=FALSE>>=
-library(tseries)
+library("tseries")
 LU <- get.hist.quote(instrument = "LU", start = "2001-01-01",
-  end = "2004-09-30", origin = "1970-01-01")
+  end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
 @
 
 <<tseries1a,echo=FALSE>>=
 if(online) {
   LU <- get.hist.quote("LU", start = "2001-01-01",
-  end = "2004-09-30", origin = "1970-01-01")
+  end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
   save(LU, file = "LU.rda", compress = TRUE)
 } else {
   load("LU.rda")
@@ -852,7 +858,7 @@ the class \code{"timeDate"} can be used for indexing \code{"zoo"} objects.
 The following example illustrates how \code{z2} can be transformed
 to use the \code{"timeDate"} class.
 <<fCalendar2>>=
-library(fCalendar)
+library("fCalendar")
 z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
 z2td
 @
@@ -1040,7 +1046,7 @@ fz <- zoo(gl(4, 5))
 
 lm(I(lag(yz) ~ diff(xz) + fz))
 
-library(quantreg)
+library("quantreg")
 rq(I(lag(yz) ~ diff(xz) + fz))
 \end{verbatim}
 

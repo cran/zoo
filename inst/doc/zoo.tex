@@ -4,7 +4,7 @@
 %% need no \usepackage{Sweave}
 
 \author{Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
-        Gabor Grothendieck}
+        Gabor Grothendieck\\GKX Associates Inc.}
 \Plainauthor{Achim Zeileis, Gabor Grothendieck}
 
 \title{\pkg{zoo}: An \proglang{S3} Class and Methods for
@@ -51,7 +51,7 @@
 
 The \proglang{R} system for statistical computing
 \citep[\url{http://www.R-project.org/}]{zoo:R:2005}
-ships with a a class for regularly spaced time series,
+ships with a class for regularly spaced time series,
 \code{"ts"} in package \pkg{stats}, but has no native class for
 irregularly spaced time series. With the increased interest in
 computational finance with \proglang{R} over the last years
@@ -180,7 +180,7 @@ random seed to make the examples in this paper exactly reproducible.
 
 \begin{Schunk}
 \begin{Sinput}
-R> library(zoo)
+R> library("zoo")
 R> set.seed(1071)
 \end{Sinput}
 \end{Schunk}
@@ -589,7 +589,7 @@ series, but can also specify a subset. For the remaining series the default para
 is then used which can again be changed: e.g., in the above example the \code{col} argument
 is set to display the series \code{"Bb"} in red and all remaining series in blue.
 The results of the multiple panel plots are depicted in Figure~\ref{fig:plot13} and the
-single panel plot in \ref{fig:plot2}.
+single panel plot in Figure~\ref{fig:plot2}.
 
 
 \subsection{Merging and binding}
@@ -706,7 +706,7 @@ reduced object is returned. In the following example,
 first a function is set up which returns for a given \code{"Date"}
 value the corresponding first of the month. This function is then
 used to compute the coarser grid for the \code{aggregate} call: in
-the first example, the grouping is computed explicitely by \verb/firstofmonth(Z.index)/
+the first example, the grouping is computed explicitely by \verb/firstofmonth(index(Z))/
 and the mean of the observations in the month
 is returned---in the second example, only the function that computes 
 the grouping (when applied to \verb/index(Z)/) is supplied and
@@ -715,20 +715,20 @@ the first observation is used for aggregation.
 \begin{Schunk}
 \begin{Sinput}
 R> firstofmonth <- function(x) as.Date(sub("..$", "01", format(x)))
-R> aggregate(Z, firstofmonth(Z.index), mean)
+R> aggregate(Z, firstofmonth(index(Z)), mean)
 \end{Sinput}
 \begin{Soutput}
            Aa          Bb          Cc         
-2004-02-01  0.53820841  0.04508597 -0.12412352
-2004-03-01 -1.18080051  0.58156655 -0.45730045
+2004-02-01 -0.13779642  0.40676219 -0.23765136
+2004-03-01 -0.16679327  0.03905223 -0.28700869
 \end{Soutput}
 \begin{Sinput}
-R> aggregate(Z, firstofmonth(Z.index), head, 1)
+R> aggregate(Z, firstofmonth, head, 1)
 \end{Sinput}
 \begin{Soutput}
            Aa         Bb         Cc        
 2004-02-01  1.2554339  0.6815732 -0.6329205
-2004-03-01 -1.4945833  1.3234122 -1.4944227
+2004-03-01 -1.2086102  1.4237978 -0.8161448
 \end{Soutput}
 \end{Schunk}
 
@@ -822,7 +822,7 @@ R> z1
 \end{Schunk}
 
 The index associated with a \code{"zoo"} object can be extracted
-by \code{index} and modified by \code{index<-}. As the interpretation
+by \code{index} and modified by \mbox{\code{index<-}.} As the interpretation
 of the index as ``time'' in time series applications is natural,
 there are also synonymous methods \code{time} and \code{time<-}. 
 Hence, the commands \code{index(z2)} and \code{time(z2)}
@@ -923,7 +923,8 @@ are \code{lag} and \code{diff}. These are available with the same
 arguments as the \code{"ts"} methods.\footnote{\code{diff} also
 has an additional argument that also allows for geometric and
 not only allows arithmetic differences. Furthermore, note the sign
-of the lag in \code{lag}: by default it is positive and shifts the 
+of the lag in \code{lag} which behaves like the \code{"ts"} method, i.e.,
+by default it is positive and shifts the 
 observations \emph{forward}, to obtain the more standard \emph{backward}
 shift the lag has to be negative.}
 
@@ -1166,7 +1167,7 @@ The package \pkg{strucchange} provides a collection of methods for testing,
 monitoring and dating structural changes, in particular in linear regression models.
 Tests for structural change assess whether the parameters of a model remain
 constant over an ordering with respect to a specified variable, usually time.
-To adequatly store and visualize empirical fluctuation processes which 
+To adequately store and visualize empirical fluctuation processes which 
 capture instabilities over this ordering, a data type for indexed ordered
 observations is required. This was the motivation for starting the \pkg{zoo}
 project.
@@ -1186,9 +1187,9 @@ content (variable \code{juice}).
 
 \begin{Schunk}
 \begin{Sinput}
-R> library(strucchange)
-R> library(DAAG)
-R> data(fruitohms)
+R> library("strucchange")
+R> library("DAAG")
+R> data("fruitohms")
 R> ocus <- gefp(ohms ~ 1, order.by = ~juice, data = fruitohms)
 \end{Sinput}
 \end{Schunk}
@@ -1218,9 +1219,14 @@ function \code{gefp} see \cite{zoo:Zeileis+Leisch+Hornik:2002} and
 \subsection[tseries: Historical financial data]{\pkg{tseries}: Historical financial data}
 \label{sec:tseries}
 
+\emph{This section war written when \pkg{tseries} did not yet support \code{"zoo"}
+series directly. For historical reasons and completeness, the example is still
+included but for practical purposes it is not relevant anymore because,
+from version 0.9-30 on, \code{get.hist.quote} returns a \code{"zoo"} series by default.}
+
 A typical application for irregular time series which became increasingly
 important over the last years in computational statistics and finance is
-daily (or higher frequent) financial data. The package \pkg{tseries} provides
+daily (or higher frequency) financial data. The package \pkg{tseries} provides
 the function \code{get.hist.quote} for obtaining historical financial data
 by querying Yahoo! Finance at \url{http://finance.yahoo.com/},
 an online portal quoting data provided by Reuters. The following code
@@ -1229,9 +1235,9 @@ until 2004-09-30:
 
 \begin{Schunk}
 \begin{Sinput}
-R> library(tseries)
+R> library("tseries")
 R> LU <- get.hist.quote(instrument = "LU", start = "2001-01-01", 
-+     end = "2004-09-30", origin = "1970-01-01")
++     end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
 \end{Sinput}
 \end{Schunk}
 
@@ -1288,7 +1294,7 @@ The following example illustrates how \code{z2} can be transformed
 to use the \code{"timeDate"} class.
 \begin{Schunk}
 \begin{Sinput}
-R> library(fCalendar)
+R> library("fCalendar")
 R> z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
 R> z2td
 \end{Sinput}
@@ -1449,12 +1455,12 @@ frames and lists.
 \section*{Computational details}
 
 The results in this paper were obtained using \proglang{R}
-2.1.0 with the packages
-\pkg{zoo} 1.0--1,
-\pkg{strucchange} 1.2--10,
+2.1.1 with the packages
+\pkg{zoo} 1.0--2,
+\pkg{strucchange} 1.2--11,
 \pkg{fCalendar} 201.10060,
-\pkg{tseries} 0.9--27 and
-\pkg{DAAG} 0.46.
+\pkg{tseries} 0.9--30 and
+\pkg{DAAG} 0.58.
 \proglang{R} itself and all packages used are available from
 CRAN at \url{http://CRAN.R-project.org/}.
 
@@ -1522,7 +1528,7 @@ fz <- zoo(gl(4, 5))
 
 lm(I(lag(yz) ~ diff(xz) + fz))
 
-library(quantreg)
+library("quantreg")
 rq(I(lag(yz) ~ diff(xz) + fz))
 \end{verbatim}
 

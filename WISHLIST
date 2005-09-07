@@ -1,6 +1,8 @@
 FEATURES
 ********
 
+  o rollmean returns all NAs when na.pad = TRUE
+
   o allow plot.zoo to accept a list of zoo objects -- this would
     be particularly useful in the case of line plots of multiple series
     with different time bases since NAs are introduced by merging 

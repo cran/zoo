@@ -33,8 +33,8 @@
 
 
 <<preliminaries, echo=FALSE, results=hide>>=
-library(zoo)
-library(tseries)
+library("zoo")
+library("tseries")
 online <- FALSE ## if set to FALSE the local copy of
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
@@ -198,52 +198,33 @@ prices2returns(aggregate(na.locf(m), nextfri, tail, 1))
 When connected to the internet, Yahoo! Finance can be easily queried using
 the \code{get.hist.quote} function in
 <<tseries>>=
-library(tseries)
+library("tseries")
 @
 
 <<data handling if offline, echo=FALSE, results=hide>>=
 if(online) {
-  sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31", origin = "1970-01-01")
-  sunw <- na.omit(as.zoo(sunw))
-  attr(sunw, "na.action") <- NULL
-  time(sunw) <- as.Date(time(sunw))
-
+  sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31")
   sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
-    origin = as.Date(0), compression = "m", quote = "Close")
-  sunw2 <- na.omit(as.zoo(sunw2[, 1]))
-  attr(sunw2, "na.action") <- NULL
-  time(sunw2) <- as.Date(time(sunw2))
+    compression = "m", quote = "Close")
+  save(sunw, sunw2, file = "sunw.rda")
 } else {
   load("sunw.rda")
 }
 @
 
-As, currently, \code{get.hist.quote} only returns \verb/"ts"/ series filled with
-\code{NA}s, some effort has to be taken to transform the result to a \verb/"zoo"/
-series (which will be available directly in future versions of \code{get.hist.quote}.
+From version 0.9-30 on, \code{get.hist.quote} by default returns \verb/"zoo"/ series with
+a \verb/"Date"/ attribute (in previous versions these had to be transformed from \verb/"ts"/
+`by hand').
 
 A daily series can be obtained by:
 <<get.hist.quote daily series, eval=FALSE>>=
-sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31", origin = "1970-01-01")
+sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31")
 @
-which can subsequently be transformed easily to a \verb/"zoo"/ series with \verb/"Date"/
-dates:
-<<transform to zoo with Date index, eval=FALSE>>=
-sunw <- na.omit(as.zoo(sunw))
-attr(sunw, "na.action") <- NULL
-time(sunw) <- as.Date(time(sunw))
-@
-For making the coercion to \verb/"Date"/ so simple, the \code{origin} argument above
-has to be set to the origin of the \verb/"Date"/ class, either by \verb/origin = "1970-01-01"/
-or by \verb/origin = as.Date(0)/.
 
 A monthly series can be obtained and transformed by
 <<get.hist.quote monthly series, eval=FALSE>>=
 sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
-  origin = as.Date(0), compression = "m", quote = "Close")
-sunw2 <- na.omit(as.zoo(sunw2[, 1]))
-attr(sunw2, "na.action") <- NULL
-time(sunw2) <- as.Date(time(sunw2))
+  compression = "m", quote = "Close")
 @
 
 Here, \verb/"yearmon"/ dates might be even more useful:

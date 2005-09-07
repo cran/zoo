@@ -53,6 +53,7 @@ plot.zoo <- function(x, screens = 1,
 	ngraph <- nser
     }
     if(is.null(main)) main <- deparse(substitute(x))
+    main.outer <- TRUE
     if(is.null(ylab)) ylab <- colnames(x)[!duplicated(screens)]
     if(is.null(ylab)) ylab <- paste("Series", which(!duplicated(screens)))
     ylab <- rep(ylab, length.out = ngraph)
@@ -102,6 +103,7 @@ plot.zoo <- function(x, screens = 1,
   } else {
     if(is.null(ylab)) ylab <- deparse(substitute(x))
     if(is.null(main)) main <- ""
+    main.outer <- FALSE
     if(is.null(ylim)) ylim <- range(x, na.rm = TRUE)
 	else ylim <- range(c(ylim, recursive = TRUE), na.rm = TRUE)
 
@@ -123,7 +125,7 @@ plot.zoo <- function(x, screens = 1,
 		type = type[[i]], ...)
     }
   }
-  title(main, outer = TRUE)
+  title(main, outer = main.outer)
   return(invisible(x))
 }
 

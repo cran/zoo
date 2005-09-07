@@ -1,3 +1,11 @@
+Changes in Version 1.0-2
+
+  o Small enhancements of plot.zoo()
+
+  o Bug fixes in na.locf.default(), as.data.frame.zoo(),
+    lag.zoo(), lag.zooref().
+    
+
 Changes in Version 1.0-1
 
   o Convenience function read.zoo() for reading "zoo" series directly
