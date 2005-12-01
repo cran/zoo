@@ -4,8 +4,8 @@ is.regular <- function(x, strict = FALSE) {
 
 is.regular.zoo <- function(x, strict = FALSE)
 {
-  delta <- try(diff(as.numeric(index(x))))
-  if(class(delta) == "try-error") FALSE
+  delta <- try(diff(as.numeric(index(x))), silent = TRUE)
+  if(class(delta) == "try-error" || any(is.na(delta))) FALSE
   else if(length(delta) < 1) FALSE
   else if(strict) identical(all.equal(delta, rep.int(delta[1], length(delta))), TRUE)
   else identical(all.equal(delta/min(delta), round(delta/min(delta))), TRUE)
@@ -32,8 +32,8 @@ frequency.zoo <- function(x, ...)
   freq <- attr(x, "frequency")
   if(!is.null(freq) || length(index(x)) < 2) return(freq)
 
-  d <- try(diff(as.numeric(index(x))))
-  reg <- if(class(d) == "try-error") FALSE
+  d <- try(diff(as.numeric(index(x))), silent = TRUE)
+  reg <- if(class(d) == "try-error" || any(is.na(d))) FALSE
     else identical(all.equal(d/min(d), round(d/min(d))), TRUE)
   if(!reg) return(NULL)
 
@@ -47,7 +47,7 @@ frequency.zoo <- function(x, ...)
   UseMethod("frequency<-")
   
 "frequency<-.zoo" <- function(x, value) {
-  ix <- try(as.numeric(index(x)))
+  ix <- try(as.numeric(index(x)), silent = TRUE)
   freqOK <- if(class(ix) == "try-error") FALSE
     else if(length(ix) < 2) TRUE
     else identical(all.equal(ix*value, round(ix*value)), TRUE)

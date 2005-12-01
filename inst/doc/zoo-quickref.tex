@@ -390,6 +390,51 @@ R> r <- prices2returns(sunw3)
 \end{Schunk}
 where \code{r} is still a \verb/"zoo"/ series.
 
+
+\mysection{Query Oanda}
+
+Similarly you can obtain historical exchange rates from \url{http://www.oanda.com/}
+using \code{get.hist.quote}.
+
+A daily series of EUR/USD exchange rates can be queried by
+\begin{Schunk}
+\begin{Sinput}
+R> eur.usd <- get.hist.quote(instrument = "EUR/USD", provider = "oanda", 
++     start = "2004-01-01", end = "2004-12-31")
+\end{Sinput}
+\end{Schunk}
+
+This contains the exchange rates for every day in 2004. However, it is common practice
+in many situations to exclude the observations from weekends. To do so, we
+write a little convenience function which can determine for a vector of \code{"Date"}
+observations whether it is a weekend or not
+
+\begin{Schunk}
+\begin{Sinput}
+R> is.weekend <- function(x) ((as.numeric(x) - 2)%%7) < 2
+\end{Sinput}
+\end{Schunk}
+
+Based on this we can omit all observations from weekends
+\begin{Schunk}
+\begin{Sinput}
+R> eur.usd <- eur.usd[!is.weekend(time(eur.usd))]
+\end{Sinput}
+\end{Schunk}
+
+The function \code{is.weekend} introduced above exploits the fact that a \code{"Date"}
+is essentially the number of days since 1970-01-01, a Thursday. A mor intelligible
+function which yields identical results could be based on the \code{"POSIXlt"} class
+
+\begin{Schunk}
+\begin{Sinput}
+R> is.weekend <- function(x) {
++     x <- as.POSIXlt(x)
++     x$wday > 5 | x$wday < 1
++ }
+\end{Sinput}
+\end{Schunk}
+
 \bibliography{zoo}
 
 \end{document}

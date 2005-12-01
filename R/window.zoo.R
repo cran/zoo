@@ -55,7 +55,7 @@ window.zoo <- function(x, index = index.zoo(x), start = NULL, end = NULL, ...)
   return(x)
 }
  
-lag.zoo <- function(x, k = 1, ...)
+lag.zoo <- function(x, k = 1, na.pad = FALSE, ...)
 {
    if (length(k) > 1) {
 	if (is.null(names(k))) names(k) <- paste("lag", k, sep = "")
@@ -75,7 +75,7 @@ lag.zoo <- function(x, k = 1, ...)
 	   xx <- x[-seq(to = nr, length = -k),,]
 	   attr(xx, "index") <- index(x)[-seq(1, length = -k)]
    }
-   return(xx)
+   if (na.pad) merge(zoo(,time(x)), xx, all = c(TRUE, FALSE)) else xx
 }
 
 
@@ -100,14 +100,14 @@ lag.zooreg <- function(x, k = 1, ...)
    return(x)
 }
 
-diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, ...)
+diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, ...)
 {
+    ix <- index(x)
     stopifnot(lag >= 1, differences >= 1)
     if (!arithmetic) x <- log(x)
     for(i in 1:differences) {
-	x <- x - lag(x, k = -lag)
+	x <- x - lag(x, k = -lag, ...)
     }
     if (!arithmetic) x <- exp(x)
-    return(x)
+    if (na.pad) merge(zoo(,ix), x, all = c(TRUE, FALSE)) else x
 }
-

@@ -105,7 +105,7 @@ respective help page and \code{\link{is.regular}} for further details.
 Methods to standard generics for \code{"zoo"} objects currently
 include: \code{print} (see above), \code{summary}, \code{str}, \code{head},
 \code{tail}, \code{[} (subsetting), \code{rbind}, \code{cbind}, \code{merge}
-(see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}),
+(see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}), \code{barplot},
 \code{plot} and \code{lines} (see \code{\link{plot.zoo}}).
 
 To \dQuote{prettify} printed output of \code{"zoo"} series the generic 
@@ -224,6 +224,11 @@ z20 <- zoo(matrix(nrow = 4, ncol = 0), 1:4)
 x1 <- zoo(1:5, 1:5)
 x2 <- zoo(2:6, 2:6)
 10 * x1 + x2
+
+# ifelse does not work with zoo but this works
+# to create a zoo object which equals x1 at
+# time i if x1[i] > x1[i-1] and 0 otherwise
+(diff(x1) > 0) * x1
 
 }
 \keyword{ts}

@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.0-2
-Date: 2005-09-07
+Version: 1.0-3
+Date: 2005-12-01
 Title: Z's ordered observations
 Author: Achim Zeileis, Gabor Grothendieck
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
@@ -13,4 +13,4 @@ Description: An S3 class with methods for totally ordered indexed
 Depends: R (>= 2.1.0)
 Suggests: chron, fCalendar, its, tseries, strucchange, DAAG
 License: GPL
-Packaged: Thu Sep  8 13:07:59 2005; zeileis
+Packaged: Thu Dec  1 12:20:38 2005; zeileis

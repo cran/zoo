@@ -24,7 +24,9 @@ read.zoo(file, format = "", tz = "", FUN = NULL, \dots)
 to read data from a text file and turn it into a \code{"zoo"} series 
 immediately. \code{read.zoo} reads the data file via \code{read.table(file, \dots)}.
 The first column of the resulting data is interpreted to be the index, the
-remaining columns the corresponding data. To assign the appropriate class
+remaining columns the corresponding data. (If the file only has only column
+then that is assumed to be the data column and \code{1, 2, ...} are used
+for the index.)  To assign the appropriate class
 to the index, \code{FUN} can be specified and is applied to the first column.
 By default, \code{read.zoo} uses \code{as.Date(as.character(x), format = format)} if \code{format} is 
 specified and \code{as.POSIXct(as.character(x), tz = tz)} if \code{tz}
@@ -42,13 +44,12 @@ An object of class \code{"zoo"} (or \code{"zooreg"}).
 \seealso{\code{\link{zoo}}}
 
 \examples{
-## not run
 \dontrun{
-## turn (numeric) first column into yearmon index
+## turn *numeric* first column into yearmon index
 z <- read.zoo("foo.csv", sep = ",", FUN = as.yearmon)
 
-## turn (character) first column into Date index
-z <- read.zoo("foo.tab", format = "%m/%d/%Y")
+## turn *character* first column into Date index
+z <- read.zoo("foo.tab", format = "\%m/\%d/\%Y")
 }
 }
 \keyword{ts}

@@ -1,6 +1,12 @@
 FEATURES
 ********
 
+  o provide a [<-.zoo method that is fully consistent with [.zoo
+    so that the following works:
+      a <- zoo(matrix(1:10,5,2), 2001:2005)
+      a[I(2003), 2] <- NA
+    (Note: as in window<-.zoo)
+
   o rollmean returns all NAs when na.pad = TRUE
 
   o allow plot.zoo to accept a list of zoo objects -- this would

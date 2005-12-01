@@ -9,11 +9,14 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, ...)
   rval <- read.table(file, ...)
 
   ## extract index
-  if(NCOL(rval) < 1) stop("data file must specify at least two columns")
+  if(NCOL(rval) < 1) stop("data file must specify at least one column")
   
   ## extract index, retain rest of the data
-  ix <- rval[,1]
-  rval <- rval[,-1]
+  if (NCOL(rval) == 1) ix <- seq(length = NROW(rval))
+  else {
+              ix <- rval[,1]
+              rval <- rval[,-1]
+  }
   if(is.data.frame(rval)) rval <- as.matrix(rval)
     
   ## index transformation functions
@@ -21,8 +24,8 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, ...)
               else function(x) as.Date(as.character(x), format = format)
   toPOSIXct <- function(x) as.POSIXct(as.character(x), tz = tz)
   toDefault <- function(x) {
-    rval <- try(toDate(x))
-    if(class(rval) == "try-error") rval <- try(toPOSIXct(x))
+    rval <- try(toDate(x), silent = TRUE)
+    if(class(rval) == "try-error") rval <- try(toPOSIXct(x), silent = TRUE)
     if(class(rval) == "try-error") rval <- rep(NA, length(x))
     return(rval)
   }

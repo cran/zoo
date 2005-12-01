@@ -15,8 +15,8 @@ zoo <- function (x, order.by = index(x), frequency = NULL)
     if(is.matrix(x) || is.data.frame(x)) x <- as.matrix(x)
 
     if(!is.null(frequency)) {
-        d <- try(diff(as.numeric(order.by)))
-	ok <- if(class(d) == "try-error" || length(d) < 1) FALSE
+        d <- try(diff(as.numeric(order.by)), silent = TRUE)
+	ok <- if(class(d) == "try-error" || length(d) < 1 || any(is.na(d))) FALSE
 	else {	    
             deltat <- min(d)
 	    dd <- d/deltat

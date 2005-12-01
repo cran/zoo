@@ -1,5 +1,6 @@
 \name{plot.zoo}
 \alias{plot.zoo}
+\alias{barplot.zoo}
 \alias{lines.zoo}
 \title{Plotting zoo Objects}
 \description{
@@ -49,11 +50,13 @@ are recycled if shorter. They can also be (partially) named list, e.g.,
 default value and \code{c(1, 2)} the value only  for series \code{A}.
 The \code{screens} argument can be specified in a similar way.
 If \code{plot.type} and \code{screens} conflict then multiple plots
-will be assumed.
-Also see the examples.
+will be assumed. Also see the examples.
+
+In addition to classical time series line plots, there is also a
+simple \code{\link{barplot}} method for \code{"zoo"} series.
 }
 
-\seealso{\code{\link{zoo}}, \code{\link{plot.ts}}}
+\seealso{\code{\link{zoo}}, \code{\link{plot.ts}}, \code{\link{barplot}}}
 
 \examples{
 x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
@@ -74,5 +77,9 @@ plot(z, type = "b", screen = c(1,2,1), col = 1:3)
 
 ## plot one zoo series against the other.  This does NOT dispatch plot.zoo.
 plot(coredata(merge(x, x2)))
+
+## barplot
+x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)
+barplot(x, beside = TRUE)
 }
 \keyword{ts}
