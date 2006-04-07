@@ -2,7 +2,7 @@ index2char <- function(x, ...) UseMethod("index2char")
 
 index2char.default <- function(x, ...) as.character(x)
 
-index2char.numeric <- function(x, frequency = NULL, digits = 4, ...)
+index2char.numeric <- function(x, frequency = NULL, digits = getOption("digits") - 3, ...)
 {
   freq <- frequency
   if(is.null(freq)) return(as.character(round(x, digits = digits)))

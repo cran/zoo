@@ -20,6 +20,7 @@
 \alias{na.contiguous.list}
 \alias{na.contiguous.default}
 \alias{na.contiguous.zoo}
+\alias{scale.zoo}
 
 \alias{index2char}
 \alias{index2char.default}
@@ -40,8 +41,9 @@ zoo(x, order.by = index(x), frequency = NULL)
 }
 \arguments{
   \item{x}{a numeric vector, matrix or a factor.}
-  \item{order.by}{a vector by which the observations in \code{x}
-    are ordered.}
+  \item{order.by}{an index vector with unique entries by which the
+    observations in \code{x} are ordered. See the details for support
+    of non-unique indexes.}
   \item{frequency}{numeric indicating frequency of \code{order.by}.
     If specified, it is checked whether \code{order.by} and \code{frequency}
     comply. If so, a regular \code{"zoo"} series is returned, i.e.,
@@ -50,7 +52,7 @@ zoo(x, order.by = index(x), frequency = NULL)
   \item{style}{a string specifying the printing style which can be
     \code{"horizontal"} (the default for vectors), \code{"vertical"}
     (the default for matrices) or \code{"plain"} (which first prints
-    first the data and then the index).}
+    the data and then the index).}
   \item{quote}{logical. Should characters be quoted?}
   \item{\dots}{further arguments passed to the print methods of
     the data and the index.}
@@ -93,6 +95,14 @@ and \code{\link[base]{match}}. Furthermore, for certain (but not for all)
 operations the index class should have an \code{as.numeric} method (in 
 particular for regular series) and an \code{as.character} method might improve
 printed output (see also below).
+
+The index observations \code{order.by} should typically be unique, such that
+the observations can be totally ordered. Nevertheless, \code{zoo()} is able to create
+\code{"zoo"} objects with duplicated indexes and simple methods such as \code{plot()}
+or \code{summary()} or will typically work for such objects. However, this is
+not formally supported as the bulk of functionality provided in \pkg{zoo} requires
+unique index observations/time stamps. See below for an example how to remove
+duplicated indexes.
 
 If a \code{frequency} is specified when creating a series via \code{zoo}, the
 object returned is actually of class \code{"zooreg"} which inherits from \code{"zoo"}.
@@ -172,6 +182,18 @@ provides this functionality for arbitrary functions and more efficient versions
 available for the mean, maximum and median respectively.
 }
 
+\references{
+  Achim Zeileis and Gabor Grothendieck (2005).
+  \pkg{zoo}: S3 Infrastructure for Regular and Irregular Time Series.
+  \emph{Journal of Statistical Software}, \bold{14(6)}, 1-27.
+  URL http://www.jstatsoft.org/v14/i06/ and available as 
+  \code{vignette("zoo")}.
+  
+  Ajay Shah, Achim Zeileis and Gabor Grothendieck (2005).
+  \pkg{zoo} Quick Reference.
+  Package vignette available as \code{vignette("zoo-quickref")}.  
+}
+
 \value{
 A vector or matrix with an \code{"index"} attribute of the same
 dimension (\code{NROW(x)}) by which \code{x} is ordered.
@@ -208,10 +230,10 @@ plot(y)
 ## create a constant series
 z <- zoo(1, seq(4)[-2])
 
-## create a 0 dimensional zoo series
+## create a 0-dimensional zoo series
 z0 <- zoo(, 1:4)
 
-## create a 2 dimensional zoo series
+## create a 2-dimensional zoo series
 z2 <- zoo(matrix(1:12, 4, 3), as.Date("2003-01-01") + 0:3)
 
 ## create a factor zoo object
@@ -220,7 +242,7 @@ fz <- zoo(gl(2,5), as.Date("2004-01-01") + 0:9)
 ## create a zoo series with 0 columns
 z20 <- zoo(matrix(nrow = 4, ncol = 0), 1:4)
 
-## arithmetic on zoo ojbects intersects them first
+## arithmetic on zoo objects intersects them first
 x1 <- zoo(1:5, 1:5)
 x2 <- zoo(2:6, 2:6)
 10 * x1 + x2
@@ -230,6 +252,13 @@ x2 <- zoo(2:6, 2:6)
 # time i if x1[i] > x1[i-1] and 0 otherwise
 (diff(x1) > 0) * x1
 
+## zoo series with duplicated indexes
+z3 <- zoo(1:8, c(1, 2, 2, 2, 3, 4, 5, 5))
+plot(z3)
+## remove duplicated indexes by averaging
+lines(aggregate(z3, index(z3), mean), col = 2)
+## or by using the last observation
+lines(aggregate(z3, index(z3), tail, 1), col = 4)
 }
 \keyword{ts}
 

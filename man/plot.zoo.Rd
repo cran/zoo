@@ -2,6 +2,7 @@
 \alias{plot.zoo}
 \alias{barplot.zoo}
 \alias{lines.zoo}
+\alias{points.zoo}
 \title{Plotting zoo Objects}
 \description{
 Plotting method for objects of class \code{"zoo"}.
@@ -12,7 +13,8 @@ Plotting method for objects of class \code{"zoo"}.
   xlim = NULL, ylim = NULL, xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
   col = 1, lty = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, \dots)
-\method{lines}{zoo}(x, type = "l", \dots)
+\method{lines}{zoo}(x, y = NULL, type = "l", \dots)
+\method{points}{zoo}(x, y = NULL, type = "p", \dots)
 }
 \arguments{
   \item{x}{an object of class \code{"zoo"}.}
@@ -78,6 +80,7 @@ lines(x2, col = 2)
 
 ## multivariate plotting
 z <- cbind(x, x2, zoo(rnorm(5, sd = 0.5), x.Date))
+plot(z, type = "b", pch = 1:3, col = 1:3, ylab = list(expression(mu), "b", "c"))
 colnames(z) <- LETTERS[1:3]
 plot(z, plot.type = "single", col = list(B = 2))
 plot(z, type = "b", pch = 1:3, col = 1:3)

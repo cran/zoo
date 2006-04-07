@@ -139,3 +139,11 @@ tail.zoo <- function(x, n = 6, ...) {
 
 range.zoo <- function(..., na.rm = FALSE)
     range(sapply(list(...), coredata), na.rm = na.rm)
+
+
+scale.zoo <- function (x, center = TRUE, scale = TRUE) {
+	x[] <- xs <- scale(coredata(x), center = center, scale = scale)
+	attributes(x) <- c(attributes(x), attributes(xs))
+	x
+}
+

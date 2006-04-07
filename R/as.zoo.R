@@ -50,6 +50,7 @@ as.matrix.zoo <- function(x)
 		    lab
 		else paste(lab, 1:NCOL(x), sep = ".")
 	    }
+    if(is.null(row.names(y))) row.names(y) <- index2char(index(x), frequency = attr(x, "frequency"))
     return(y)
 }
 
@@ -65,13 +66,11 @@ as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE)
 	                  else paste(lab, 1:NCOL(x), sep = ".")
 		}
 	}
-	## before we used 1:NROW(y) as the default:
-	## if (!is.null(row.names)) row.names(y) <- row.names
-	row.names(y) <- if (is.null(row.names)) {
-	  tmp <- index2char(index(x), frequency = attr(x, "frequency"))
-	  ## added check for duplicated names
-	  if (!any(duplicated(tmp))) tmp
-        } else row.names
+	if (!is.null(row.names)) row.names(y) <- row.names 
+	  else {
+	    tmp <- index2char(index(x), frequency = attr(x, "frequency"))
+	    if (!any(duplicated(tmp))) row.names(y) <- tmp
+        }
 	return(y)
 }
 

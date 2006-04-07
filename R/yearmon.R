@@ -65,3 +65,24 @@ Ops.yearmon <- function(e1, e2) {
     if(is.numeric(rval)) rval <- as.yearmon(rval)
     return(rval)
 }
+
+"-.yearmon" <- function (e1, e2) 
+{
+    if (!inherits(e1, "yearmon")) 
+        stop("Can only subtract from yearmon objects")
+    if (nargs() == 1) 
+	return(- as.numeric(e1))
+    if (inherits(e2, "yearmon")) 
+        return(as.numeric(e1) - as.numeric(e2))
+    if (!is.null(attr(e2, "class"))) 
+      stop("can only subtract yearmon objects and numbers from yearmon objects")
+    structure(unclass(as.yearmon(e1)) - e2, class = "yearmon")
+}
+
+
+axis.yearmon <- function(side, x, ...) axis.Date(side, as.Date(x), ...)
+
+Axis.yearmon <- function(x=NULL, at=NULL, ..., side, labels=NULL)
+	Axis(x=as.Date(x), at=at, ..., side=side, labels=labels)
+
+

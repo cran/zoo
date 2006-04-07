@@ -151,9 +151,15 @@ plot.zoo <- function(x, y = NULL, screens = 1,
   return(invisible(x))
 }
 
-lines.zoo <- function(x, type = "l", ...)
+lines.zoo <- function(x, y = NULL, type = "l", ...)
 {
-  if(NCOL(x) == 1) lines(index(x), x, type = type, ...)
-    else stop("Can't plot lines for multivariate zoo object")
+  if (is.null(y)) {
+     if(NCOL(y) == 1) lines(index(x), x, type = type, ...)
+       else stop("Can't plot lines for multivariate zoo object")
+  } else
+     lines(coredata(cbind(x,y)), type = type, ...)
 }
+
+points.zoo <- function(x, y = NULL, type = "p", ...)
+  lines(x, y, type = type, ...)
 
