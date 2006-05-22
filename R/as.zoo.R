@@ -54,7 +54,7 @@ as.matrix.zoo <- function(x)
     return(y)
 }
 
-as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE)
+as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE, ...)
 {
 	y <- as.data.frame(coredata(x))
         if(NCOL(x) > 0) {

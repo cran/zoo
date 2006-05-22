@@ -1,6 +1,14 @@
+Changes in Version 1.0-7
+
+  o added a `...' argument to as.data.frame() method for
+    complying with R 2.4.0
+
+  o improved handling of `by' argument in aggregate() method
+
+
 Changes in Version 1.0-6
 
-  o ?zoo now explicitely points out that the index of 
+  o ?zoo now explicitly points out that the index of 
     zoo objects should have unique observations (aka 
     time stamps).
     
