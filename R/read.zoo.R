@@ -1,4 +1,4 @@
-read.zoo <- function(file, format = "", tz = "", FUN = NULL, ...)
+read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ...)
 {
   ## `file' and `...' is simply passed to read.table
   ## the first column is interpreted to be the index, the rest the coredata
@@ -48,6 +48,6 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, ...)
   
   ## setup zoo object and return
   rval <- zoo(rval, ix)
-  if(is.regular(rval)) rval <- as.zooreg(rval)
+  if(regular && is.regular(rval)) rval <- as.zooreg(rval)
   return(rval)
 }

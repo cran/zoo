@@ -1,3 +1,18 @@
+Changes in Version 1.1-0
+
+  o added a NAMESPACE, many S3 methods are not exported explicitely
+    anymore
+
+  o new argument `regular' in read.zoo() which is set to FALSE. Only if
+    set to TRUE the series read is coerced to "zooreg" (if possible), 
+    which was the previous default behaviour.
+    
+  o suppressWarnings() was added in is.regular() and frequency() functions
+    which try() to convert indexes to numerics which might lead to errors
+    or warnings and NAs (e.g., for characters), both should be fully suppressed
+    now.
+
+
 Changes in Version 1.0-7
 
   o added a `...' argument to as.data.frame() method for

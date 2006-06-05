@@ -7,7 +7,7 @@
 \code{"zoo"} series from text files.
 }
 \usage{
-read.zoo(file, format = "", tz = "", FUN = NULL, \dots)
+read.zoo(file, format = "", tz = "", FUN = NULL, regular = FALSE, \dots)
 }
 \arguments{
   \item{file}{character giving the name of the file which the data
@@ -16,6 +16,8 @@ read.zoo(file, format = "", tz = "", FUN = NULL, \dots)
   \item{tz}{time zone argument passed to \code{\link{as.POSIXct}}.}
   \item{FUN}{a function for computing the index from the first column
     of the data. See details.}
+  \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
+    (if the series is regular)?}
   \item{\dots}{further arguments passed to \code{\link{read.table}}.}
 }
 
@@ -33,8 +35,8 @@ specified and \code{as.POSIXct(as.character(x), tz = tz)} if \code{tz}
 is specified; otherwise it tries to guess between \code{"numeric"},
 \code{"Date"} and \code{"POSIXct"}.
 
-If the resulting series has an underlying regularity, it is coerced to 
-a \code{"zooreg"} series.
+If \code{regular} is set to \code{TRUE} and the resulting series has an underlying
+regularity, it is coerced to a \code{"zooreg"} series.
 }
 
 \value{

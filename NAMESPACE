@@ -1,0 +1,198 @@
+export(
+## zoo core functionality
+  "zoo",
+  "zooreg",
+  "as.zoo",
+  "as.zoo.default",
+  "as.zooreg",
+  "as.zooreg.default",
+  "cbind.zoo",
+  "is.zoo",
+  "merge.zoo",
+  "plot.zoo",
+  "read.zoo",
+
+## new time series functionality
+  "coredata",
+  "coredata.default",
+  "coredata<-",
+  "frequency<-",
+  "index",
+  "index2char",
+  "index<-",
+  "is.regular",
+  "time<-",
+
+## rolling operations
+  "rapply",
+  "rollmax",
+  "rollmax.default",
+  "rollmean",
+  "rollmean.default",
+  "rollmedian",
+  "rollmedian.default",
+
+## NA operations
+  "na.approx",
+  "na.approx.default",
+  "na.locf",
+  "na.locf.default",
+  "na.trim",
+  "na.trim.default",
+
+## new index classes
+  "yearmon",
+  "as.yearmon",
+  "as.yearmon.default",
+  "yearqtr",
+  "as.yearqtr",
+  "as.yearqtr.default",
+
+## auxiliary generics
+  "MATCH",
+  "MATCH.default",
+  "ORDER",
+  "ORDER.default")
+
+## methods for class zoo
+  S3method("Ops", "zoo")
+  S3method("[", "zoo")
+  S3method("aggregate", "zoo")
+  S3method("as.data.frame", "zoo")
+  S3method("as.list", "zoo")
+  S3method("as.matrix", "zoo")
+  S3method("as.ts", "zoo")
+  S3method("as.vector", "zoo")
+  S3method("barplot", "zoo")
+  S3method("c", "zoo")
+  S3method("coredata", "zoo")
+  S3method("coredata<-", "zoo")
+  S3method("cummax", "zoo")
+  S3method("cummin", "zoo")
+  S3method("cumprod", "zoo")
+  S3method("cumsum", "zoo")
+  S3method("cycle", "zoo")
+  S3method("deltat", "zoo")
+  S3method("diff", "zoo")
+  S3method("end", "zoo")
+  S3method("frequency", "zoo")
+  S3method("frequency<-", "zoo")
+  S3method("head", "zoo")
+  S3method("index", "zoo")
+  S3method("index<-", "zoo")
+  S3method("is.regular", "zoo")
+  S3method("lag", "zoo")
+  S3method("lines", "zoo")
+  S3method("na.contiguous", "zoo")
+  S3method("points", "zoo")
+  S3method("print", "zoo")
+  S3method("range", "zoo")
+  S3method("rapply", "zoo")
+  S3method("rbind", "zoo")
+  S3method("rollmax", "zoo")
+  S3method("rollmean", "zoo")
+  S3method("rollmedian", "zoo")
+  S3method("scale", "zoo")
+  S3method("start", "zoo")
+  S3method("str", "zoo")
+  S3method("summary", "zoo")
+  S3method("t", "zoo")
+  S3method("tail", "zoo")
+  S3method("time", "zoo")
+  S3method("time<-", "zoo")
+  S3method("window", "zoo")
+  S3method("window<-", "zoo")
+
+## methods for class zooreg
+  S3method("as.ts", "zooreg")
+  S3method("deltat", "zooreg")
+  S3method("frequency", "zooreg")
+  S3method("frequency<-", "zooreg")
+  S3method("lag", "zooreg")
+  S3method("time<-", "zooreg")
+  S3method("index<-", "zooreg")
+  S3method("is.regular", "zooreg")
+
+## methods for class ts
+  S3method("coredata", "ts")
+  S3method("coredata<-", "ts")
+  S3method("index", "ts")
+  S3method("is.regular", "ts")
+  S3method("rapply", "ts")
+  S3method("rollmax", "ts")
+  S3method("rollmean", "ts")
+  S3method("rollmedian", "ts")
+
+## methods for class irts
+  S3method("coredata", "irts")
+  S3method("coredata<-", "irts")
+
+## methods for class its
+  S3method("coredata", "its")
+  S3method("coredata<-", "its")
+
+## methods for class yearmon
+  S3method("-", "yearmon")
+  S3method("Axis", "yearmon")
+  S3method("MATCH", "yearmon")
+  S3method("Ops", "yearmon")
+  S3method("[", "yearmon")
+  S3method("as.Date", "yearmon")
+  S3method("as.POSIXct", "yearmon")
+  S3method("as.POSIXlt", "yearmon")
+  S3method("as.character", "yearmon")
+  S3method("as.numeric", "yearmon")
+  S3method("axis", "yearmon")
+  S3method("c", "yearmon")
+  S3method("format", "yearmon")
+  S3method("print", "yearmon")
+
+## methods for class yearqtr 
+  S3method("-", "yearqtr")
+  S3method("Axis", "yearqtr")
+  S3method("MATCH", "yearqtr")
+  S3method("Ops", "yearqtr")
+  S3method("[", "yearqtr")
+  S3method("as.Date", "yearqtr")
+  S3method("as.POSIXct", "yearqtr")
+  S3method("as.POSIXlt", "yearqtr")
+  S3method("as.character", "yearqtr")
+  S3method("as.numeric", "yearqtr")
+  S3method("axis", "yearqtr")
+  S3method("c", "yearqtr")
+  S3method("format", "yearqtr")
+  S3method("print", "yearqtr")
+
+## methods for misc classes
+  S3method("index", "default")
+  S3method("index2char", "default")
+  S3method("is.regular", "default")
+  S3method("index2char", "numeric")
+  S3method("na.contiguous", "data.frame")
+  S3method("na.contiguous", "list")
+
+## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
+  S3method("as.Date", "integer")
+  S3method("as.Date", "numeric")
+  S3method("as.Date", "ts")
+  S3method("as.list", "ts")
+  S3method("as.yearmon", "Date")
+  S3method("as.yearmon", "POSIXt")
+  S3method("as.yearmon", "character")
+  S3method("as.yearmon", "dates")
+  S3method("as.yearmon", "integer")
+  S3method("as.yearmon", "numeric")
+  S3method("as.yearqtr", "Date")
+  S3method("as.yearqtr", "POSIXt")
+  S3method("as.yearqtr", "character")
+  S3method("as.yearqtr", "dates")
+  S3method("as.yearqtr", "integer")
+  S3method("as.yearqtr", "numeric")
+  S3method("as.zoo", "factor")
+  S3method("as.zoo", "irts")
+  S3method("as.zoo", "its")
+  S3method("as.zoo", "ts")
+  S3method("as.zoo", "zoo")
+  S3method("as.zoo", "zooreg")
+  S3method("as.zooreg", "ts")
+  S3method("as.zooreg", "zoo")

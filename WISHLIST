@@ -1,6 +1,8 @@
 FEATURES
 ********
 
+  o zoo(NULL, ...), zooreg(NULL, ...)
+
   o register S3 methods and use namespaces so that this works:
      f <- local(function(x) zoo::index(x), baseenv())
 
