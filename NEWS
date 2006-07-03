@@ -1,3 +1,11 @@
+Changes in Version 1.1-1
+
+  o added na.spline() generic and default method for replacing
+    NAs via cubic spline interpolation
+    
+  o rbind() method now exported explicitely again
+
+
 Changes in Version 1.1-0
 
   o added a NAMESPACE, many S3 methods are not exported explicitely

@@ -1,6 +1,9 @@
 FEATURES
 ********
 
+  o zoo methods for dbReadTable and dbWriteTable to facilitate
+    using zoo objects with DBI
+
   o zoo(NULL, ...), zooreg(NULL, ...)
 
   o register S3 methods and use namespaces so that this works:

@@ -1,14 +1,19 @@
 \name{na.approx}
 \alias{na.approx}
 \alias{na.approx.default}
+\alias{na.spline}
+\alias{na.spline.default}
 \title{Replace NA by Interpolation}
 \description{
-Generic function for replacing each \code{NA} with interpolated
+Generic functions for replacing each \code{NA} with interpolated
 values.
 }
 \usage{
 na.approx(object, \dots) 
 \method{na.approx}{default}(object, along = index(object), na.rm = TRUE, \dots) 
+
+na.spline(object, \dots) 
+\method{na.spline}{default}(object, along = index(object), na.rm = TRUE, \dots) 
 }
 \arguments{
   \item{object}{object in which \code{NA}s are to be replaced}
@@ -19,6 +24,10 @@ na.approx(object, \dots)
 }
 
 \details{
+  Missing values (\code{NA}s) are replaced by linear interpolation via
+  \code{\link{approx}} or cubic spline interpolation via \code{\link{spline}},
+  respectively.  
+
   By default the index associated with \code{object} is used
   for interpolation. Note, that if this calls \code{index.default}
   this gives an equidistant spacing \code{1:NROW(object)}. If \code{object}
@@ -32,7 +41,7 @@ by interpolating the non-\code{NA} values before and after it.
 Leading \code{NA}s are omitted (if \code{na.rm = TRUE}) or not replaced (if \code{na.rm = FALSE}). 
 }
 
-\seealso{\code{\link{zoo}}}
+\seealso{\code{\link{zoo}}, \code{\link{approx}}, \code{\link{spline}}}
 
 \examples{
 
