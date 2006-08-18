@@ -687,29 +687,34 @@ to an equidistant spacing, by setting the second argument of
 A typical task to be performed on ordered observations is to evaluate some
 function, e.g., computing the mean, in a window of observations that is moved
 over the full sample period. The resulting statistics are usually synonymously referred to
-as rolling/running/moving statistics. In \pkg{zoo}, the generic function \code{rapply} 
+as rolling/running/moving statistics. In \pkg{zoo}, the generic function
+\code{rollapply}\footnote{In previous versions of \pkg{zoo}, this function was called
+  \code{rapply}. It was renamed because from \proglang{R}~2.4.0 on, base \proglang{R}
+  provides a different function \code{rapply} for recursive (and not rolling) application
+  of functions. The function \code{zoo::rapply} is still provided for backward compatibility,
+  however it dispatches now to \code{rollapply} methods.}
 is provided along with a \code{"zoo"} and a \code{"ts"} method. The most important arguments
 are
 
 \begin{Scode}
-rapply(data, width, FUN)
+rollapply(data, width, FUN)
 \end{Scode}
 
 where the function \code{FUN} is applied to a rolling window of size \code{width}
-of the observations \code{data}. The function \code{rapply} currently only evaluates
+of the observations \code{data}. The function \code{rollapply} currently only evaluates
 the function for windows of full size \code{width}, hence the result has \code{width - 1}
 fewer observations than the original series. But it can be determined whether the `lost'
 observations should be padded with \code{NA}s and whether the result should be left-
 or right-aligned or centered (default) with respect to the original index.
 
-<<rapply>>=
-rapply(Z, 5, sd)
-rapply(Z, 5, sd, na.pad = TRUE, align = "left")
+<<rollapply>>=
+rollapply(Z, 5, sd)
+rollapply(Z, 5, sd, na.pad = TRUE, align = "left")
 @
 
-To improve the performance of \code{rapply(x, k, }\textit{foo}\code{)} for some frequently
+To improve the performance of \code{rollapply(x, k, }\textit{foo}\code{)} for some frequently
 used functions \textit{foo}, more efficient implementations \code{roll}\textit{foo}\code{(x, k)}
-are available (and also called by \code{rapply}). 
+are available (and also called by \code{rollapply}). 
 Currently, these are the generic functions \code{rollmean}, \code{rollmedian}
 and \code{rollmax} which have methods for \code{"zoo"} and \code{"ts"} series and a 
 default method for plain vectors.

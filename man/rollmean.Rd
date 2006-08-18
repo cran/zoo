@@ -31,21 +31,21 @@ rollmedian(x, k, na.pad = FALSE, align = c("center", "left", "right"), \dots)
 
 \details{
 These functions compute rolling means, maximums and medians respectively
-and are thus similar to \code{\link{rapply}} but are
+and are thus similar to \code{\link{rollapply}} but are
 optimized for speed.
 
 Currently, there are methods for \code{"zoo"} and \code{"ts"} series and
 default methods (intended for vectors). The default method of \code{rollmedian}
 is an interface to \code{\link{runmed}}.
 The default method of \code{rollmean} does not handle inputs that contain
-\code{NA}s. In such cases, use \code{\link{rapply}} instead.
+\code{NA}s. In such cases, use \code{\link{rollapply}} instead.
 }
 
 \value{
 An object of the same class as \code{x} with the rolling mean/max/median.
 }
 
-\seealso{\code{\link{rapply}}, \code{\link{zoo}}}
+\seealso{\code{\link{rollapply}}, \code{\link{zoo}}}
 
 \examples{
 x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
@@ -60,8 +60,8 @@ rollmean(xm, 3)
 rollmax(xm, 3)
 rollmedian(xm, 3)
 
-rapply(xm, 3, mean) # uses rollmean
-rapply(xm, 3, function(x) mean(x)) # does not use rollmean
+rollapply(xm, 3, mean) # uses rollmean
+rollapply(xm, 3, function(x) mean(x)) # does not use rollmean
 
 }
 \keyword{ts}

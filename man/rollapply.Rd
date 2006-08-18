@@ -1,13 +1,15 @@
-\name{rapply}
+\name{rollapply}
 \alias{rapply}
-\alias{rapply.zoo}
-\alias{rapply.ts}
+\alias{rapply-deprecated}
+\alias{rollapply}
+\alias{rollapply.zoo}
+\alias{rollapply.ts}
 \title{Apply Rolling Functions}
 \description{
   A generic function for applying a function to rolling margins of an array.
 }
 \usage{
-rapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
+rollapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
  na.pad = FALSE, align = c("center", "left", "right"), \dots)
 }
 \arguments{
@@ -38,6 +40,12 @@ rapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
   for more details.
   
   Currently, there are methods for \code{"zoo"} and \code{"ts"} series.
+  
+  In previous versions, this function was called \code{rapply}. It was renamed
+  because from R 2.4.0 on, base R provides a different function \code{rapply}
+  for recursive (and not rolling) application of functions. The function 
+  \code{zoo::rapply} is still provided for backward compatibility, however
+  it dispatches now to \code{rollapply} methods.
 }
 \value{
   A object of the same class as \code{data} with the results of the rolling function.
@@ -47,15 +55,15 @@ rapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
 
 \examples{
 z <- zoo(11:15, as.Date(31:35)) 
-rapply(z, 2, mean)
+rollapply(z, 2, mean)
 
 z2 <- zoo(rnorm(6))
-rapply(z2, 3, mean, by = 3) # means of nonoverlapping groups of 3
+rollapply(z2, 3, mean, by = 3) # means of nonoverlapping groups of 3
 aggregate(z2, c(3,3,3,6,6,6), mean) # same
 
-rapply(z2, 3, mean) # uses rollmean which is optimized for mean
+rollapply(z2, 3, mean) # uses rollmean which is optimized for mean
 rollmean(z2, 3) # same
-rapply(z2, 3, (mean)) # does not use rollmean
+rollapply(z2, 3, (mean)) # does not use rollmean
 }
 \keyword{iteration}
 \keyword{array}

@@ -1,3 +1,6 @@
+## name spaces needed for S3 methods
+import("stats", "utils", "graphics", "lattice")
+
 export(
 ## zoo core functionality
   "zoo",
@@ -10,8 +13,13 @@ export(
   "rbind.zoo",
   "is.zoo",
   "merge.zoo",
-  "plot.zoo",
   "read.zoo",
+
+## plotting
+  "plot.zoo",
+  "make.par.list",
+  "panel.plot.default", 
+  "panel.plot.custom",
 
 ## new time series functionality
   "coredata",
@@ -26,6 +34,7 @@ export(
 
 ## rolling operations
   "rapply",
+  "rollapply",
   "rollmax",
   "rollmax.default",
   "rollmean",
@@ -50,6 +59,29 @@ export(
   "yearqtr",
   "as.yearqtr",
   "as.yearqtr.default",
+
+# *** temporary -- change these to S3Method when lattice creates generics
+  "panel.lines.ts",
+  "panel.lines.its",
+  "panel.lines.zoo",
+  "panel.points.ts",
+  "panel.points.its",
+  "panel.points.zoo",
+  "panel.segments.ts",
+  "panel.segments.its",
+  "panel.segments.zoo",
+  "panel.text.ts",
+  "panel.text.its",
+  "panel.text.zoo",
+  "panel.rect.ts",
+  "panel.rect.its",
+  "panel.rect.zoo",
+  "panel.arrows.ts",
+  "panel.arrows.its",
+  "panel.arrows.zoo",
+  "panel.polygon.ts",
+  "panel.polygon.its",
+  "panel.polygon.zoo",
 
 ## auxiliary generics
   "MATCH",
@@ -87,10 +119,11 @@ export(
   S3method("lag", "zoo")
   S3method("lines", "zoo")
   S3method("na.contiguous", "zoo")
+  S3method("plot", "zoo")
   S3method("points", "zoo")
   S3method("print", "zoo")
   S3method("range", "zoo")
-  S3method("rapply", "zoo")
+  S3method("rollapply", "zoo")
   S3method("rollmax", "zoo")
   S3method("rollmean", "zoo")
   S3method("rollmedian", "zoo")
@@ -104,6 +137,7 @@ export(
   S3method("time<-", "zoo")
   S3method("window", "zoo")
   S3method("window<-", "zoo")
+  S3method("xyplot", "zoo")
 
 ## methods for class zooreg
   S3method("as.ts", "zooreg")
@@ -120,10 +154,11 @@ export(
   S3method("coredata<-", "ts")
   S3method("index", "ts")
   S3method("is.regular", "ts")
-  S3method("rapply", "ts")
+  S3method("rollapply", "ts")
   S3method("rollmax", "ts")
   S3method("rollmean", "ts")
   S3method("rollmedian", "ts")
+  S3method("xyplot", "ts")
 
 ## methods for class irts
   S3method("coredata", "irts")
@@ -132,6 +167,7 @@ export(
 ## methods for class its
   S3method("coredata", "its")
   S3method("coredata<-", "its")
+  S3method("xyplot", "its")
 
 ## methods for class yearmon
   S3method("-", "yearmon")

@@ -130,7 +130,8 @@ indexes of type \code{"numeric"}, \code{"integer"} or \code{"logical"}. But
 additionally, it can be used to index with observations from the index class of
 the series. If the index class of the series is one of the three classes above,
 the corresponding index has to be encapsulated in \code{I()} to enforce usage of
-the index class (see examples).
+the index class (see examples).   Subscripting by a zoo object whose
+data contains logical values is undefined.
 
 Additionally, \code{zoo} provides several generic functions and methods
 to work (a) on the data contained in a \code{"zoo"} object, (b) the
@@ -176,7 +177,7 @@ linear interpolation to fill in \code{NA} values.
 
 A typical task to be performed on ordered observations is to evaluate some
 function, e.g., computing the mean, in a window of observations that is moved
-over the full sample period. The generic function \code{\link{rapply}}
+over the full sample period. The generic function \code{\link{rollapply}}
 provides this functionality for arbitrary functions and more efficient versions
 \code{\link{rollmean}}, \code{\link{rollmax}}, \code{\link{rollmedian}} are
 available for the mean, maximum and median respectively.
@@ -259,6 +260,14 @@ plot(z3)
 lines(aggregate(z3, index(z3), mean), col = 2)
 ## or by using the last observation
 lines(aggregate(z3, index(z3), tail, 1), col = 4)
+
+## x1[x1 > 3] is not officially supported since
+## x1 > 3 is of class "zoo", not "logical".
+## Use one of these instead:
+x1[which(x1 > 3)]
+x1[coredata(x1 > 3)]
+x1[as.logical(x1 > 3)]
+subset(x1, x1 > 3)
 }
 \keyword{ts}
 

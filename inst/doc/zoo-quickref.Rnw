@@ -176,7 +176,7 @@ r <- prices2returns(m)
 A 10-day rolling window standard deviations (for all columns) can
 be computed by
 <<rolling standard deviations>>=
-rapply(r, width = 10, FUN = sd)
+rollapply(r, 10, sd)
 @
 
 To go from a daily series to the series of just the last-traded-day of each month

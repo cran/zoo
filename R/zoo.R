@@ -7,7 +7,8 @@ zoo <- function (x, order.by = index(x), frequency = NULL)
     else if (is.vector(x)) 
         x <- rep(x, length.out = length(index))[index]
     else if (is.factor(x))         
-        x <- factor(rep(as.character(x), length.out = length(index))[index], labels = levels(x))
+        x <- factor(rep(as.character(x), length.out = length(index))[index],
+	  levels = levels(x), ordered = is.ordered(x))
     else if (is.matrix(x) || is.data.frame(x)) 
         x <- (x[rep(1:NROW(x), length.out = length(index)), , 
             drop = FALSE])[index, , drop = FALSE]
@@ -101,17 +102,19 @@ str.zoo <- function(object, ...)
 
   ## also support that i can be index:
   ## if i is not numeric/integer/logical, it is interpreted to be the index
-  if(!(all(class(i) == "numeric") ||
-       all(class(i) == "integer") ||
-       all(class(i) == "logical")))
+  if (all(class(i) == "logical"))
+    i <- which(i)
+  else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
+    i <- which(coredata(merge(zoo(,time(x)), i)))
+  } else if(!((all(class(i) == "numeric") || all(class(i) == "integer")))) 
     i <- which(MATCH(x.index, i, nomatch = 0) > 0)
   
   if(length(dim(rval)) == 2) {
-	if (length(i) == 1) drop <- FALSE
-        if(missing(j)) 
-		rval <- zoo(rval[i, , drop = drop, ...], x.index[i])
-	  else
-		rval <- zoo(rval[i, j, drop = drop, ...], x.index[i])
+	drop. <- if (length(i) == 1) FALSE else drop
+        rval <- if (missing(j)) rval[i, , drop = drop., ...]
+		else rval[i, j, drop = drop., ...]
+	if (drop && length(rval) == 1) rval <- c(rval)
+	rval <- zoo(rval, x.index[i])
   } else
 	rval <- zoo(rval[i], x.index[i])
 

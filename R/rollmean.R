@@ -1,6 +1,6 @@
 # rollmean, rollmax, rollmedian (, rollmad) based on code posted by Jarek Tuszynski at
 # https://www.stat.math.ethz.ch/pipermail/r-help/2004-October/057363.html
-# ToDo: rollmad, currently rapply() can be used
+# ToDo: rollmad, currently rollapply() can be used
 
 rollmean <- function(x, k, na.pad = FALSE, align = c("center", "left", "right"), ...)
   UseMethod("rollmean")

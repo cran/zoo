@@ -100,7 +100,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     }
 
     # extend all to a length equal to the number of args
-    all <- rep(all, length.out = length(cl))
+    all <- rep(as.logical(all), length.out = length(cl))
 
     # ensure the class of the index of each arg are all the same
     indexlist <- lapply(args, index)

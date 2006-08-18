@@ -1,6 +1,15 @@
 FEATURES
 ********
 
+  o examples: example(aggregate.zoo) could have an example
+    where there's intra-day data which is reduced to a grid
+    of (say) five-minute returns.
+
+  o design: re-think shared design of parameter and panel
+    functions for plotting.
+
+  o bugs: rollmax, rollmedian give Error for k=1.
+
   o zoo methods for dbReadTable and dbWriteTable to facilitate
     using zoo objects with DBI
 

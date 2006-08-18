@@ -53,12 +53,11 @@ Plotting method for objects of class \code{"zoo"}.
 \details{
 The methods for \code{plot} and \code{lines} are very similar
 to the corresponding \code{ts} methods. However, the handling of
-graphical parameters \code{col}, \code{pch} and \code{lty} is more
-flexible for multivariate series. These parameters can be
-vectors of the same length as the number of series plotted or
-are recycled if shorter. They can also be (partially) named list, e.g.,
-\code{list(A = c(1,2), c(3,4))} in which \code{c(3, 4)} is the
-default value and \code{c(1, 2)} the value only  for series \code{A}.
+several graphical parameters is more flexible for multivariate series.
+These parameters can be vectors of the same length as the number of
+series plotted or are recycled if shorter. They can also be (partially)
+named list, e.g., \code{list(A = c(1,2), c(3,4))} in which \code{c(3, 4)}
+is the default value and \code{c(1, 2)} the value only  for series \code{A}.
 The \code{screens} argument can be specified in a similar way.
 If \code{plot.type} and \code{screens} conflict then multiple plots
 will be assumed. Also see the examples.

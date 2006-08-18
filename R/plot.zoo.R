@@ -1,3 +1,37 @@
+make.par.list <- function(nams, x, n, m, def, recycle = sum(unnamed) > 0) {
+##FIXME: should defaults for n, m, def be available?
+
+# if nams are the names of our variables and x is a parameter
+# specification such as list(a = c(1,2), c(3,4)) then 
+# create a new list which uses the named variables from x
+# and assigns the unnamed in order.  For the remaining variables
+# assign them the default value if recycle = FALSE or recycle the
+# unnamed variables if recycle = TRUE.  The default value for
+# recycle is TRUE if there is at least one unnamed variable
+# in x and is false if there are only named variables in x.
+# n is the length of the series and m is the total number of series
+# It only needs to know whether m is 1 or greater than m.
+# def is the default value used when recycle = FALSE
+# recycle = TRUE means recycle unspecified values
+# recycle = FALSE means replace values for unspecified series with def
+# Within series recycling is done even if recycle=FALSE.
+  stopifnot(all(names(x) %in% c("", nams)))
+  if (!is.list(x)) x <- if (m == 1) list(x) else as.list(x)
+  y <- vector(mode = "list", length = length(nams))
+  names(y) <- nams
+  in.x <- nams %in% names(x)
+  unnamed <- if (is.null(names(x))) rep(TRUE, length(x)) else names(x) == ""
+  if (!recycle) y[] <- def
+  y[in.x] <- x[nams[in.x]]
+  if (recycle) {
+    stopifnot(sum(unnamed) > 0)
+    y[!in.x] <- x[unnamed]
+  } else {
+    y[which(!in.x)[seq(len=sum(unnamed))]] <- x[unnamed]
+  }
+  lapply(y, function(y) if (length(y)==1) y else rep(y, length.out = n))
+}
+
 plot.zoo <- function(x, y = NULL, screens = 1,
   plot.type = c("multiple", "single"), panel = lines, 
   xlab = "Index", ylab = NULL, main = NULL, xlim = NULL, ylim = NULL,
@@ -31,33 +65,6 @@ plot.zoo <- function(x, y = NULL, screens = 1,
   }
   ## Else : no y, only x
 
-  parm <- function(nams, x, n, m, def, recycle = sum(unnamed) > 0) {
-  # if nams are the names of our variables and x is a parameter
-  # specification such as list(a = c(1,2), c(3,4)) then 
-  # create a new list which uses the named variables from x
-  # and assigns the unnamed in order.  For the remaining variables
-  # assign them the default value if recycle = FALSE or recycle the
-  # unnamed variables if recycle = TRUE.  The default value for
-  # recycle is TRUE if there is at least one unnamed variable
-  # in x and is false if there are only named variables in x.
-  # n is the length of the series and m is the total number of series
-  # It only needs to know whether m is 1 or greater than m.
-	stopifnot(all(names(x) %in% c("", nams)))
-	if (!is.list(x)) x <- if (nser == 1) list(x) else as.list(x)
-	y <- vector(mode = "list", length = length(nams))
-	names(y) <- nams
-	in.x <- nams %in% names(x)
-	unnamed <- if (is.null(names(x))) rep(TRUE, length(x)) else names(x) == ""
-	if (!recycle) y[] <- def
-	y[in.x] <- x[nams[in.x]]
-	if (recycle) {
-		stopifnot(sum(unnamed) > 0)
-		y[!in.x] <- x[unnamed]
-	} else {
-		y[which(!in.x)[seq(len=sum(unnamed))]] <- x[unnamed]
-	}
-	lapply(y, function(y) if (length(y)==1) y else rep(y, length.out = n))
-  }
   recycle <- function(a, len, nser)
      rep(lapply(as.list(a), rep, length.out = len), length.out = nser)
   plot.type <- match.arg(plot.type)
@@ -66,9 +73,9 @@ plot.zoo <- function(x, y = NULL, screens = 1,
   x.index <- index(x)
   if(is.ts(x.index)) x.index <- as.vector(x.index)
   cn <- if (is.null(colnames(x))) paste("V", seq(length = nser), sep = "")
-	else colnames(x)
+	  else colnames(x)
 
-  screens <- parm(cn, screens, NROW(x), nser, 1)
+  screens <- make.par.list(cn, screens, NROW(x), nser, 1)
   screens <- as.factor(unlist(screens))[drop = TRUE]
   ngraph <- length(levels(screens))
   if(nser > 1 && (plot.type == "multiple" || ngraph > 1)) {
@@ -82,13 +89,13 @@ plot.zoo <- function(x, y = NULL, screens = 1,
     if(is.null(ylab)) ylab <- paste("Series", which(!duplicated(screens)))
     ylab <- rep(ylab, length.out = ngraph)
     lty <- rep(lty, length.out = nser)
-    col <- parm(cn, col, NROW(x), nser, 1)
-    pch <- parm(cn, pch, NROW(x), nser, par("pch"))
-    type <- parm(cn, type, NROW(x), nser, "l")
+    col <- make.par.list(cn, col, NROW(x), nser, 1)
+    pch <- make.par.list(cn, pch, NROW(x), nser, par("pch"))
+    type <- make.par.list(cn, type, NROW(x), nser, "l")
     if (!is.null(ylim)) {
         if (is.list(ylim)) ylim <- lapply(ylim, range, na.rm = TRUE)
 	else ylim <- list(range(ylim, na.rm = TRUE))
-	ylim <- lapply(parm(cn, ylim, 2, nser, NULL), function(x) 
+	ylim <- lapply(make.par.list(cn, ylim, 2, nser, NULL), function(x) 
 		if (is.null(x) || length(na.omit(x)) ==0) NULL 
 		else range(x, na.rm = TRUE))
     }
@@ -130,9 +137,9 @@ plot.zoo <- function(x, y = NULL, screens = 1,
 	else ylim <- range(c(ylim, recursive = TRUE), na.rm = TRUE)
 
     lty <- rep(lty, length.out = nser)
-    col <- parm(cn, col, NROW(x), nser, 1)
-    pch <- parm(cn, pch, NROW(x), nser, par("pch"))
-    type <- parm(cn, type, NROW(x), nser, "l")
+    col <- make.par.list(cn, col, NROW(x), nser, 1)
+    pch <- make.par.list(cn, pch, NROW(x), nser, par("pch"))
+    type <- make.par.list(cn, type, NROW(x), nser, "l")
    
     dummy <- rep(range(x, na.rm = TRUE), 
 	length.out = length(index(x)))

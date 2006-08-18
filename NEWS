@@ -1,14 +1,49 @@
+Changes in Version 1.2-0
+
+  o rapply() was re-named to rollapply() because from R 2.4.0 on,
+    base R provides a function rapply() for recursive (not rolling)
+    application of functions, which was already described in the Green
+    Book. zoo::rapply() still exists for backward compatibility, however,
+    it is flagged as deprecated and now dispatches to rollapply() methods.
+
+  o added methods for xyplot() from package "lattice" for classes "zoo",
+    "ts", "its". These functions are still under development and the
+    interface and functionality might be modified/extended in future
+    releases.
+  
+  o new function make.par.list() (which was previously a local function
+    parm() in zoo's plot() method) for processing named argument lists.
+    Useful in plotting routines like the plot() and xyplot() methods,
+    see ?make.par.list.
+
+  o subscripting by a "zoo" object whose data is logical is now defined, e.g.
+      z <- zoo(1:10); z[z > 3] 
+    However, assignment such as
+      z[z > 3] <- 2 * z[z > 3]
+    does not work.
+  
+  o fixed a bug in zoo() when ordered factors are supplied ("ordered"
+    class was dropped)
+
+  o fixed bug in subscripting for drop = TRUE and length of result is 1
+
+  o fixed bug in na.trim(x, "right")
+
+  o all= argument of merge.zoo is coerced to logical so one can do this:
+    merge(zoo(2:4, 2:4), zoo(1:3), all = 0:1)
+
+
 Changes in Version 1.1-1
 
   o added na.spline() generic and default method for replacing
     NAs via cubic spline interpolation
     
-  o rbind() method now exported explicitely again
+  o rbind() method now exported explicitly again
 
 
 Changes in Version 1.1-0
 
-  o added a NAMESPACE, many S3 methods are not exported explicitely
+  o added a NAMESPACE, many S3 methods are not exported explicitly
     anymore
 
   o new argument `regular' in read.zoo() which is set to FALSE. Only if
