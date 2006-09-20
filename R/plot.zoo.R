@@ -15,7 +15,8 @@ make.par.list <- function(nams, x, n, m, def, recycle = sum(unnamed) > 0) {
 # recycle = TRUE means recycle unspecified values
 # recycle = FALSE means replace values for unspecified series with def
 # Within series recycling is done even if recycle=FALSE.
-  stopifnot(all(names(x) %in% c("", nams)))
+  # Should we allow arbirary names in 1d case?
+  # if (m > 1) stopifnot(all(names(x) %in% c("", nams)))
   if (!is.list(x)) x <- if (m == 1) list(x) else as.list(x)
   y <- vector(mode = "list", length = length(nams))
   names(y) <- nams

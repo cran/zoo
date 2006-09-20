@@ -85,6 +85,14 @@ FEATURES
     - regression test suite
     - additional use and testing
 
+  o xyplot.zoo.  Currently default lattice colors for lines are used 
+    as defaults for both lines and points.  Fix it so lattice default
+    colors for points are used as defaults for points.
+
+  o make.par.list.  names, other than correspondence names, are
+    not allowed on x.  Perhaps this should be allowed if m = 1
+    or perhaps it should be allowed if x is not a list and
+    correspondence names only allowed for lists.
 
 
 INTERFACES

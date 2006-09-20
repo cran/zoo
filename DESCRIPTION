@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.2-0
-Date: 2006-08-18
+Version: 1.2-1
+Date: 2006-09-20
 Title: Z's ordered observations
 Author: Achim Zeileis, Gabor Grothendieck
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
@@ -15,4 +15,4 @@ Suggests: chron, fCalendar, its, tseries, lattice, strucchange, DAAG
 Imports: stats, utils, graphics, lattice
 LazyLoad: yes
 License: GPL
-Packaged: Fri Aug 18 12:52:47 2006; zeileis
+Packaged: Tue Sep 19 18:51:39 2006; zeileis

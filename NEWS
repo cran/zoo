@@ -1,3 +1,10 @@
+Changes in Version 1.2-1
+
+  o One of the examples on ?xyplot.zoo does not run with the
+    R 2.4.0 lattice. It is currently placed in \dontrun{}
+    (see comments in ?xyplot.zoo).    
+
+
 Changes in Version 1.2-0
 
   o rapply() was re-named to rollapply() because from R 2.4.0 on,

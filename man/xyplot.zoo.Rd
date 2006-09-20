@@ -150,6 +150,10 @@ print(panel.grid(h = 10, v = 10, col = "grey", lty = 3))
 trellis.unfocus()
 
 # Number 2. Using a custom panel routine.
+\dontrun{
+# This example relies on R version 2.3.1.
+# In R version 2.4.0, remove panel.number argument
+# and use panel.number() function.
 p <- function(x, y, groups = NULL, ..., panel.number) {
   panel.xyplot(x, y, groups = groups, ..., panel.number)
   if (panel.number == 2) {
@@ -158,6 +162,7 @@ p <- function(x, y, groups = NULL, ..., panel.number) {
   }
 }
 print(xyplot(z, panel = panel.plot.custom(panel = p)))
+}
 
 
 # plot a light grey rectangle "behind" panel b
