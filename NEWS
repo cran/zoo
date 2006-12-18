@@ -1,3 +1,11 @@
+Changes in Version 1.2-2
+
+  o the order of arguments (... now come after FUN) in rollapply has
+    been changed to allow unnamed additional arguments to be specified
+    for FUN.  Previously they had to be named.
+
+  o bug in as.ts.zooreg fixed
+
 Changes in Version 1.2-1
 
   o One of the examples on ?xyplot.zoo does not run with the

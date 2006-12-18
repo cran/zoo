@@ -110,7 +110,8 @@ as.ts.zooreg <- function(x, ...)
 {
   freq <- frequency(x)
   deltat <- 1/freq
-  round. <- function(x) deltat * round(x/deltat)
+  # round. <- function(x) deltat * round(x/deltat)
+  round. <- function(x) deltat * floor(x/deltat+0.5)
   tt <- round.(as.numeric(time(x)))
   tt2 <- round.(seq(head(tt,1), tail(tt,1), deltat))
   xx <- merge(zoo(coredata(x), tt), zoo(, tt2))

@@ -1,16 +1,16 @@
-rollapply <- function(data, width, FUN, by = 1, ascending = TRUE,
-  by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"), ...)
+rollapply <- function(data, width, FUN, ..., by = 1, ascending = TRUE,
+  by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"))
     UseMethod("rollapply")
 
-rapply <- function(data, width, FUN, by = 1, ascending = TRUE,
-  by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"), ...)
+rapply <- function(data, width, FUN, ..., by = 1, ascending = TRUE,
+  by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"))
 {
     .Deprecated("rollapply")
     UseMethod("rollapply")
 }
 
-rollapply.zoo <- function(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE, na.pad = FALSE,
-  align = c("center", "left", "right"), ...) {
+rollapply.zoo <- function(data, width, FUN, ..., by = 1, ascending = TRUE, by.column = TRUE, na.pad = FALSE,
+  align = c("center", "left", "right")) {
     itt <- 0
     embedi <- function(n, k, by = 1, ascending = FALSE) {
     # n = no of time points, k = number of columns
@@ -44,6 +44,7 @@ rollapply.zoo <- function(data, width, FUN, by = 1, ascending = TRUE, by.column 
       "right" = { 0 })    
     tt <- index(data)[seq((width-n1), (nr-n1), by)]
 
+    FUN <- match.fun(FUN)
     res <- if (is.null(dim(cdata)))
 	   zoo(apply(embedi(nr, width, by, ascending), 1, 
                 function(st) FUN(cdata[st], ...)), tt, 

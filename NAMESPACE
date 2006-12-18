@@ -1,5 +1,5 @@
 ## name spaces needed for S3 methods
-import("stats", "utils", "graphics", "lattice")
+import("stats", "utils", "graphics", "lattice", "grDevices")
 
 export(
 ## zoo core functionality

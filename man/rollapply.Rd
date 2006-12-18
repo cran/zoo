@@ -9,8 +9,8 @@
   A generic function for applying a function to rolling margins of an array.
 }
 \usage{
-rollapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
- na.pad = FALSE, align = c("center", "left", "right"), \dots)
+rollapply(data, width, FUN, \dots, by = 1, ascending = TRUE, by.column = TRUE,
+ na.pad = FALSE, align = c("center", "left", "right"))
 }
 \arguments{
   \item{data}{the data to be used (representing a series of observations).}
@@ -18,6 +18,7 @@ rollapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
   \item{FUN}{the function to be applied.
     In the case of functions like \code{+}, \code{\%*\%}, etc., the
     function name must be quoted.}
+  \item{\dots}{optional arguments to \code{FUN}.}
   \item{by}{calculate FUN for trailing width points at every by-th time
     point.}
   \item{ascending}{logical. If TRUE then points are passed to \code{FUN} in
@@ -28,7 +29,6 @@ rollapply(data, width, FUN, by = 1, ascending = TRUE, by.column = TRUE,
     result has same number of elements or rows as \code{data}.}
   \item{align}{character specifying whether result should be left- or
     right-aligned or centered (default).}
-  \item{\dots}{optional arguments to \code{FUN}.}
 }
 \details{
   Groups time points in successive sets of \code{width} time points and 

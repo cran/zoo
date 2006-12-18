@@ -94,6 +94,11 @@ FEATURES
     or perhaps it should be allowed if x is not a list and
     correspondence names only allowed for lists.
 
+  o rollapply.default
+
+  o as of lattice 0.12-14 lattice:::updateList could be replaced with
+    modifyList
+
 
 INTERFACES
 **********

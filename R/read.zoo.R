@@ -17,24 +17,34 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ..
               ix <- rval[,1]
               rval <- rval[,-1]
   }
+  if(is.factor(ix)) ix <- as.character(ix)
   if(is.data.frame(rval)) rval <- as.matrix(rval)
     
   ## index transformation functions
-  toDate <- if(format == "") function(x) as.Date(as.character(x))
+  toDate <- if(missing(format)) function(x) as.Date(as.character(x))
               else function(x) as.Date(as.character(x), format = format)
   toPOSIXct <- function(x) as.POSIXct(as.character(x), tz = tz)
   toDefault <- function(x) {
-    rval <- try(toDate(x), silent = TRUE)
-    if(class(rval) == "try-error") rval <- try(toPOSIXct(x), silent = TRUE)
-    if(class(rval) == "try-error") rval <- rep(NA, length(x))
+    rval <- try(toPOSIXct(x), silent = TRUE)
+    if(inherits(rval, "try-error"))
+      rval <- try(toDate(x), silent = TRUE)
+    else {
+      hms <- as.POSIXlt(rval)
+      hms <- hms$sec + 60 * hms$min + 3600 * hms$hour
+      if(isTRUE(all.equal(hms, rep.int(hms[1], length(hms))))) {
+        rval2 <- try(toDate(x), silent = TRUE)
+        if(!inherits(rval2, "try-error")) rval <- rval2
+      }
+    }
+    if(inherits(rval, "try-error")) rval <- rep(NA, length(x))
     return(rval)
   }
   toNumeric <- function(x) x
   
   ## setup default FUN
   if(is.null(FUN)) {
-    FUN <- if(format != "") toDate
-           else if(tz != "") toPOSIXct
+    FUN <- if(!missing(format)) toDate
+           else if(!missing(tz)) toPOSIXct
            else if(is.numeric(ix)) toNumeric
            else toDefault        
   }

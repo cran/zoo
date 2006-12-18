@@ -25,13 +25,13 @@ as.Date.yearmon <- function(x, frac = 0, ...) {
 as.POSIXct.yearmon <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
 as.POSIXlt.yearmon <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
 as.numeric.yearmon <- function(x) unclass(x)
-as.character.yearmon <- function(x) format.yearmon(x)
+as.character.yearmon <- function(x, ...) format.yearmon(x, ...)
 
 ## other methods for class yearmon
 c.yearmon <- function(...)
     as.yearmon(do.call("c", lapply(list(...), as.numeric)))
 
-format.yearmon <- function (x, format = "%b %Y", ...) 
+format.yearmon <- function(x, format = "%b %Y", ...) 
 {
     xx <- format(as.Date(x), format = format, ...)
     names(xx) <- names(x)
