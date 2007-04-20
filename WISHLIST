@@ -1,6 +1,9 @@
 FEATURES
 ********
 
+  o rbind.zoo() currently ignores the column names (if any),
+    should behave like rbind.data.frame() in this case.
+
   o examples: example(aggregate.zoo) could have an example
     where there's intra-day data which is reduced to a grid
     of (say) five-minute returns.

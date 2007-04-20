@@ -38,9 +38,9 @@ as.zoo.zoo <- function(x, ...) x
 as.vector.zoo <- function(x, mode = "any")
 	as.vector(as.matrix(x), mode = mode)
 
-as.matrix.zoo <- function(x) 
+as.matrix.zoo <- function(x, ...) 
 {
-    y <- as.matrix(coredata(x))
+    y <- as.matrix(coredata(x), ...)
     if (length(y) > 0) 
 	    colnames(y) <- if (length(colnames(x)) > 0) 
 		colnames(x)

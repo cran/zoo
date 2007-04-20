@@ -12,6 +12,24 @@ rbind.zoo <- function(..., deparse.level = 1)
   ncols <- sapply(args, NCOL)  
   if(!all(ncols == ncols[1])) stop("number of columns differ")
 
+  ## process colnames() if any
+  nams <- lapply(args, colnames)
+  namsNULL <- sapply(nams, is.null)
+  if(all(namsNULL)) namsOK <- TRUE else {
+    if(sum(namsNULL) > 0) namsOK <- FALSE else {
+      nam1 <- nams[[1]]
+      namsID <- sapply(nams, function(x) identical(x, nam1))
+      if(all(namsID)) namsOK <- TRUE else {
+        namsSORT <- sapply(nams, function(x) identical(sort(x), sort(nam1)))
+	if(!all(namsSORT)) namsOK <- FALSE else {
+	  namsOK <- TRUE
+	  for(i in which(!namsID)) args[[i]] <- args[[i]][,nam1]
+	}
+      }
+    }
+  }
+  if(!namsOK) warning("column names differ")
+
   if(ncols[1] > 1)
     rval <- zoo(do.call("rbind", lapply(args, coredata)), indexes)
   else
@@ -102,8 +120,13 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     # extend all to a length equal to the number of args
     all <- rep(as.logical(all), length.out = length(cl))
 
-    # ensure the class of the index of each arg are all the same
+    ## check indexes:
     indexlist <- lapply(args, index)
+    ## 1. for non-unique entries
+    index_duplicates <- function(x) length(unique(MATCH(x, x))) < length(x)
+    if(any(sapply(indexlist, index_duplicates)))
+      stop("series cannot be merged with non-unique index entries in a series")
+    ## 2. for differing classes
     indexclasses <- sapply(indexlist, function(x) class(x)[1])
     if (!all(indexclasses == indexclasses[1])) 
         warning(paste("Index vectors are of different classes:", 

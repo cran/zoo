@@ -24,7 +24,7 @@ as.Date.yearmon <- function(x, frac = 0, ...) {
 }
 as.POSIXct.yearmon <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
 as.POSIXlt.yearmon <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
-as.numeric.yearmon <- function(x) unclass(x)
+as.numeric.yearmon <- function(x, ...) unclass(x)
 as.character.yearmon <- function(x, ...) format.yearmon(x, ...)
 
 ## other methods for class yearmon

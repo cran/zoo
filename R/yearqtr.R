@@ -23,7 +23,7 @@ as.Date.yearqtr <- function(x, frac = 0, ...) {
 }
 as.POSIXct.yearqtr <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
 as.POSIXlt.yearqtr <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
-as.numeric.yearqtr <- function(x) unclass(x)
+as.numeric.yearqtr <- function(x, ...) unclass(x)
 as.character.yearqtr <- function(x, ...) format.yearqtr(x, ...)
 
 ## other methods for class yearqtr

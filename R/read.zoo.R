@@ -8,6 +8,14 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ..
   ## read data
   rval <- read.table(file, ...)
 
+  ## if `file' does not contain data
+  if(NROW(rval) < 1) {
+    if(is.data.frame(rval)) rval <- as.matrix(rval)
+    if(NCOL(rval) > 1) rval <- rval[,-1]
+    rval <- zoo(rval)
+    return(rval)
+  }
+
   ## extract index
   if(NCOL(rval) < 1) stop("data file must specify at least one column")
   

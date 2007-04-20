@@ -1,39 +1,38 @@
 zoo <- function (x, order.by = index(x), frequency = NULL) 
 {
+    ## process index "order.by"    
+    if(length(unique(MATCH(order.by, order.by))) < length(order.by))
+      warning(paste("some methods for", dQuote("zoo"),
+      "objects do not work if the index entries in", sQuote("order.by"), "are not unique"))
     index <- ORDER(order.by)
     order.by <- order.by[index]
-    if (missing(x) || is.null(x)) 
-        x <- numeric()
+
+    if(missing(x) || is.null(x)) 
+      x <- numeric()
     else if (is.vector(x)) 
-        x <- rep(x, length.out = length(index))[index]
+      x <- rep(x, length.out = length(index))[index]
     else if (is.factor(x))         
-        x <- factor(rep(as.character(x), length.out = length(index))[index],
-	  levels = levels(x), ordered = is.ordered(x))
+      x <- factor(rep(as.character(x), length.out = length(index))[index],
+        levels = levels(x), ordered = is.ordered(x))
     else if (is.matrix(x) || is.data.frame(x)) 
-        x <- (x[rep(1:NROW(x), length.out = length(index)), , 
-            drop = FALSE])[index, , drop = FALSE]
+      x <- (x[rep(1:NROW(x), length.out = length(index)), , 
+        drop = FALSE])[index, , drop = FALSE]
     else stop(paste(dQuote("x"), ": attempt to define illegal zoo object"))
     if(is.matrix(x) || is.data.frame(x)) x <- as.matrix(x)
 
     if(!is.null(frequency)) {
-        d <- try(diff(as.numeric(order.by)), silent = TRUE)
-	ok <- if(class(d) == "try-error" || length(d) < 1 || any(is.na(d))) FALSE
-	else {	    
-            deltat <- min(d)
-	    dd <- d/deltat
-	    if(identical(all.equal(dd, round(dd)), TRUE)) {	    
-                freq <- 1/deltat
-                if(freq > 1 && identical(all.equal(freq, round(freq)), TRUE)) freq <- round(freq)
-  	        identical(all.equal(frequency %% freq, 0), TRUE)
-	    } else {
-	        FALSE
-	    }
-	}
-	if(!ok) {
-	  warning(paste(dQuote("order.by"), "and", dQuote("frequency"),
-	          "do not match:", dQuote("frequency"), "ignored"))
-	  frequency <- NULL
-	}
+      delta <- suppressWarnings(try(diff(as.numeric(order.by)), silent = TRUE))
+      freqOK <- if(class(delta) == "try-error" || any(is.na(delta))) FALSE
+        else if(length(delta) < 1) TRUE
+        else identical(all.equal(delta*frequency, round(delta*frequency)), TRUE)
+      if(!freqOK) {
+        warning(paste(dQuote("order.by"), "and", dQuote("frequency"),
+        	"do not match:", dQuote("frequency"), "ignored"))
+        frequency <- NULL
+      } else {
+        if(frequency > 1 && identical(all.equal(frequency, round(frequency)), TRUE))
+	  frequency <- round(frequency)
+      }
     }
 
     attr(x, "oclass") <- attr(x, "class")

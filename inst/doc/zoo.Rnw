@@ -51,7 +51,7 @@ library("zoo")
 library("tseries")
 library("strucchange")
 library("fCalendar")
-online <- FALSE ## if set to FALSE the local copy of LU.rda
+online <- FALSE ## if set to FALSE the local copy of MSFT.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
 @
@@ -798,47 +798,47 @@ A typical application for irregular time series which became increasingly
 important over the last years in computational statistics and finance is
 daily (or higher frequency) financial data. The package \pkg{tseries} provides
 the function \code{get.hist.quote} for obtaining historical financial data
-by querying Yahoo! Finance at \url{http://finance.yahoo.com/},
+by querying Yahoo!\ Finance at \url{http://finance.yahoo.com/},
 an online portal quoting data provided by Reuters. The following code
-queries the quotes of Lucent Technologies starting from 2001-01-01
+queries the quotes of Microsoft Corp.\ starting from 2001-01-01
 until 2004-09-30:
 
 <<tseries1,eval=FALSE>>=
 library("tseries")
-LU <- get.hist.quote(instrument = "LU", start = "2001-01-01",
+MSFT <- get.hist.quote(instrument = "MSFT", start = "2001-01-01",
   end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
 @
 
 <<tseries1a,echo=FALSE>>=
 if(online) {
-  LU <- get.hist.quote("LU", start = "2001-01-01",
+  MSFT <- get.hist.quote("MSFT", start = "2001-01-01",
   end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
-  save(LU, file = "LU.rda", compress = TRUE)
+  save(MSFT, file = "MSFT.rda", compress = TRUE)
 } else {
-  load("LU.rda")
+  load("MSFT.rda")
 }
 @  
 
-In the returned \code{LU} object the irregular data is stored by extending
+In the returned \code{MSFT} object the irregular data is stored by extending
 it in a regular grid and filling the gaps with \code{NA}s. The time is stored
 in days starting from an \code{origin}, in this case specified to be 1970-01-01, the
 origin used by the \code{Date} class.
 This series can be transformed easily into an irregular \code{"zoo"} series 
-using a \code{"Date"} index. The log-difference returns for Lucent 
-Technologies is depicted in Figure~\ref{fig:tseries}.
+using a \code{"Date"} index. The log-difference returns for Microsoft
+is depicted in Figure~\ref{fig:tseries}.
 
 <<tseries2>>=
-LU <- as.zoo(LU)
-index(LU) <- as.Date(index(LU))
-LU <- na.omit(LU)
+MSFT <- as.zoo(MSFT)
+index(MSFT) <- as.Date(index(MSFT))
+MSFT <- na.omit(MSFT)
 @
 
 \begin{figure}[h!]
 \begin{center}
 <<tseries3,fig=TRUE,height=8,width=6>>=
-plot(diff(log(LU)))
+plot(diff(log(MSFT)))
 @
-\caption{\label{fig:tseries} Log-difference returns for Lucent Technologies}
+\caption{\label{fig:tseries} Log-difference returns for Microsoft Corp.}
 \end{center}
 \end{figure}
 

@@ -1,3 +1,22 @@
+Changes in Version 1.3-0
+
+  o checking for non-unique index entries has been improved:
+    zoo() throws a warning if a series with non-unique index entries
+    is created. merge() gives a more useful error message.
+
+  o inconsistencies when checking for regularity of series have been
+    resolved: is.regular(), frequency(), frequency<-() etc. all behave
+    consistently now.
+
+  o custom panel functions in plot.zoo can now refer to 
+    parent.frame()$panel.number to determine the current panel.  Also
+    added an example of this to ?plot.zoo.
+
+  o read.zoo() will behave consistently when the file contains no data.
+  
+  o column names (if any) are checked now in rbind.zoo(), producing a
+    similar behaviour as in rbind.data.frame()
+
 Changes in Version 1.2-2
 
   o the order of arguments (... now come after FUN) in rollapply has

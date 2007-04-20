@@ -98,8 +98,8 @@ printed output (see also below).
 
 The index observations \code{order.by} should typically be unique, such that
 the observations can be totally ordered. Nevertheless, \code{zoo()} is able to create
-\code{"zoo"} objects with duplicated indexes and simple methods such as \code{plot()}
-or \code{summary()} or will typically work for such objects. However, this is
+\code{"zoo"} objects with duplicated indexes (with a warning) and simple methods such as \code{plot()}
+or \code{summary()} will typically work for such objects. However, this is
 not formally supported as the bulk of functionality provided in \pkg{zoo} requires
 unique index observations/time stamps. See below for an example how to remove
 duplicated indexes.

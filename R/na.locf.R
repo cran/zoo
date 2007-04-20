@@ -13,7 +13,7 @@ na.locf.default <- function(object, na.rm = TRUE, rev = FALSE, ...) {
 	      na.index <- function(x, i) {
 		L <- !is.na(i)
 		x[!L] <- NA
-		x[L] <- x[i[L]]
+		x[L] <- coredata(x)[i[L]]
 	  	x
 	      }
 	      na.index(x, idx)
