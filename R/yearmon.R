@@ -9,8 +9,15 @@ as.yearmon.integer <- function(x, ...) structure(x, class = "yearmon")
 as.yearmon.dates <- 
 as.yearmon.Date <- 
 as.yearmon.POSIXt <- function(x, ...) as.yearmon(with(as.POSIXlt(x, tz="GMT"), 1900 + year + mon/12))
-as.yearmon.character <- function(x, ...) as.yearmon(as.Date(x, ...))
-
+as.yearmon.character <- function(x, format = "", ...) {
+   if (format == "") format <- "%Y-%m-%d"
+   has.short.keys <- rep(regexpr("%[mbByY%]", format) > 0, length(x))
+   has.no.others <- regexpr("%", gsub("%[mbByY%]", "", format)) < 0
+   z <- ifelse(has.short.keys & has.no.others,
+      as.Date( paste("01", x, sep = "-"), paste("%d", format, sep = "-"), ... ),
+      as.Date(x, format, ...))
+   as.yearmon(as.Date(z))
+}
 
 ## coercion from yearmon
 # returned Date is the fraction of the way through the period given by frac
@@ -26,6 +33,25 @@ as.POSIXct.yearmon <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
 as.POSIXlt.yearmon <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
 as.numeric.yearmon <- function(x, ...) unclass(x)
 as.character.yearmon <- function(x, ...) format.yearmon(x, ...)
+as.data.frame.yearmon <- function(x, row.names = NULL, optional = FALSE, ...) 
+{
+  nrows <- length(x)
+  nm <- paste(deparse(substitute(x), width.cutoff = 500), collapse = " ")
+  if (is.null(row.names)) {
+    if (nrows == 0) 
+        row.names <- character(0)
+    else if(length(row.names <- names(x)) == nrows && !any(duplicated(row.names))) {
+    }
+    else if(optional) row.names <- character(nrows)
+    else row.names <- seq_len(nrows)
+  }
+  names(x) <- NULL
+  value <- list(x)
+  if(!optional) names(value) <- nm
+  attr(value, "row.names") <- row.names
+  class(value) <- "data.frame"
+  value
+}
 
 ## other methods for class yearmon
 c.yearmon <- function(...)

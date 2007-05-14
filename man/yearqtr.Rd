@@ -13,6 +13,7 @@
 \alias{as.POSIXlt.yearqtr}
 \alias{as.numeric.yearqtr}
 \alias{as.character.yearqtr}
+\alias{as.data.frame.yearqtr}
 \alias{c.yearqtr}
 \alias{format.yearqtr}
 \alias{print.yearqtr}
