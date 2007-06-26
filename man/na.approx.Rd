@@ -52,6 +52,10 @@ na.approx(z)
 ## use equidistant spacing
 na.approx(z, 1:6)
 
-na.approx(zoo(c(NA,9,3,2,3,2)))
+# with and without na.rm = FALSE
+zz <- c(NA,9,3,NA,3,2)
+na.approx(zz, na.rm = FALSE)
+na.approx(zz)
+
 }
 \keyword{ts}

@@ -1,3 +1,9 @@
+Changes in Version 1.3-2
+
+  o merge.zoo() has been improved so that unnecessary checking of
+    frequencies is avoided for "zoo" objects.
+
+
 Changes in Version 1.3-1
 
   o as.yearmon can take format arguments that do not involve day,
@@ -25,6 +31,7 @@ Changes in Version 1.3-0
   
   o column names (if any) are checked now in rbind.zoo(), producing a
     similar behaviour as in rbind.data.frame()
+
 
 Changes in Version 1.2-2
 

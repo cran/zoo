@@ -72,5 +72,24 @@ as.POSIXct(x)
 z <- zoo(rnorm(24), x, frequency = 12)
 z
 as.ts(z)
+
+## convert data fram to multivariate monthly "ts" series
+## 1.read raw data
+Lines.raw <- "ID Date Count
+123 20 May 1999 1
+123 21 May 1999 3
+222 1 Feb 2000 2
+222 3 Feb 2000 4
+"
+DF <- read.table(textConnection(Lines.raw), skip = 1,
+ col.names = c("ID", "d", "b", "Y", "Count"))
+## 2. fix raw date
+DF$yearmon <- as.yearmon(paste(DF$b, DF$Y), "\%b \%Y")
+## 3. aggregate counts over months, convert to zoo and merge over IDs
+ag <- function(DF) aggregate(zoo(DF$Count), DF$yearmon, sum)
+z <- do.call("merge.zoo", lapply(split(DF, DF$ID), ag))
+## 4. convert to "zooreg" and then to "ts"
+frequency(z) <- 12
+as.ts(z)
 }
 \keyword{ts}

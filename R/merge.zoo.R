@@ -162,9 +162,11 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     # indexes <- sort.unique(c(indexunion, indexintersect))
 
     ## check whether resulting objects still got the same frequency
-    freq <- c(frequency(zoo(,indexes)), freq)
-    freq <- if((length(freq) == 2) && identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
-       max(freq) else NULL
+    if(!is.null(freq)) {
+      freq <- c(frequency(zoo(,indexes)), freq)
+      freq <- if((length(freq) == 2) && identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
+        max(freq) else NULL
+    }
 
     # the f function does the real work
     # it takes a zoo object, a, and fills in a matrix corresponding to

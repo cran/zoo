@@ -102,6 +102,17 @@ FEATURES
   o as of lattice 0.12-14 lattice:::updateList could be replaced with
     modifyList
 
+  o read.zoo.  The following situations have all appeared on r-help:
+    - the index is of the form yyyy-mm-dd hh:mm:ss at the beginning of each
+      line but sep is whitespace.  To handle this read.zoo would have to
+      figure out special cases in which there is whitespace in the 
+      format and use two columsn rather than one.  I think it would be 
+      good enough if it only handled a single whitespace.
+    - index is not in column 1
+    - header does not have a component corresponding to the index.  It
+      would be nice if read.zoo could automatically figure out that situation
+      and handle it.
+
 
 INTERFACES
 **********
