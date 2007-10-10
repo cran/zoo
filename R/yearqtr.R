@@ -19,10 +19,10 @@ as.Date.yearqtr <- function(x, frac = 0, ...) {
 	month <- floor(12 * (x - year) + 1 + .5 + .001)
 	dd.start <- as.Date(paste(year, month, 1, sep = "-"))
 	dd.end <- dd.start + 100 - as.numeric(format(dd.start + 100, "%d")) 
-	as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end))
+	as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
 }
-as.POSIXct.yearqtr <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
-as.POSIXlt.yearqtr <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
+as.POSIXct.yearqtr <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
+as.POSIXlt.yearqtr <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
 as.numeric.yearqtr <- function(x, ...) unclass(x)
 as.character.yearqtr <- function(x, ...) format.yearqtr(x, ...)
 as.data.frame.yearqtr <- function(x, row.names = NULL, optional = FALSE, ...) 

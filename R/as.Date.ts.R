@@ -1,8 +1,5 @@
-as.Date.numeric <- function(x, ...)
-	structure(floor(x + .001), class = "Date")
-
-as.Date.integer <- function(x, ...)
-	structure(x, class = "Date")
+as.Date.numeric <- function (x, origin = "1970-01-01", ...) 
+  as.Date(origin, ...) + x
 
 as.Date.ts <- function(x, offset = 0, ...) {
    time.x <- unclass(time(x)) + offset

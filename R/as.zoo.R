@@ -56,8 +56,8 @@ as.matrix.zoo <- function(x, ...)
 
 as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE, ...)
 {
-	y <- as.data.frame(coredata(x))
-        if(NCOL(x) > 0) {
+	y <- as.data.frame(coredata(x), optional = optional)
+        if(NCOL(x) > 0 && !optional) {
 		colnames(y) <- if (length(colnames(x)) > 0) 
 			colnames(x)
 		else {

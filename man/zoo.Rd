@@ -36,7 +36,7 @@ totally ordered observations which includes irregular
 time series.
 }
 \usage{
-zoo(x, order.by = index(x), frequency = NULL)
+zoo(x = NULL, order.by = index(x), frequency = NULL)
 \method{print}{zoo}(x, style = , quote = FALSE, \dots) 
 }
 \arguments{
@@ -167,13 +167,22 @@ objects can be coerced to \code{"zoo"}, the reverse is available for
 Furthermore, \code{"zoo"} objects can be coerced to vectors, matrices and
 lists and data frames (dropping the index/time attribute). See \code{\link{as.zoo}}.
 
-Four methods are available for \code{NA} handling in the data of 
-\code{"zoo"} objects: \code{\link{na.omit}} which returns a \code{"zoo"}
-object with incomplete observations removed, \code{\link{na.locf}} which
-replaces \code{NA}s by the last previous non-\code{NA}, \code{\link{na.contiguous}}
-which extracts the longest consecutive stretch of non-missing values
-in a \code{"zoo"} object and \code{\link{na.approx}} which uses
-linear interpolation to fill in \code{NA} values. 
+Six methods are available for \code{NA} handling in the data of 
+\code{"zoo"} objects: 
+\code{\link{na.approx}} which uses linear interpolation to fill 
+in \code{NA} values. 
+\code{\link{na.contiguous}} which extracts the longest consecutive 
+stretch of non-missing values in a \code{"zoo"} object,
+\code{\link{na.locf}} which
+replaces \code{NA}s by the last previous non-\code{NA}, 
+\code{\link{na.omit}} which returns a \code{"zoo"}
+object with incomplete observations removed, 
+\code{\link{na.spline}} which uses linear interpolation to fill 
+in \code{NA} values and
+\code{\link{na.trim}} which trims runs of \code{NA}s off the beginning and
+end but not in the interior.  A 7th \code{NA} routine can be found in
+the \code{stinepack} package where \code{\link[stinepack]{na.stinterp}} which  
+performs Stineman interpolation.
 
 A typical task to be performed on ordered observations is to evaluate some
 function, e.g., computing the mean, in a window of observations that is moved

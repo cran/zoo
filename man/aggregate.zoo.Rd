@@ -1,3 +1,4 @@
+
 \name{aggregate.zoo}
 \alias{aggregate.zoo}
 \title{Compute Summary Statistics of zoo Objects}
@@ -54,6 +55,18 @@ first.of.quarter <- function(tt) as.Date(as.yearqtr(tt))
 # 2. via "Date" index (not regular)
 z.qtr1 <- aggregate(z.day, as.yearqtr, mean)
 z.qtr2 <- aggregate(z.day, first.of.quarter, mean)
+
+# The last one used the first day of the quarter but suppose
+# we want the first day of the quarter that exists in the series
+# (and the series does not necessarily start on the first day
+# of the quarter).
+z.day[!duplicated(as.yearqtr(time(z.day)))]
+
+# This is the same except it uses the last day of the quarter.
+# It requires R 2.6.0 which introduced the fromLast= argument.
+\dontrun{
+z.day[!duplicated(as.yearqtr(time(z.day)), fromLast = TRUE)]
+}
 
 
 ## aggregate on month and extend to monthly time series

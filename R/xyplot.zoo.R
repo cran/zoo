@@ -19,7 +19,8 @@ panel.plot.custom <- function(...) {
   args <- list(...)
   function(...) {
     dots <- list(...)
-    do.call("panel.plot.default", lattice:::updateList(dots, args))
+    # do.call("panel.plot.default", lattice:::updateList(dots, args))
+    do.call("panel.plot.default", modifyList(dots, args))
   }
 }
 

@@ -16,21 +16,14 @@ FEATURES
   o zoo methods for dbReadTable and dbWriteTable to facilitate
     using zoo objects with DBI
 
-  o zoo(NULL, ...), zooreg(NULL, ...)
-
   o register S3 methods and use namespaces so that this works:
      f <- local(function(x) zoo::index(x), baseenv())
-
-  o make "zoo" enforce the index entries to be unique (which is 
-    assumed in a few functions such as merge.zoo).
 
   o provide a [<-.zoo method that is fully consistent with [.zoo
     so that the following works:
       a <- zoo(matrix(1:10,5,2), 2001:2005)
       a[I(2003), 2] <- NA
     (Note: as in window<-.zoo)
-
-  o rollmean returns all NAs when na.pad = TRUE
 
   o allow plot.zoo to accept a list of zoo objects -- this would
     be particularly useful in the case of line plots of multiple series
@@ -74,7 +67,6 @@ FEATURES
     
   o merge()
     - names not processed correctly when retclass = "list"
-
         
   o misc functions
     - interface to additional statistical routines such as the ones
@@ -83,14 +75,7 @@ FEATURES
       [Z: with as.ts.zoo() most of the functions work directly
        by coercing the first argument to "ts"]
 
-
-  o QA
-    - regression test suite
-    - additional use and testing
-
-  o xyplot.zoo.  Currently default lattice colors for lines are used 
-    as defaults for both lines and points.  Fix it so lattice default
-    colors for points are used as defaults for points.
+  o QA: regression test suite
 
   o make.par.list.  names, other than correspondence names, are
     not allowed on x.  Perhaps this should be allowed if m = 1
@@ -112,6 +97,14 @@ FEATURES
     - header does not have a component corresponding to the index.  It
       would be nice if read.zoo could automatically figure out that situation
       and handle it.
+    - the date format is yyyy.mm .  In that case it would be convenient
+      if it were possible to specify:
+      read.zoo(..., FUN = as.yearmon, format = "%Y.%m")
+      and, in general, if format were passed to FUN if both are specified.
+
+  o plot.zoo. if screen= specified and plot.type= not specified then
+    plot.type should be regarded in a way which is consistent with screen
+    rather than always using the default of plot.type = "multiple".
 
 
 INTERFACES

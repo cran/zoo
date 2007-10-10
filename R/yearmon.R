@@ -27,10 +27,10 @@ as.Date.yearmon <- function(x, frac = 0, ...) {
      month <- floor(12 * (x - year) + 1 + .5 + .001)
      dd.start <- as.Date(paste(year, month, 1, sep = "-")) 
      dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
-     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end))
+     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
 }
-as.POSIXct.yearmon <- function(x, tz = "") as.POSIXct(as.Date(x), tz = tz)
-as.POSIXlt.yearmon <- function(x, tz = "") as.POSIXlt(as.Date(x), tz = tz)
+as.POSIXct.yearmon <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
+as.POSIXlt.yearmon <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
 as.numeric.yearmon <- function(x, ...) unclass(x)
 as.character.yearmon <- function(x, ...) format.yearmon(x, ...)
 as.data.frame.yearmon <- function(x, row.names = NULL, optional = FALSE, ...) 

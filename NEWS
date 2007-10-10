@@ -1,3 +1,38 @@
+Changes in Version 1.4-0
+
+  o added a write.zoo() function that writes zoo series to
+    a text file via write.table(). The index is included in
+    the first column so that it can be easily read again
+    using read.zoo().
+
+  o read.zoo() has a new argument index.column (default: 1)
+    which can be used to specify in which column of a data
+    file the index/time is stored.
+
+  o rapply() was removed from zoo - after being deprecated
+    since zoo 1.2-0 (and R 2.4.0) and replaced by rollapply().
+
+  o improved str() method for "zoo" and "zooreg" series, now
+    gives explicit information about class, start and end,
+    as well as data, index (and frequency).
+    
+  o zoo() now has a default first argument like ts() has.
+    By default, zoo() is now zoo(NULL) and returns an empty
+    series. This differs somewhat from the default ts()
+    and zooreg() that return ts(NA) zooreg(NA), respectively.
+
+  o added ... arguments to the as.POSIXct and as.POSIXlt
+    methods
+    
+  o implementation of as.Date.numeric() has been modified:
+    being backward compatible with the old zoo:::as.Date.numeric().
+    It now matches the new (2.7.0 to be) base:::as.Date.numeric(),
+    but also sets a default "origin" argument (1970-01-01).
+
+  o plot.type argument of plot.zoo() now chooses its default 
+    value via the screen argument.
+
+
 Changes in Version 1.3-2
 
   o merge.zoo() has been improved so that unnecessary checking of
@@ -6,7 +41,7 @@ Changes in Version 1.3-2
 
 Changes in Version 1.3-1
 
-  o as.yearmon can take format arguments that do not involve day,
+  o as.yearmon() can take format arguments that do not involve day,
     e.g. as.yearmon("2007-01", "%Y-%m")
 
   o added as.data.frame() methods for "yearmon" and "yearqtr"

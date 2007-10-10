@@ -1,4 +1,4 @@
-zoo <- function (x, order.by = index(x), frequency = NULL) 
+zoo <- function (x = NULL, order.by = index(x), frequency = NULL) 
 {
     ## process index "order.by"    
     if(length(unique(MATCH(order.by, order.by))) < length(order.by))
@@ -89,7 +89,15 @@ is.zoo <- function(object)
 
 str.zoo <- function(object, ...)
 {
-  str(unclass(object), ...)
+  cls <- if(inherits(object, "zooreg")) "zooreg" else "zoo"
+  if(NROW(object) < 1) cat(paste(sQuote(cls), "series (without observations)\n")) else {
+    cat(paste(sQuote(cls), " series from ", start(object), " to ", end(object), "\n", sep = ""))
+    cat("  Data:")
+    str(coredata(object), ...)
+    cat("  Index: ")
+    str(index(object), ...)
+    if(cls == "zooreg") cat(paste("  Frequency:", attr(object, "frequency"), "\n"))
+  }
 }
 
 "[.zoo" <- function(x, i, j, drop = TRUE, ...)

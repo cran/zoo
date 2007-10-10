@@ -120,8 +120,10 @@ zooreg(1:5, start = Sys.Date())
 ## or with "yearmon" index
 zooreg(1:5, end = yearmon(2000))
 
-## lag and diff (as it is defined in terms of lag)
-## act different on zoo and zooreg objects!
+## lag and diff (as diff is defined in terms of lag)
+## act differently on zoo and zooreg objects!
+## lag.zoo moves a point to the adjacent time whereas
+## lag.zooreg moves a point by deltat
 x <- c(1, 4, 5, 6)
 zz <- zoo(x, x)
 zr <- as.zooreg(zz)

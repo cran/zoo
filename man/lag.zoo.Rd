@@ -29,6 +29,8 @@ methods. The only additional arguments are \code{arithmetic} in \code{diff}
 as part of the dots.
 Also, \code{"k"} can be a vector of lags in which case the names of
 \code{"k"}, if any, are used in naming the result.
+
+
 }
 
 \value{
@@ -39,6 +41,13 @@ The lagged or differenced \code{"zoo"} object.
 \note{
   Note the sign of \code{k}: a series lagged by a positive \code{k}
   is shifted \emph{earlier} in time.
+
+  \code{lag.zoo} and \code{lag.zooreg} can give different results.
+  For a lag of 1 \code{lag.zoo} moves points to the adjacent time point
+  whereas \code{lag.zooreg} moves the time by \code{deltat}.  This
+  implies that a point in a \code{zoo} series cannot be lagged to a time 
+  point that is not already in the series whereas this is possible for
+  a \code{zooreg} series.  
 }
 
 

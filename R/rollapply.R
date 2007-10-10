@@ -2,12 +2,15 @@ rollapply <- function(data, width, FUN, ..., by = 1, ascending = TRUE,
   by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"))
     UseMethod("rollapply")
 
-rapply <- function(data, width, FUN, ..., by = 1, ascending = TRUE,
-  by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"))
-{
-    .Deprecated("rollapply")
-    UseMethod("rollapply")
-}
+## up to zoo 1.2-0 rollapply was called rapply(), it was deprecated
+## up to zoo 1.3-x and removed in zoo 1.4-0.
+## 
+## rapply <- function(data, width, FUN, ..., by = 1, ascending = TRUE,
+##   by.column = TRUE, na.pad = FALSE, align = c("center", "left", "right"))
+## {
+##     .Deprecated("rollapply")
+##     UseMethod("rollapply")
+## }
 
 rollapply.zoo <- function(data, width, FUN, ..., by = 1, ascending = TRUE, by.column = TRUE, na.pad = FALSE,
   align = c("center", "left", "right")) {
@@ -45,12 +48,13 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1, ascending = TRUE, by.co
     tt <- index(data)[seq((width-n1), (nr-n1), by)]
 
     FUN <- match.fun(FUN)
-    res <- if (is.null(dim(cdata)))
-	   zoo(apply(embedi(nr, width, by, ascending), 1, 
-                function(st) FUN(cdata[st], ...)), tt, 
-			if (by == 1) attr(data, "frequency"))
-    else if (by.column) {
-	    e <- embedi(nr, width, by, ascending)
+    e <- embedi(nr, width, by, ascending)
+    res <- if (is.null(dim(cdata))) {
+           xx <- sapply(1:nrow(e), function(i) FUN(cdata[e[i,]], ...))
+	   if (! is.null(dim(xx))) xx <- t(xx)
+	   zoo(xx, tt, if (by == 1) attr(data, "frequency"))
+    } else if (by.column) {
+	    # e <- embedi(nr, width, by, ascending)
 	    zoo( sapply( 1:ncol(cdata), function(i)
 			apply( e, 1, function(st) FUN(cdata[st,i], ...) ) ),
 			tt, if (by == 1) attr(data, "frequency")

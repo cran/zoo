@@ -939,8 +939,6 @@ Again, this functionality makes switching between different time scales or index
 representations particularly easy and \pkg{zoo} provides the user with the flexibility
 to adjust a certain index to his/her problem of interest.
 
-\newpage
-
 \section{Summary and outlook} \label{sec:summary}
 
 The package \pkg{zoo} provides an \proglang{S3} class and methods

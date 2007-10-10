@@ -14,6 +14,7 @@ export(
   "is.zoo",
   "merge.zoo",
   "read.zoo",
+  "write.zoo",
 
 ## plotting
   "plot.zoo",
@@ -33,7 +34,6 @@ export(
   "time<-",
 
 ## rolling operations
-  "rapply",
   "rollapply",
   "rollmax",
   "rollmax.default",
@@ -212,7 +212,6 @@ export(
   S3method("na.contiguous", "list")
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
-  S3method("as.Date", "integer")
   S3method("as.Date", "numeric")
   S3method("as.Date", "ts")
   S3method("as.list", "ts")

@@ -277,7 +277,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     # so its important not to use it in the single vector case.
     rval <- if (length(rval) > 1) 
 	do.call("cbind", rval)
-    else
+    else if (length(rval) > 0)
 	rval[[1]]
     # return if vector since remaining processing is only for column names
     if (length(dim(rval)) == 0) {

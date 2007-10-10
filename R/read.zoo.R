@@ -1,4 +1,4 @@
-read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ...)
+read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, index.column = 1, ...)
 {
   ## `file' and `...' is simply passed to read.table
   ## the first column is interpreted to be the index, the rest the coredata
@@ -11,7 +11,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ..
   ## if `file' does not contain data
   if(NROW(rval) < 1) {
     if(is.data.frame(rval)) rval <- as.matrix(rval)
-    if(NCOL(rval) > 1) rval <- rval[,-1]
+    if(NCOL(rval) > 1) rval <- rval[,-index.column]
     rval <- zoo(rval)
     return(rval)
   }
@@ -22,8 +22,8 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ..
   ## extract index, retain rest of the data
   if (NCOL(rval) == 1) ix <- seq(length = NROW(rval))
   else {
-              ix <- rval[,1]
-              rval <- rval[,-1]
+    ix <- rval[,index.column]
+    rval <- rval[,-index.column]
   }
   if(is.factor(ix)) ix <- as.character(ix)
   if(is.data.frame(rval)) rval <- as.matrix(rval)
@@ -68,4 +68,15 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, ..
   rval <- zoo(rval, ix)
   if(regular && is.regular(rval)) rval <- as.zooreg(rval)
   return(rval)
+}
+
+write.zoo <- function(x, file = "", index.name = "Index",
+  row.names = FALSE, col.names = NULL, ...)
+{
+  if(is.null(col.names)) col.names <- !is.null(colnames(x))
+  dx <- as.data.frame(x)  
+  stopifnot(all(names(dx) != index.name))
+  dx[[index.name]] <- index(x)
+  dx <- dx[, c(ncol(dx), 1:(ncol(dx)-1))]
+  write.table(dx, file = file, row.names = row.names, col.names = col.names, ...)
 }

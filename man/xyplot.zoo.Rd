@@ -208,5 +208,10 @@ trellis.unfocus()
 
 trellis.par.set(strip.background = strip.background)
 
+\dontrun{
+library(plotandplayGTK)
+playwith(xyplot(z))
+}
+
 }
 \keyword{ts}

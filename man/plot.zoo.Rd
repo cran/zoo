@@ -8,7 +8,7 @@
 Plotting method for objects of class \code{"zoo"}.
 }
 \usage{
-\method{plot}{zoo}(x, y = NULL, screens = 1, plot.type = c("multiple", "single"),
+\method{plot}{zoo}(x, y = NULL, screens, plot.type,
   panel = lines, xlab = "Index", ylab = NULL, main = NULL,
   xlim = NULL, ylim = NULL, xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
@@ -24,10 +24,17 @@ Plotting method for objects of class \code{"zoo"}.
     scatter plot of \code{y} versus \code{x} is produced.}
   \item{screens}{factor (or coerced to factor) whose levels specify which
     graph each series is to be plotted in.  \code{screens=c(1,2,1)}
-    would plot series 1, 2 and 3 in graphs 1, 2 and 1.}
+    would plot series 1, 2 and 3 in graphs 1, 2 and 1.  If not specified
+    then 1 is used if \code{plot.type="single"} and \code{seq_len(ncol(x))}
+    otherwise.}
   \item{plot.type}{for multivariate zoo objects, "multiple" plots the
     series on multiple plots and "single" superimposes them on a single
-    plot}
+    plot.  Default is "single" if \code{screens} has only one level and
+    \code{"multiple"} otherwise. If neither \code{screens} nor
+    \code{plot.type} is specified then \code{"single"}
+    is used if there is one series and \code{"mulitple"} otherwise.  This
+    option is provided for back compatibility.  Usually \code{screens} is
+    used instead.}
   \item{panel}{a \code{function(x, y, col, lty, \dots)}  which gives the
     action to be carried out in each panel of the display for
    \code{plot.type = "multiple"}.}
@@ -85,7 +92,7 @@ lines(x2, col = 2)
 z <- cbind(x, x2, zoo(rnorm(5, sd = 0.5), x.Date))
 plot(z, type = "b", pch = 1:3, col = 1:3, ylab = list(expression(mu), "b", "c"))
 colnames(z) <- LETTERS[1:3]
-plot(z, plot.type = "single", col = list(B = 2))
+plot(z, screens = 1, col = list(B = 2))
 plot(z, type = "b", pch = 1:3, col = 1:3)
 plot(z, type = "b", pch = list(A = 1:5, B = 3), col = list(C = 4, 2))
 plot(z, type = "b", screen = c(1,2,1), col = 1:3)
@@ -120,6 +127,26 @@ my.panel <- function(...) {
 }
 # 3. plot
 plot(zz, panel = my.panel, xaxt = "n")
+
+## plot with left and right axes
+## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
+set.seed(1)
+z <- zoo(cbind(A = cumsum(rnorm(100)), B = cumsum(rnorm(100, mean = 0.2))))
+opar <- par(mai = c(.8, .8, .2, .8))
+plot(z[,1], type = "l", 
+   xlab = "X axis label", ylab = colnames(z)[1])
+par(new = TRUE)
+plot(z[,2], type = "l", ann = FALSE, yaxt = "n", col = "blue")
+axis(4)
+legend(x = "topleft", bty = "n", lty = c(1,1), col = c("black", "blue"),
+       legend = paste(colnames(z), c("(left scale)", "(right scale)")))
+usr <- par("usr")
+# mtext line should replace text line if y labels are to have same orientation
+#  mtext(colnames(z)[2], 4, 2, col = "blue")
+text(usr[2] + .1 * diff(usr[1:2]), mean(usr[3:4]), colnames(z)[2],
+   srt = -90, xpd = TRUE, col = "blue")
+par(opar)
+
 
 
 ## plot one zoo series against the other.

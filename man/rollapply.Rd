@@ -1,6 +1,4 @@
 \name{rollapply}
-\alias{rapply}
-\alias{rapply-deprecated}
 \alias{rollapply}
 \alias{rollapply.zoo}
 \alias{rollapply.ts}
@@ -43,9 +41,7 @@ rollapply(data, width, FUN, \dots, by = 1, ascending = TRUE, by.column = TRUE,
   
   In previous versions, this function was called \code{rapply}. It was renamed
   because from R 2.4.0 on, base R provides a different function \code{rapply}
-  for recursive (and not rolling) application of functions. The function 
-  \code{zoo::rapply} is still provided for backward compatibility, however
-  it dispatches now to \code{rollapply} methods.
+  for recursive (and not rolling) application of functions.
 }
 \value{
   A object of the same class as \code{data} with the results of the rolling function.
@@ -54,16 +50,38 @@ rollapply(data, width, FUN, \dots, by = 1, ascending = TRUE, by.column = TRUE,
 \seealso{\code{\link{rollmean}}}
 
 \examples{
-z <- zoo(11:15, as.Date(31:35)) 
+## rolling mean
+z <- zoo(11:15, as.Date(31:35))
 rollapply(z, 2, mean)
 
+## non-overlapping means
 z2 <- zoo(rnorm(6))
-rollapply(z2, 3, mean, by = 3) # means of nonoverlapping groups of 3
+rollapply(z2, 3, mean, by = 3)      # means of nonoverlapping groups of 3
 aggregate(z2, c(3,3,3,6,6,6), mean) # same
 
-rollapply(z2, 3, mean) # uses rollmean which is optimized for mean
-rollmean(z2, 3) # same
+## optimized vs. customized versions
+rollapply(z2, 3, mean)   # uses rollmean which is optimized for mean
+rollmean(z2, 3)          # same
 rollapply(z2, 3, (mean)) # does not use rollmean
+
+## rolling regression:
+## set up multivariate zoo series with
+## number of UK driver deaths and lags 1 and 12
+seat <- as.zoo(log(UKDriverDeaths))
+time(seat) <- as.yearmon(time(seat))
+seat <- merge(y = seat, y1 = lag(seat, k = -1),
+  y12 = lag(seat, k = -12), all = FALSE)
+
+## run a rolling regression with a 3-year time window
+## (similar to a SARIMA(1,0,0)(1,0,0)_12 fitted by OLS)
+fm <- rollapply(seat, width = 36,
+  FUN = function(z) coef(lm(y ~ y1 + y12, data = as.data.frame(z))),
+  by.column = FALSE, align = "right")
+
+## plot the changes in coefficients
+plot(fm)
+## showing the shifts after the oil crisis in Oct 1973
+## and after the seatbelt legislation change in Jan 1983
 }
 \keyword{iteration}
 \keyword{array}
