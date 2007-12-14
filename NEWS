@@ -1,5 +1,11 @@
 Changes in Version 1.4-0
 
+  o replaced by() calls by tapply() due to fixes in R
+    2.6.1-patched that caused errors in plot.zoo().
+    
+
+Changes in Version 1.4-0
+
   o added a write.zoo() function that writes zoo series to
     a text file via write.table(). The index is included in
     the first column so that it can be easily read again

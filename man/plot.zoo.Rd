@@ -128,6 +128,27 @@ my.panel <- function(...) {
 # 3. plot
 plot(zz, panel = my.panel, xaxt = "n")
 
+
+# plot a mulitple ts series with nice X axis using panel function
+
+tab <- ts(cbind(A = 1:24, B = 24:1), start = c(2006, 1), freq = 12)
+pnl.xaxis <- function(...) {
+     lines(...)
+     panel.number <- parent.frame()$panel.number
+     nser <- parent.frame()$nser
+     # if bottom panel
+     if (!length(panel.number) || panel.number == nser) { 
+           tt <- list(...)[[1]]
+           ym <- as.yearmon(tt)
+	   mon <- as.numeric(format(ym, "\%m"))
+	   yy <- format(ym, "\%y")
+	   mm <- substring(month.abb[mon], 1, 1)
+	   axis(1, tt[mon == 1], yy[mon == 1], cex.axis = 0.7)
+	   axis(1, tt[mon > 1], mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
+     }
+}
+plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n")
+
 ## plot with left and right axes
 ## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
 set.seed(1)
@@ -141,7 +162,7 @@ axis(4)
 legend(x = "topleft", bty = "n", lty = c(1,1), col = c("black", "blue"),
        legend = paste(colnames(z), c("(left scale)", "(right scale)")))
 usr <- par("usr")
-# mtext line should replace text line if y labels are to have same orientation
+# if you don't care about srt= in text then mtext is shorter:
 #  mtext(colnames(z)[2], 4, 2, col = "blue")
 text(usr[2] + .1 * diff(usr[1:2]), mean(usr[3:4]), colnames(z)[2],
    srt = -90, xpd = TRUE, col = "blue")

@@ -117,8 +117,8 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     layout(matrix(seq(nr*nc), nr), widths = widths, heights = heights)
     par(mar = mar, oma = oma)
     ranges <- if (is.null(ylim))
-	by(1:ncol(x), screens, function(idx) range(x[,idx], na.rm = TRUE))
-        else by(1:ncol(x), screens, function(idx) 
+	tapply(1:ncol(x), screens, function(idx) range(x[,idx], na.rm = TRUE))
+        else tapply(1:ncol(x), screens, function(idx) 
 		if (is.null(ylim[[idx]])) range(x[,idx], na.rm = TRUE)
 		else ylim[[idx]])
     for(j in seq(along = levels(screens))) {

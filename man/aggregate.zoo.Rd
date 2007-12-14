@@ -86,6 +86,15 @@ yrt2 <- range(time(y2))
 y0 <- zoo(,seq(from = yrt2[1], to = yrt2[2], by = "month"))
 merge(y2, y0)
 
+# given daily series keep only first point in each month at
+# day 21 or more
+z <- zoo(101:200, as.Date("2000-01-01") + seq(0, length = 100, by = 2))
+zz <- z[as.numeric(format(time(z), "\%d")) >= 21]
+zz[!duplicated(as.yearmon(time(zz)))]
+
+# same except times are of "yearmon" class
+aggregate(zz, as.yearmon, head, 1)
+
 # aggregate POSIXct seconds data every 10 minutes
 tt <- seq(10, 2000, 10)
 x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
