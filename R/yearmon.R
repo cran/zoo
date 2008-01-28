@@ -10,7 +10,12 @@ as.yearmon.dates <-
 as.yearmon.Date <- 
 as.yearmon.POSIXt <- function(x, ...) as.yearmon(with(as.POSIXlt(x, tz="GMT"), 1900 + year + mon/12))
 as.yearmon.character <- function(x, format = "", ...) {
-   if (format == "") format <- "%Y-%m-%d"
+   if (format == "") {
+        nch <- nchar(gsub("[^-]", "", x))
+        if (length(table(nch)) != 1) 
+            stop("yearmon variable can only have one format")
+        format <- if (nch == 1) "%Y-%m" else "%Y-%m-%d"
+   }
    has.short.keys <- rep(regexpr("%[mbByY%]", format) > 0, length(x))
    has.no.others <- regexpr("%", gsub("%[mbByY%]", "", format)) < 0
    z <- ifelse(has.short.keys & has.no.others,
@@ -78,15 +83,12 @@ print.yearmon <- function(x, ...) {
     val
 }
 
-axis.yearmon <- function (side, x, at, format, ...) 
-    axis.Date(side, as.Date(x), at, format, ...)
-
 MATCH.yearmon <- function(x, table, nomatch = NA, ...)
     match(floor(12*as.numeric(x) + .001), floor(12*as.numeric(table) + .001), nomatch = nomatch, ...)
 
 Ops.yearmon <- function(e1, e2) {
-    e1 <- as.numeric(e1)
-    e2 <- as.numeric(e2)
+    e1 <- as.numeric(as.yearmon(e1))
+    e2 <- as.numeric(as.yearmon(e2))
     rval <- NextMethod(.Generic)
     if(is.numeric(rval)) rval <- as.yearmon(rval)
     return(rval)
@@ -105,8 +107,47 @@ Ops.yearmon <- function(e1, e2) {
     structure(unclass(as.yearmon(e1)) - e2, class = "yearmon")
 }
 
+Axis.yearmon <- function(x = NULL, at = NULL, ..., side, labels = NULL)
+    axis.yearmon(x = x, at = at, ..., side = side, labels = TRUE)
 
-Axis.yearmon <- function(x=NULL, at=NULL, ..., side, labels=NULL)
-	Axis(x=as.Date(x), at=at, ..., side=side, labels=labels)
+axis.yearmon <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 = 2) {
+    # If years in range > N1 then only years shown.  
+    # If years in range > N2 then month ticks are not labelled.
+    mat <- missing(at) || is.null(at)
+    if (!mat) # at not missing
+        x <- as.yearmon(at)
+    else x <- as.yearmon(x)
+    range <- par("usr")[if (side%%2) 
+        1:2
+    else 3:4]
+    # range[1] <- ceiling(range[1])
+    # range[2] <- floor(range[2])
+    d <- range[2] - range[1]
+    z <- c(range, x[is.finite(x)])
+    class(z) <- "yearmon"
+    if (d > N1) { # axis has years only
+        z <- structure(pretty(z), class = "yearmon")
+    } else if (d > N2) { # axis has all years and unlabelled months
+        z <- seq(min(x), max(x), 1/12)
+	# z <- seq(floor(min(x)), ceiling(max(x)))
+    } else { # years and months
+        z <- seq(min(x), max(x), 1/12)
+    }
+    if (!mat) 
+        z <- x[is.finite(x)]
+    z <- z[z >= range[1] & z <= range[2]]
+    z <- sort(unique(z))
+    class(z) <- "yearmon"
+    if (identical(labels, TRUE)) {
+	if (missing(format)) format <- c("%Y", "%b")
+	if (length(format) == 1) format <- c(format, "")
+	if (d <= N2) labels <- format.yearmon(z, format = format[2])
+	idx <- format.yearmon(z, format = "%m") == "01"
+	labels[idx] <- format.yearmon(z[idx], format = format[1])
+    } else if (identical(labels, FALSE)) 
+        labels <- rep("", length(z))
+    axis(side, at = z, labels = labels, ...)
+}
 
-
+summary.yearmon <- function(object, ...)
+  summary(as.numeric(object), ...)

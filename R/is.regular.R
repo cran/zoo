@@ -9,6 +9,7 @@ is.regular.zoo <- function(x, strict = FALSE)
   else if(length(delta) < 1) FALSE
   else if(strict) identical(all.equal(delta, rep.int(delta[1], length(delta))), TRUE)
   else {
+    delta <- unique(delta)
     rval <- identical(all.equal(delta/min(delta), round(delta/min(delta))), TRUE)
     if(!rval && identical(all.equal(delta, round(delta)), TRUE)) rval <- TRUE
     rval
@@ -41,6 +42,7 @@ frequency.zoo <- function(x, ...)
   delta <- suppressWarnings(try(diff(as.numeric(index(x))), silent = TRUE))
   reg <- if(class(delta) == "try-error" || any(is.na(delta))) FALSE
   else {
+    delta <- unique(delta)
     rval <- identical(all.equal(delta/min(delta), round(delta/min(delta))), TRUE)
     if(rval) freq <- 1/min(delta)
     else if(identical(all.equal(delta, round(delta)), TRUE)) {
@@ -82,7 +84,7 @@ frequency.zoo <- function(x, ...)
 }
 
 "frequency<-.zooreg" <- function(x, value) {
-   delta <- diff(as.numeric(index(x)))
+  delta <- diff(as.numeric(index(x)))
   stopifnot(identical(all.equal(delta*value, round(delta*value)), TRUE))
   attr(x, "frequency") <- value
   return(x)

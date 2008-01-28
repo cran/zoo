@@ -77,7 +77,8 @@ In addition to classical time series line plots, there is also a
 simple \code{\link{barplot}} method for \code{"zoo"} series.
 }
 
-\seealso{\code{\link{zoo}}, \code{\link{plot.ts}}, \code{\link{barplot}}}
+\seealso{\code{\link{zoo}}, \code{\link{plot.ts}}, \code{\link{barplot}},
+\code{\link{xyplot.zoo}}}
 
 \examples{
 x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
@@ -100,7 +101,8 @@ plot(z, type = "b", screen = c(1,2,1), col = 1:3)
 plot(x)
 opar <- par(usr = c(par("usr")[1:2], range(x2)))
 lines(x2, lty = 2)
-axis(4)
+# axis(4)
+Axis(side = 4)
 par(opar)
 
 
@@ -119,15 +121,30 @@ my.panel <- function(...) {
    # if bottom panel
    if (!length(panel.number) || panel.number == NCOL(zz)) { 
       # next line only if non-labelled ticks wanted for each point
-      axis(1, at = time(zz), lab = FALSE)
-      ix <- seq(1, length(zz), 3)
-      labs <- format(time(zz), fmt)
-      axis(1, at = time(zz)[ix], lab = labs[ix], tcl = -0.7, cex.axis = 0.7)
+      # axis(1, at = time(zz), lab = FALSE)
+      tt <- time(zz)
+      Axis(side = 1, at = tt, labels = FALSE)
+      ix <- seq(1, length(tt), 3)
+      labs <- format(tt, fmt)
+      # axis(1, at = time(zz)[ix], lab = labs[ix], tcl = -0.7, cex.axis = 0.7)
+      Axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
    }
 }
 # 3. plot
 plot(zz, panel = my.panel, xaxt = "n")
 
+# with a single panel plot a fancy X axis is just the same
+# procedure as for the ordinary plot command
+plot(zz, screen = 1, col = 1:2, xaxt = "n")
+# axis(1, at = time(zz), labels = FALSE)
+tt <- time(zz)
+Axis(side = 1, at = tt, labels = FALSE)
+ix <- seq(1, length(tt), 3)
+fmt <- "\%b-\%d" # format for axis labels
+labs <- format(tt, fmt)
+# axis(1, at = time(zz)[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
+Axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
+legend("bottomright", colnames(zz), lty = 1, col = 1:2)
 
 # plot a mulitple ts series with nice X axis using panel function
 
@@ -143,11 +160,13 @@ pnl.xaxis <- function(...) {
 	   mon <- as.numeric(format(ym, "\%m"))
 	   yy <- format(ym, "\%y")
 	   mm <- substring(month.abb[mon], 1, 1)
-	   axis(1, tt[mon == 1], yy[mon == 1], cex.axis = 0.7)
-	   axis(1, tt[mon > 1], mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
+	   # axis(1, tt[mon == 1], yy[mon == 1], cex.axis = 0.7)
+	   Axis(side = 1, at = tt[mon == 1], labels = yy[mon == 1], cex.axis = 0.7)
+	   # axis(1, tt[mon > 1], mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
+	   Axis(side = 1, at = tt[mon > 1], labels = mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
      }
 }
-plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n")
+plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n", main = "Fancy X Axis")
 
 ## plot with left and right axes
 ## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
@@ -158,7 +177,8 @@ plot(z[,1], type = "l",
    xlab = "X axis label", ylab = colnames(z)[1])
 par(new = TRUE)
 plot(z[,2], type = "l", ann = FALSE, yaxt = "n", col = "blue")
-axis(4)
+# axis(4)
+Axis(side = 4)
 legend(x = "topleft", bty = "n", lty = c(1,1), col = c("black", "blue"),
        legend = paste(colnames(z), c("(left scale)", "(right scale)")))
 usr <- par("usr")

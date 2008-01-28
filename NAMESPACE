@@ -59,6 +59,7 @@ export(
   "yearqtr",
   "as.yearqtr",
   "as.yearqtr.default",
+  "format.yearqtr",
 
 # *** temporary -- change these to S3Method when lattice creates generics
   "panel.lines.ts",
@@ -185,6 +186,7 @@ export(
   S3method("c", "yearmon")
   S3method("format", "yearmon")
   S3method("print", "yearmon")
+  S3method("summary", "yearmon")
 
 ## methods for class yearqtr 
   S3method("-", "yearqtr")
@@ -202,6 +204,7 @@ export(
   S3method("c", "yearqtr")
   S3method("format", "yearqtr")
   S3method("print", "yearqtr")
+  S3method("summary", "yearqtr")
 
 ## methods for misc classes
   S3method("index", "default")

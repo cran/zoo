@@ -72,7 +72,7 @@ z <- read.zoo("foo.csv", sep = ",", FUN = as.yearmon)
 ## first column is of form yyyy.mm
 ## (Here we use format in place of as.character so that final zero 
 ## is not dropped in dates like 2001.10 which as.character would do.)
-f <- function(x) as.yearmon(format(x, nsmall = 2), "%Y.%m")
+f <- function(x) as.yearmon(format(x, nsmall = 2), "\%Y.\%m")
 z <- read.zoo("foo.csv", header = TRUE, FUN = f)
 
 ## turn *character* first column into Date index

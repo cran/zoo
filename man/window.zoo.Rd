@@ -16,9 +16,15 @@ of \code{"zoo"} objects and replacing it.
   \item{x}{an object.}
   \item{index}{the index/time window which should be extracted.}
   \item{start}{an index/time value. Only the indexes in \code{index}
-    which are greater or equal to \code{start} are used.}
+    which are greater or equal to \code{start} are used.  If the index
+    class supports comparisons to character variables, as does \code{Date}
+    class and the \code{chron} package \code{dates} class, then \code{start} 
+    may alternately be a character variable.}
   \item{end}{an index/time value. Only the indexes in \code{index}
-    which are lower or equal to \code{end} are used.}
+    which are lower or equal to \code{end} are used. (If the index
+    class supports comparisons to character variables, as does \code{Date}
+    class and the \code{chron} package \code{dates} class, then \code{end} 
+    may alternately be a character variable.)}
   \item{value}{a suitable value object for use with \code{window(x)}.}
   \item{\dots}{currently not used.}
 }
@@ -41,6 +47,10 @@ window(x, index = x.date[1:6], start = as.Date("2003-02-01"))
 window(x, index = x.date[c(4, 8, 10)])
 window(x, index = x.date[c(4, 8, 10)]) <- matrix(1:6, ncol = 2)
 x
+
+## for classes that support comparisons with "character" variables
+## start and end may be "character".
+window(x, start = "2003-02-01")
 
 ## zooreg example (with plain numeric index)
 z <- zooreg(rnorm(10), start = 2000, freq = 4)

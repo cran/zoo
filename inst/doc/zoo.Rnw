@@ -96,7 +96,9 @@ This paper describes how these design goals are implemented in \pkg{zoo}.
 The resulting package provides the \code{"zoo"} class which offers an
 extensive (and still growing) set of standard and new methods for working
 with indexed observations and `talks' to the classes \code{"ts"}, \code{"its"},
-\code{"irts"} and \code{"timeSeries"}. It also bridges the gap
+\code{"irts"} and \code{"timeSeries"}. \citep[In addition to these independent
+approaches, the class \code{"xts"} built upon \code{"zoo"} was recently
+introduced by][.]{zoo:xts:2008}. \pkg{zoo} also bridges the gap
 between regular and irregular time series by providing coercion with (virtually)
 no loss of information between \code{"ts"} and \code{"zoo"}.
 With these tools \pkg{zoo} provides the basic infrastructure for

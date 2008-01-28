@@ -1,0 +1,220 @@
+\documentclass{Z}
+\DeclareGraphicsExtensions{.pdf,.eps}
+\newcommand{\mysection}[1]{\subsubsection[#1]{\textbf{#1}}}
+
+
+%% need no \usepackage{Sweave}
+
+\author{Gabor Grothendieck\\GKX Associates Inc. \And
+        Achim Zeileis\\Wirtschaftsuniversit\"at Wien}
+\Plainauthor{Achim Zeileis, Gabor Grothendieck}
+
+\title{\pkg{zoo} FAQ}
+\Plaintitle{zoo FAQ}
+
+\Keywords{irregular time series, daily data, weekly data, returns}
+
+\Abstract{This is a collection of frequently asked questions (FAQ) about the \pkg{zoo} package together with their answers. }
+
+\begin{document}
+
+\SweaveOpts{engine=R,eps=FALSE}
+%\VignetteIndexEntry{zoo FAQ}
+%\VignetteDepends{zoo,tseries}
+%\VignetteKeywords{irregular time series, daily data, weekly data, returns}
+%\VignettePackage{zoo}
+
+
+<<preliminaries, echo=FALSE, results=hide>>=
+library("zoo")
+@
+
+\mysection{1. I know that duplicate times are not allowed but my data has them.  What do I do?}
+
+In general, \pkg{zoo} functions will not accept \pkg{zoo} objects with
+duplicates times.  \pkg{zoo} and \code{read.zoo} will issue warnings but
+will not prevent the creation of such objects in order to give the user
+a chance to fix them up -- typically by using \code{aggregate.zoo}
+or \code{duplicated}.  \code{merge.zoo} will issue an error message if
+such illegal operations are attempted with it.  Since \code{merge}
+is the workhorse behind many \pkg{zoo} functions on
+that account alone many or most \pkg{zoo} functions will not work with
+duplicates among the times.  Typically we eliminate duplicates by
+averaging over them, taking the last among each run of duplicates
+or interpolating the duplicates and deleting ones on the end that
+cannot be interpolated.  These three approaches are shown here. Note
+that \code{force} is the identity function (i.e. it just returns its argument)
+and is an \pkg{R} core function:
+
+<<duplicates>>=
+## zoo series with duplicated indexes
+z <- suppressWarnings(zoo(1:8, c(1, 2, 2, 2, 3, 4, 5, 5)))
+z
+
+# fix it up by averaging duplicates
+aggregate(z, force, mean)
+
+# or, fix it up by taking last in each set of duplicates
+aggregate(z, force, tail, 1)
+
+# fix it up via interpolation of duplicate times
+time(z) <- na.approx(ifelse(duplicated(time(z)), NA, time(z)), na.rm = FALSE)
+# if there is a run of equal times at end they
+# wind up as NAs and we cannot have NA times
+z[!is.na(time(z))]
+@
+
+\mysection{2. When I try to specify a log axis to plot.zoo a warning is issued.  What is wrong?}
+
+Arguments that are part of \code{...} are passed to the \code{panel} 
+function and
+the default \code{panel} function, \code{lines}, does not accept \code{log}.  
+Either 
+ignore the warning, use \code{suppressWarnings} 
+(see \code{?suppressWarnings}) or create
+your own panel function which excludes the \code{log}:
+
+<<log-plot>>=
+z <- zoo(1:100)
+plot(z, log = "y", panel = function(..., log) lines(...))
+@
+
+\mysection{3. How do I create right and a left vertical axes in plot.zoo?}
+
+The following shows an example of creating a single panel plot using 
+\code{plot.zoo} and both left and right axes.  
+
+<<plot-axes,fig=TRUE,height=6,split=TRUE,include=FALSE,prefix=FALSE>>=
+set.seed(1)
+z.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
+z <- zoo(cbind(left = rnorm(5), right = rnorm(5, sd = 0.2)), z.Date)
+# right axis is for broken lines
+plot(z[,1], xlab = "Time", ylab = "")
+opar <- par(usr = c(par("usr")[1:2], range(z[,2])))
+lines(z[,2], lty = 2)
+# axis(4)
+Axis(side = 4)
+legend("bottomright", lty = 1:2, legend = colnames(z))
+par(opar)
+@
+
+\input{plot-axes}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics{plot-axes}
+\caption{\label{fig:plot-axes} Left and right plot.zoo axes.}
+\end{center}
+\end{figure}
+
+
+\mysection{4. How do I create a monthly series but still keep track of the dates?}
+
+Create a \pkg{S3} subclass of \code{"yearmon"} called \code{"yearmon2"} that 
+stores the dates as names on the time vector.  It will be sufficient to create
+an \code{as.yearmon2} generic together with \code{as.Date.yearmon2} and 
+\code{as.yearmon2.Date} methods. It will act the same as \code{"yearmon"} 
+but we can recover the dates at any time using \code{as.Date} and
+\code{aggregate.zoo} as shown in the test at the end of this example:
+
+<<yearmon2>>=
+as.yearmon2 <- function(x, ...) UseMethod("as.yearmon2")
+as.yearmon2.Date <- function(x, ...) {
+  y <- as.yearmon(with(as.POSIXlt(x, tz = "GMT"), 1900 + year + mon/12))
+  names(y) <- x
+  structure(y, class = c("yearmon2", class(y)))
+}
+
+as.Date.yearmon2 <- function(x, frac = 0, ...) {
+     if (!is.null(names(x))) return(as.Date(names(x)))
+     x <- unclass(x)
+     year <- floor(x + .001)
+     month <- floor(12 * (x - year) + 1 + .5 + .001)
+     dd.start <- as.Date(paste(year, month, 1, sep = "-")) 
+     dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
+     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
+}
+
+# test
+dd <- seq(as.Date("2000-01-01"), length = 5, by = 32)
+z <- zoo(1:5, as.yearmon2(dd))
+# shows index as yearmon class
+z
+# recover dates to show index as Date class
+aggregate(z, as.Date, force) 
+@
+
+\mysection{5. I have data frame with both numeric and factor columns.  How do I convert that to a zoo object?}
+
+A \code{"zoo"} object may be a numeric vector or matrix or a factor but not
+both.  You can convert it to two \code{"zoo"} variables:
+
+<<factor-1>>=
+DF <- data.frame(time = 1:4, x = 1:4, f = factor(1:4))
+zx <- zoo(DF$x, DF$time)
+zf <- zoo(DF$f, DF$time)
+@
+
+or you can convert the factor to numeric and then create a single
+\code{"zoo"} series:
+
+<<factor-2>>=
+z <- zoo(data.matrix(DF[-1]), DF$time)
+@
+
+\mysection{6. Why does lag these give slightly different results on a zoo and a zooreg series which are otherwise the same?}
+
+To be definite let us consider the following examples:
+<<lags>>=
+z <- zoo(11:15, as.Date("2008-01-01") + c(-4, 1, 2, 3, 6))
+zr <- as.zooreg(z)
+
+lag(z)
+lag(zr)
+
+diff(log(z))
+diff(log(zr))
+@
+
+\code{lag.zoo} and \code{lag.zooreg} work differently.  For \code{"zoo"}
+objects the lagged version is obtained by moving the time points
+to the adjacent time point that exists in the series but for \code{"zooreg"} 
+objects the time is lagged by \code{deltat}, the time between adjacent
+regular times.
+
+A key difference is that in \code{"zooreg"} one can lag a point to a time point
+that did not previously exist in the series and, in particular, can lag
+a series outside of the original time range whereas that is not possible
+in a \code{"zoo"} series.
+
+Note that \code{lag.zoo} has an \code{na.pad=} argument which may be what you 
+are looking for.
+
+The difference between \code{diff.zoo} and \code{diff.zooreg} stems from
+the fact that \code{diff(x)} is defined in terms of \code{lag} like
+this: \code{x-lag(x,-1)}.
+
+\mysection{7. How do I subtract the mean of each month from a zoo series?}
+
+To subtract the mean of Jan 2007 from each day in that month,
+subtract the mean of Feb 2007 from each day in that month, etc.
+try this:
+     
+<<subtract-monthly-means>>=
+# test data
+set.seed(123)
+z <- zoo(rnorm(100), as.Date("2007-01-01") + seq(0, by = 10, length = 100))
+
+# answer
+z.demean1 <- z - ave(z, as.yearmon(time(z)))
+@
+
+To subtract the mean of all Januaries from each January, etc.
+try this:
+
+<<subtract-monthly-means-2>>=
+z.demean2 <- z - ave(z, format(time(z), "%m"))
+@
+
+\end{document}
+

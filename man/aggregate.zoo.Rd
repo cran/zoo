@@ -9,7 +9,7 @@ reduced \code{"zoo"} object.
 }
 
 \usage{
-\method{aggregate}{zoo}(x, by, FUN, \dots)
+\method{aggregate}{zoo}(x, by, FUN, \dots, regular = NULL, frequency = NULL)
 }
 
 \arguments{
@@ -21,11 +21,18 @@ reduced \code{"zoo"} object.
   \item{FUN}{a scalar function to compute the summary statistics
     which can be applied to all subsets.}
   \item{\dots}{further arguments passed to \code{FUN}.}
+  \item{regular}{logical. Should the aggregated series be coerced to class \code{"zooreg"}
+    (if the series is regular)? The default is \code{FALSE} for \code{"zoo"} series and
+    \code{TRUE} for \code{"zooreg"} series.}
+  \item{frequency}{numeric indicating the frequency of the aggregated series
+    (if a \code{"zooreg"} series should be returned. The default is to
+    determine the frequency from the data if \code{regular} is \code{TRUE}.
+    If \code{frequency} is specified, it sets \code{regular} to \code{TRUE}.
+    See examples for illustration.}
 }
 
 \value{
-An object of class \code{"zoo"} or \code{"zooreg"} (if the resulting
-series \code{\link{is.regular}}).
+An object of class \code{"zoo"} or \code{"zooreg"}.
 }
 
 \seealso{\code{\link{zoo}}}
@@ -68,6 +75,13 @@ z.day[!duplicated(as.yearqtr(time(z.day)))]
 z.day[!duplicated(as.yearqtr(time(z.day)), fromLast = TRUE)]
 }
 
+# The aggregated series above are of class "zoo" (because z.day
+# was "zoo"). To create a regular series of class "zooreg",
+# the frequency can be automatically chosen
+zr.qtr1 <- aggregate(z.day, as.yearqtr, mean, regular = TRUE)
+# or specified explicitely
+zr.qtr2 <- aggregate(z.day, as.yearqtr, mean, frequency = 4)
+
 
 ## aggregate on month and extend to monthly time series
 if(require(chron)) {
@@ -75,16 +89,15 @@ y <- zoo(matrix(11:15,nr=5,nc=2), chron(c(15,20,80,100,110)))
 colnames(y) <- c("A", "B")
 
 # aggregate by month using first of month as times for coarser series
-# replacing each such group with the first observation in that month.
-# Uses fact that chron dates format, by default, to mm/dd/yy
-firstofmonth <- function(x) chron(sub("/../", "/01/", format(x)))
-y2 <- aggregate(y, firstofmonth(time(y)), head, 1)
+# using first day of month as repesentative time
+y2 <- aggregate(y, as.Date(as.yearmon(time(y))), head, 1)
 
 # fill in missing months by merging with an empty series containing
 # a complete set of 1st of the months
 yrt2 <- range(time(y2))
 y0 <- zoo(,seq(from = yrt2[1], to = yrt2[2], by = "month"))
 merge(y2, y0)
+}
 
 # given daily series keep only first point in each month at
 # day 21 or more
@@ -99,6 +112,5 @@ aggregate(zz, as.yearmon, head, 1)
 tt <- seq(10, 2000, 10)
 x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
 aggregate(x, time(x) - as.numeric(time(x)) \%\% 600, mean)
-}
 }
 \keyword{ts}

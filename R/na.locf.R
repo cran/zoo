@@ -1,10 +1,10 @@
 na.locf <- function(object, na.rm = TRUE, ...)
 	UseMethod("na.locf")
 
-na.locf.default <- function(object, na.rm = TRUE, rev = FALSE, ...) {
+na.locf.default <- function(object, na.rm = TRUE, fromLast, rev, ...) {
 	na.locf.0 <- function(x) {
 	      L <- !is.na(x)
-	      idx <- if (rev)
+	      idx <- if (fromLast)
 	         rev(c(NA,rev(which(L)))[cumsum(rev(L))+1])
               else
 	         c(NA,which(L))[cumsum(L)+1]
@@ -18,6 +18,11 @@ na.locf.default <- function(object, na.rm = TRUE, rev = FALSE, ...) {
 	      }
 	      na.index(x, idx)
 	}
+   	if (!missing(rev)) {
+	   warning("na.locf.default: rev= deprecated. Use fromLast= instead.")
+	   if (missing(fromLast)) fromLast <- rev
+	} else if (missing(fromLast)) fromLast <- FALSE
+	rev <- base::rev
 	object[] <- if (length(dim(object)) == 0)
 		na.locf.0(object)
 	else

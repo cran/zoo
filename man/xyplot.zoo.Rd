@@ -122,6 +122,8 @@ panel.polygon.zoo(x, ...)
   Invisibly returns a \code{"trellis"} class object. Printing this
   object using \code{print} will display it.
 }
+\seealso{\code{\link{zoo}}, \code{\link{plot.ts}}, \code{\link{barplot}},
+\code{\link{plot.zoo}}}
 \examples{
 library("lattice")
 library("grid")

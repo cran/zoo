@@ -1,4 +1,36 @@
-Changes in Version 1.4-0
+Changes in Version 1.4-2
+
+  o The processing of regular series in aggregate.zoo()
+    was changed. By default, a regular series is only
+    created if the original series was regular. Otherwise,
+    a regular series is only created if indicated (by
+    setting argument regular = TRUE or by supplying a
+    specific frequency).
+
+  o zoo FAQ vignette added
+
+  o axis.yearqtr and axis.yearmon improved. They no longer
+    use axis.Date.
+    
+  o as.yearmon.character accepts "%Y-%m" default format (as well 
+    as prior default of "%Y-%m-%d")
+
+  o new summary() methods for yearmon/yearqtr objects which
+    simply report the summary of the underlying numeric vector.
+
+  o na.locf.default now uses fromLast= (consistent with the R 
+    duplicated function). It is similar to the rev= argument
+    (which will be deprecated).
+
+  o comparisons between yearmon variables and character variables
+    that can be coerced to yearmon via as.yearmon now work.  This 
+    also lets character variables be used in start= and end= 
+    arguments of window.zoo for zoo series with a yearmon index
+    (since window.zoo already allows such usage for any index class 
+    that can be compared to character).  Similarly for yearqtr.
+
+
+Changes in Version 1.4-1
 
   o replaced by() calls by tapply() due to fixes in R
     2.6.1-patched that caused errors in plot.zoo().
@@ -65,7 +97,7 @@ Changes in Version 1.3-0
     consistently now.
 
   o custom panel functions in plot.zoo can now refer to 
-    parent.frame()$panel.number to determine the current panel.  Also
+    parent.frame()$panel.number to determine the current panel. Also
     added an example of this to ?plot.zoo.
 
   o read.zoo() will behave consistently when the file contains no data.
@@ -78,7 +110,7 @@ Changes in Version 1.2-2
 
   o the order of arguments (... now come after FUN) in rollapply has
     been changed to allow unnamed additional arguments to be specified
-    for FUN.  Previously they had to be named.
+    for FUN. Previously they had to be named.
 
   o bug in as.ts.zooreg fixed
 
@@ -86,7 +118,7 @@ Changes in Version 1.2-1
 
   o One of the examples on ?xyplot.zoo does not run with the
     R 2.4.0 lattice. It is currently placed in \dontrun{}
-    (see comments in ?xyplot.zoo).    
+    (see comments in ?xyplot.zoo).
 
 
 Changes in Version 1.2-0
