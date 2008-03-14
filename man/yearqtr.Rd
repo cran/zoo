@@ -8,6 +8,8 @@
 \alias{as.yearqtr.Date}
 \alias{as.yearqtr.POSIXt}
 \alias{as.yearqtr.character}
+\alias{as.yearqtr.factor}
+\alias{as.yearqtr.yearqtr}
 \alias{as.Date.yearqtr}
 \alias{as.POSIXct.yearqtr}
 \alias{as.POSIXlt.yearqtr}
@@ -15,6 +17,7 @@
 \alias{as.character.yearqtr}
 \alias{as.data.frame.yearqtr}
 \alias{c.yearqtr}
+\alias{cycle.yearqtr}
 \alias{format.yearqtr}
 \alias{print.yearqtr}
 \alias{summary.yearqtr}
@@ -22,8 +25,6 @@
 \alias{MATCH.yearqtr}
 \alias{Ops.yearqtr}
 \alias{-.yearqtr}
-\alias{Axis.yearqtr}
-\alias{axis.yearqtr}
 
 \title{An Index Class for Quarterly Data}
 \description{
@@ -56,6 +57,10 @@ as.yearqtr(x, \dots)
   and so on in order that its internal representation is the same as 
   \code{ts} class with \code{frequency = 4}. If \code{x} is not in this
   format it is rounded via \code{floor(4*x + .0001)/4}.
+
+  \code{as.yearqtr.character} uses a default format of \code{"\%Y Q\%q"}, 
+  \code{"\%Y q\%q"} or \code{"\%Y-\%q"} according to whichever matches.
+  \code{\%q} accepts the numbers 1-4 (possibly with leading zeros).
   
   There are coercion methods available for various classes including:
   default coercion to \code{"yearqtr"} (which coerces to \code{"numeric"} first)
@@ -78,6 +83,9 @@ x <- yearqtr(2000 + seq(0, 7)/4)
 x
 
 format(x, "\%Y Quarter \%q")
+as.yearqtr("2001 Q2")
+as.yearqtr("2001 q2") # same
+as.yearqtr("2001-2") # same
 
 # returned Date is the fraction of the way through
 # the period given by frac (= 0 by default)

@@ -9,7 +9,26 @@ as.yearqtr.integer <- function(x, ...) structure(x, class = "yearqtr")
 as.yearqtr.dates <-
 as.yearqtr.Date <- 
 as.yearqtr.POSIXt <- function(x, ...) as.yearqtr(as.yearmon(x))
-as.yearqtr.character <- function(x, ...) as.yearqtr(as.Date(x, ...))
+as.yearqtr.yearqtr <- function(x, ...) x
+
+as.yearqtr.factor <- function(x, ...) as.yearqtr(as.character(x), ...)
+as.yearqtr.character <- function(x, format, ...) {
+    non.na <- x[!is.na(x)]
+    if (length(non.na) == 0) 
+        return(structure(rep(NA, length(x)), class = "yearqtr"))
+    if (missing(format) || format == "") {
+        format <- if (all(regexpr("q", non.na) > 0))  { "%Y q%q"
+        } else if (all(regexpr("Q", non.na) > 0)) { "%Y Q%q"
+        } else "%Y-%q"
+    }
+    y <- if (regexpr("%[qQ]", format) > 0) {
+        format <- sub("%q", "%m", format)
+        y <- as.numeric(as.yearmon(x, format))
+        m0 <- round(12 * (y %% 1))
+        floor(y) + ifelse(m0 > 3, NA, m0/4)
+    } else as.yearmon(x, format)
+    as.yearqtr(y)
+}
 
 ## coercion from yearqtr
 # returned Date is the fraction of the way through the period given by frac
@@ -51,8 +70,11 @@ c.yearqtr <- function(...) {
     as.yearqtr(do.call("c", lapply(list(...), as.numeric)))
 }
 
+cycle.yearqtr <- function(x, ...) as.numeric(quarters(x))
+
 format.yearqtr <- function(x, format = "%Y Q%q", ...) 
 {
+    if (length(x) == 0) return(character(0))
 	# like gsub but replacement and x may be vectors the same length
 	gsub.vec <- function(pattern, replacement, x, ...) {
 		y <- x
@@ -65,6 +87,8 @@ format.yearqtr <- function(x, format = "%Y Q%q", ...)
 	x <- unclass(x)
 	year <- floor(x + .001)
 	qtr <- floor(4*(x - year) + 1 + .5 + .001)
+    if (format == "%Y Q%q") return(paste(year, " Q", qtr, sep = ""))
+    # TODO: speed up the following
 	xx <- gsub.vec("%q", qtr, rep(format, length(qtr)))
 	xx <- gsub.vec("%Y", year, xx)
 	xx <- gsub.vec("%y", sprintf("%02d", year %% 100), xx)
@@ -72,6 +96,16 @@ format.yearqtr <- function(x, format = "%Y Q%q", ...)
 	names(xx) <- names(x)
 	xx
 }
+
+
+months.yearqtr <- function(x, abbreviate) {
+    months(as.Date(x), abbreviate)
+}
+
+quarters.yearqtr <- function(x, abbreviate) {
+    quarters(as.Date(x), abbreviate)
+}
+
 
 print.yearqtr <- function(x, ...) { 
     print(format(x), ...)

@@ -14,5 +14,9 @@ na.approx.default <- function(object, along = index(object), na.rm = TRUE, ...)
 
         object[] <- if (length(dim(object)) == 0) na.approx.0(object)
         	else apply(object, 2, na.approx.0)
-        if (na.rm) na.omit(object) else object
+        if (na.rm) {
+            out <- na.omit(object)
+            attr(out, "na.action") <- NULL
+            out
+        } else object
 }

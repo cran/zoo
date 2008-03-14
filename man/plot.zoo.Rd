@@ -73,6 +73,13 @@ In the case of a custom panel the panel can reference
 \code{parent.frame$panel.number} in order to determine which
 frame the panel is being called from.  See examples.
 
+\code{par(mfrow=...)} and \code{Axis} can be used in conjunction with 
+single panel plots in the same way as with other classic graphics.
+
+For multipanel graphics, \code{plot.zoo} takes over the layout so
+\code{par(mfrow=...)} cannot be used.  \code{Axis} can be used within
+the panels themselves but not outside the panel.  See examples.
+
 In addition to classical time series line plots, there is also a
 simple \code{\link{barplot}} method for \code{"zoo"} series.
 }
@@ -114,20 +121,17 @@ z <- zoo(c(21, 34, 33, 41, 39, 38, 37, 28, 33, 40),
        "1992-03-13")))
 zz <- merge(a = z, b = z+10)
 # 2. axis tick for every point. Also every 3rd point labelled.
-my.panel <- function(...) {
+my.panel <- function(x, y, ..., pf = parent.frame()) {
    fmt <- "\%b-\%d" # format for axis labels
-   lines(...)
-   panel.number <- parent.frame()$panel.number
+   lines(x, y, ...)
    # if bottom panel
-   if (!length(panel.number) || panel.number == NCOL(zz)) { 
-      # next line only if non-labelled ticks wanted for each point
-      # axis(1, at = time(zz), lab = FALSE)
-      tt <- time(zz)
-      Axis(side = 1, at = tt, labels = FALSE)
-      ix <- seq(1, length(tt), 3)
-      labs <- format(tt, fmt)
-      # axis(1, at = time(zz)[ix], lab = labs[ix], tcl = -0.7, cex.axis = 0.7)
-      Axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
+   if (with(pf, length(panel.number) == 0 || 
+        panel.number \%\% nr == 0 || panel.number == nser)) { 
+      # create ticks at x values and then label every third tick
+      Axis(side = 1, at = x, labels = FALSE)
+      ix <- seq(1, length(x), 3)
+      labs <- format(x, fmt)
+      Axis(side = 1, at = x[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
    }
 }
 # 3. plot
@@ -168,6 +172,23 @@ pnl.xaxis <- function(...) {
 }
 plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n", main = "Fancy X Axis")
 
+### Another example with a custom axis
+
+library(zoo)
+# test data
+z <- zoo(matrix(1:25, 5), c(10,11,20,21))
+colnames(z) <- letters[1:5]
+
+plot(zoo(coredata(z)), xaxt = "n", panel = function(x, y, ..., Time = time(z)) {
+    lines(x, y, ...)
+    # if bottom panel
+    pf <- parent.frame()
+    if (with(pf, panel.number \%\% nr == 0 || panel.number == nser)) {
+        Axis(side = 1, at = x, labels = Time)
+    }
+})
+
+
 ## plot with left and right axes
 ## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
 set.seed(1)
@@ -188,7 +209,11 @@ text(usr[2] + .1 * diff(usr[1:2]), mean(usr[3:4]), colnames(z)[2],
    srt = -90, xpd = TRUE, col = "blue")
 par(opar)
 
-
+\dontrun{
+# automatically placed point labels
+library(maptools)
+pointLabel(time(z), coredata(z[,2]), labels = format(time(z)), cex = 0.5)
+}
 
 ## plot one zoo series against the other.
 plot(x, x2)

@@ -1,3 +1,26 @@
+Changes in Version 1.5-0
+
+  o new $.zoo and $<-.zoo methods
+
+  o read.zoo now passes format and tz to FUN if they are specified.  If
+    FUN is not specified but tz and format specified then POSIXct translation 
+    is done with respect to the specified format string.
+
+  o months.yearmon, quarters.yearmon, cycle.yearmon methods added
+
+  o months.yearqtr, quarters.yearqtr, cycle.yearqtr methods added
+
+  o as.yearqtr.character now accepts %q and default formats are
+    "%Y Q%q", "%Y q%q" and "%Y-%q".
+
+  o yearqtr.factor and yearmon.factor added
+
+  o as.yearmon.yearqtr now has frac argument consistent with as.Date.yearmon
+
+  o format.yearqtr and as.character.yearqtr performance speedup for the
+    common case of default format.
+
+
 Changes in Version 1.4-2
 
   o The processing of regular series in aggregate.zoo()

@@ -21,8 +21,7 @@ An object in which leading and/or trailing
 \code{NA}s have been removed.
 }
 
-\seealso{\code{\link{na.omit}}, \code{\link{zoo}}}
-
+\seealso{\code{\link{na.approx}}, \code{\link{na.contiguous}}, \code{\link{na.locf}}, \code{\link{na.omit}}, \code{\link{na.spline}}, \code{\link[stinepack]{stinterp}}, \code{\link{zoo}}}
 \examples{
 # examples of na.trim
 x <- zoo(c(1, 4, 6), c(2, 4, 6))

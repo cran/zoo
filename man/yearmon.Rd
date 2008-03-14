@@ -8,6 +8,7 @@
 \alias{as.yearmon.Date}
 \alias{as.yearmon.POSIXt}
 \alias{as.yearmon.character}
+\alias{as.yearmon.factor}
 \alias{as.Date.yearmon}
 \alias{as.POSIXct.yearmon}
 \alias{as.POSIXlt.yearmon}
@@ -15,6 +16,7 @@
 \alias{as.character.yearmon}
 \alias{as.data.frame.yearmon}
 \alias{c.yearmon}
+\alias{cycle.yearmon}
 \alias{format.yearmon}
 \alias{print.yearmon}
 \alias{summary.yearmon}
@@ -22,8 +24,6 @@
 \alias{MATCH.yearmon}
 \alias{Ops.yearmon}
 \alias{-.yearmon}
-\alias{Axis.yearmon}
-\alias{axis.yearmon}
 
 \title{An Index Class for Monthly Data}
 \description{
@@ -44,10 +44,16 @@ yearmon(x)
   
   There are coercion methods available for various classes including:
   default coercion to \code{"yearmon"} (which coerces to \code{"numeric"} first)
-  and coercion from \code{"yearmon"} to \code{"Date"} (see below), \code{"POSIXct"},
+  and coercion from \code{"yearmon"} to \code{"Date"} (see below), 
+  \code{"POSIXct"},
   \code{"POSIXlt"}, \code{"numeric"}, \code{"character"}.  In the case of
   \code{as.yearmon.character} the \code{format} argument is the same as for
   \code{"Date"}.   One can specify a year and month with no day.  
+
+  \code{as.Date.yearmon} and \code{as.yearmon.yearqtr} both have an optional
+  second argument of \code{"frac"} which is a number between 0 and 1 inclusive
+  that indicates the fraction of the way through the period that the result
+  represents.  The default is 0 which means the beginning of the period.
 
 }
 \value{
@@ -69,6 +75,12 @@ as.yearmon("2007-12")
 as.Date(x)
 as.Date(x, frac = 1)
 as.POSIXct(x)
+
+# given a Date, x, return the Date of the next Friday
+nextfri <- function(x) 7 * ceiling(as.numeric(x - 1)/7) + as.Date(1)
+
+# 3rd Friday in last month of the quarter of Date x
+as.Date(as.yearmon(as.yearqtr(x)) + 2/12) + 14
 
 z <- zoo(rnorm(24), x, frequency = 12)
 z

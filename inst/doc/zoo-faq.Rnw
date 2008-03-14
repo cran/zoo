@@ -31,20 +31,26 @@ library("zoo")
 
 \mysection{1. I know that duplicate times are not allowed but my data has them.  What do I do?}
 
-In general, \pkg{zoo} functions will not accept \pkg{zoo} objects with
-duplicates times.  \pkg{zoo} and \code{read.zoo} will issue warnings but
-will not prevent the creation of such objects in order to give the user
-a chance to fix them up -- typically by using \code{aggregate.zoo}
-or \code{duplicated}.  \code{merge.zoo} will issue an error message if
-such illegal operations are attempted with it.  Since \code{merge}
-is the workhorse behind many \pkg{zoo} functions on
-that account alone many or most \pkg{zoo} functions will not work with
-duplicates among the times.  Typically we eliminate duplicates by
+\pkg{zoo} objects should not normally contain duplicate times.
+If you try to create such an object using
+\pkg{zoo} or \code{read.zoo} then warnings will be issued but
+the objects will be created.   The user then has the opportunity
+to fix them up -- typically by using \code{aggregate.zoo}
+or \code{duplicated}.  
+
+Merging is not well defined for duplicate series with duplicate
+times and rather than give an undesired or unexpected result,
+\code{merge.zoo} issues an error message if it encounters
+such illegal objects.   Since \code{merge.zoo}
+is the workhorse behind many \pkg{zoo} functions, a significant
+portion of \pkg{zoo} will not accept
+duplicates among the times.  Typically duplicates are eliminated by
 averaging over them, taking the last among each run of duplicates
 or interpolating the duplicates and deleting ones on the end that
 cannot be interpolated.  These three approaches are shown here. Note
-that \code{force} is the identity function (i.e. it just returns its argument)
-and is an \pkg{R} core function:
+that in the code below that \code{force} is the identity 
+function (i.e. it just returns its argument).  It 
+is an \pkg{R} core function:
 
 <<duplicates>>=
 ## zoo series with duplicated indexes
@@ -81,8 +87,8 @@ plot(z, log = "y", panel = function(..., log) lines(...))
 
 \mysection{3. How do I create right and a left vertical axes in plot.zoo?}
 
-The following shows an example of creating a single panel plot using 
-\code{plot.zoo} and both left and right axes.  
+The following shows an example of creating plot containing a single
+panel in with both left and right axes.  
 
 <<plot-axes,fig=TRUE,height=6,split=TRUE,include=FALSE,prefix=FALSE>>=
 set.seed(1)
@@ -108,46 +114,11 @@ par(opar)
 \end{figure}
 
 
-\mysection{4. How do I create a monthly series but still keep track of the dates?}
+\mysection{4. I have data frame with both numeric and factor columns.  How do I convert that to a zoo object?}
 
-Create a \pkg{S3} subclass of \code{"yearmon"} called \code{"yearmon2"} that 
-stores the dates as names on the time vector.  It will be sufficient to create
-an \code{as.yearmon2} generic together with \code{as.Date.yearmon2} and 
-\code{as.yearmon2.Date} methods. It will act the same as \code{"yearmon"} 
-but we can recover the dates at any time using \code{as.Date} and
-\code{aggregate.zoo} as shown in the test at the end of this example:
-
-<<yearmon2>>=
-as.yearmon2 <- function(x, ...) UseMethod("as.yearmon2")
-as.yearmon2.Date <- function(x, ...) {
-  y <- as.yearmon(with(as.POSIXlt(x, tz = "GMT"), 1900 + year + mon/12))
-  names(y) <- x
-  structure(y, class = c("yearmon2", class(y)))
-}
-
-as.Date.yearmon2 <- function(x, frac = 0, ...) {
-     if (!is.null(names(x))) return(as.Date(names(x)))
-     x <- unclass(x)
-     year <- floor(x + .001)
-     month <- floor(12 * (x - year) + 1 + .5 + .001)
-     dd.start <- as.Date(paste(year, month, 1, sep = "-")) 
-     dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
-     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
-}
-
-# test
-dd <- seq(as.Date("2000-01-01"), length = 5, by = 32)
-z <- zoo(1:5, as.yearmon2(dd))
-# shows index as yearmon class
-z
-# recover dates to show index as Date class
-aggregate(z, as.Date, force) 
-@
-
-\mysection{5. I have data frame with both numeric and factor columns.  How do I convert that to a zoo object?}
-
-A \code{"zoo"} object may be a numeric vector or matrix or a factor but not
-both.  You can convert it to two \code{"zoo"} variables:
+A \code{"zoo"} object may be (1) a numeric vector, (2) a numeric matrix or 
+(3) a factor but may not contain both a numeric vector and factor.  
+Use two \code{"zoo"} variables instead:
 
 <<factor-1>>=
 DF <- data.frame(time = 1:4, x = 1:4, f = factor(1:4))
@@ -155,16 +126,19 @@ zx <- zoo(DF$x, DF$time)
 zf <- zoo(DF$f, DF$time)
 @
 
-or you can convert the factor to numeric and then create a single
+or convert the factor to numeric and create a single
 \code{"zoo"} series:
 
 <<factor-2>>=
 z <- zoo(data.matrix(DF[-1]), DF$time)
 @
 
-\mysection{6. Why does lag these give slightly different results on a zoo and a zooreg series which are otherwise the same?}
+\mysection{5. Why does lag these give slightly different results on a zoo and a zooreg series which are otherwise the same?}
 
-To be definite let us consider the following examples:
+To be definite let us consider the following examples, noting how 
+both \code{code} and \code{diff} give a different answer with the same 
+input except its class is \code{"zoo"} in one case and \code{"zooreg"} in 
+another:
 <<lags>>=
 z <- zoo(11:15, as.Date("2008-01-01") + c(-4, 1, 2, 3, 6))
 zr <- as.zooreg(z)
@@ -177,25 +151,26 @@ diff(log(zr))
 @
 
 \code{lag.zoo} and \code{lag.zooreg} work differently.  For \code{"zoo"}
-objects the lagged version is obtained by moving the time points
+objects the lagged version is obtained by moving values 
 to the adjacent time point that exists in the series but for \code{"zooreg"} 
 objects the time is lagged by \code{deltat}, the time between adjacent
 regular times.
 
-A key difference is that in \code{"zooreg"} one can lag a point to a time point
+A key implication is that \code{"zooreg"} can lag a point to a time point
 that did not previously exist in the series and, in particular, can lag
 a series outside of the original time range whereas that is not possible
 in a \code{"zoo"} series.
 
-Note that \code{lag.zoo} has an \code{na.pad=} argument which may be what you 
-are looking for.
+Note that \code{lag.zoo} has an \code{na.pad=} argument which in some
+cases may be what is being sought here.
 
 The difference between \code{diff.zoo} and \code{diff.zooreg} stems from
 the fact that \code{diff(x)} is defined in terms of \code{lag} like
 this: \code{x-lag(x,-1)}.
 
-\mysection{7. How do I subtract the mean of each month from a zoo series?}
+\mysection{6. How do I subtract the mean of each month from a zoo series?}
 
+Suppose we have a daily series.
 To subtract the mean of Jan 2007 from each day in that month,
 subtract the mean of Feb 2007 from each day in that month, etc.
 try this:
@@ -215,6 +190,140 @@ try this:
 <<subtract-monthly-means-2>>=
 z.demean2 <- z - ave(z, format(time(z), "%m"))
 @
+
+\mysection{7. How do I create a monthly series but still keep track of the dates?}
+
+Create a \pkg{S3} subclass of \code{"yearmon"} called \code{"yearmon2"} that 
+stores the dates as names on the time vector.  It will be sufficient to create
+an \code{as.yearmon2} generic together with an
+\code{as.yearmon2.Date} methods as well as the inverse:
+\code{as.Date.yearmon2}.
+This new class will act the same as \code{"yearmon"} 
+stores and allows recovery of the dates using \code{as.Date} and
+\code{aggregate.zoo} as shown in the test at the end of this example:
+
+<<yearmon2>>=
+# as.yearmon2 generic and as.yearmon2.Date method
+as.yearmon2 <- function(x, ...) UseMethod("as.yearmon2")
+as.yearmon2.Date <- function(x, ...) {
+  y <- as.yearmon(with(as.POSIXlt(x, tz = "GMT"), 1900 + year + mon/12))
+  names(y) <- x
+  structure(y, class = c("yearmon2", class(y)))
+}
+
+# as.Date.yearmon2 is inverse of as.yearmon2.Date
+as.Date.yearmon2 <- function(x, frac = 0, ...) {
+     if (!is.null(names(x))) return(as.Date(names(x)))
+     x <- unclass(x)
+     year <- floor(x + .001)
+     month <- floor(12 * (x - year) + 1 + .5 + .001)
+     dd.start <- as.Date(paste(year, month, 1, sep = "-")) 
+     dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
+     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
+}
+
+# test
+dd <- seq(as.Date("2000-01-01"), length = 5, by = 32)
+z <- zoo(1:5, as.yearmon2(dd))
+# shows index as yearmon class
+z
+# recover dates to show index as Date class
+aggregate(z, as.Date, force) 
+@
+
+\mysection{8. How are axes added to a plot created using plot.zoo?}
+
+On single panel plots \code{axis} or \code{Axis} can be used just as with any 
+classic graphics plot in R.
+
+<<single-panel>>=
+# custom axis for single panel plot
+# label months but use larger year for Jan
+# months, quarters and years should have successively larger ticks
+z <- zoo(0:500, as.Date(0:500))
+plot(z, xaxt = "n")
+tt <- time(z)
+m <- unique(as.Date(as.yearmon(tt)))
+jan <- format(m, "%m") == "01"
+mlab <- substr(months(m[!jan]), 1, 1)
+Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+@
+
+A multivariate series can either be plotted as multiple single panel
+plots:
+
+<<multiplesingleplot>>=
+z3 <- cbind(z1 = z, z2 = 2*z, z3 = 3*z)
+opar <- par(mfrow = c(2, 2))
+tt <- time(z)
+m <- unique(as.Date(as.yearmon(tt)))
+jan <- format(m, "%m") == "01"
+mlab <- substr(months(m[!jan]), 1, 1)
+for(i in 1:ncol(z3)) {
+    plot(z3[,i], xaxt = "n", ylab = colnames(z3)[i], ylim = range(z3))
+    Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+    Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+    Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+}
+par(opar)
+@
+
+or as a multipanel plot.  In this case any custom axis must be
+placed in a panel function.
+
+<<multipanelplot>>=
+plot(z3, screen = 1:3, xaxt = "n", nc = 2, ylim = range(z3),
+  panel = function(...) {
+   lines(...)
+   panel.number <- parent.frame()$panel.number
+   nser <- parent.frame()$nser
+   # place axis on bottom panel of each column only
+   if (panel.number %% 2 == 0 || panel.number == nser) { 
+         tt <- list(...)[[1]]
+         m <- unique(as.Date(as.yearmon(tt)))
+         jan <- format(m, "%m") == "01"
+         mlab <- substr(months(m[!jan]), 1, 1)
+         Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+         Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+         Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+    }
+})
+@
+
+\mysection{9.  Why is nothing plotted except axes when I plot an 
+object with many NAs?}
+
+Isolated points surrounded by \code{NA} values do not form lines 
+so try one of the following:
+
+<<plot-with-na>>=
+z <- zoo(c(1, NA, 2, NA, 3))
+plot(z) # nothing appears plotted
+
+# try one of these
+
+# plot points rather than lines
+plot(z, type = "p") 
+
+# omit NAs and plot that
+plot(na.omit(z))
+
+# fill in the NAs with interpolated values
+plot(na.approx(z))
+
+# plot points with lines superimposed
+plot(z, type = "p")
+lines(na.omit(z))
+@
+
+Note that this is not specific to \pkg{zoo.}  If we
+plot in R without zoo we get the same behavior.
+
+\mysection{10. What other packages use zoo?}
+
+The packages on CRAN that depend on \pkg{zoo} are: \pkg{FinTS}, \pkg{PerformanceAnalytics}, \pkg{RBloomberg}, \pkg{dyn}, \pkg{dynlm}, \pkg{fUtilities}, \pkg{fda}, \pkg{fxregime}, \pkg{lmtest}, \pkg{party}, \pkg{sandwich}, \pkg{strucchange}, \pkg{tripEstimation}, \pkg{tseries} and \pkg{xts}.  Also these packages suggest the use of zoo with them: \pkg{TSSQLite}, \pkg{TSdbi}, \pkg{Zelig}, \pkg{gsubfn} and \pkg{pscl}.
 
 \end{document}
 

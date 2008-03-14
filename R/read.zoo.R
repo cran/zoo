@@ -29,10 +29,14 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, in
   if(is.data.frame(rval)) rval <- as.matrix(rval)
     
   ## index transformation functions
-  toDate <- if(missing(format)) function(x) as.Date(as.character(x))
-              else function(x) as.Date(as.character(x), format = format)
-  toPOSIXct <- function(x) as.POSIXct(as.character(x), tz = tz)
-  toDefault <- function(x) {
+  toDate <- if(missing(format)) function(x, ...) as.Date(as.character(x))
+              else function(x, format) as.Date(as.character(x), format = format)
+  toPOSIXct <- if (missing(format)) {
+        function(x, tz) as.POSIXct(as.character(x), tz = tz)
+  } else function(x, format, tz) {
+        as.POSIXct(strptime(as.character(x), tz = tz, format = format))
+  }
+  toDefault <- function(x, ...) {
     rval <- try(toPOSIXct(x), silent = TRUE)
     if(inherits(rval, "try-error"))
       rval <- try(toDate(x), silent = TRUE)
@@ -47,18 +51,23 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL, regular = FALSE, in
     if(inherits(rval, "try-error")) rval <- rep(NA, length(x))
     return(rval)
   }
-  toNumeric <- function(x) x
+  toNumeric <- function(x, ...) x
   
   ## setup default FUN
   if(is.null(FUN)) {
-    FUN <- if(!missing(format)) toDate
-           else if(!missing(tz)) toPOSIXct
-           else if(is.numeric(ix)) toNumeric
-           else toDefault        
+    FUN <- if (!missing(tz)) toPOSIXct
+        else if (!missing(format)) toDate
+        else if (is.numeric(ix)) toNumeric
+        else toDefault
   }
   
   ## compute index from (former) first column
-  ix <- FUN(ix)
+  ix <- if (missing(format)) {
+    if (missing(tz)) FUN(ix) else FUN(ix, tz = tz)
+  } else {
+    if (missing(tz)) FUN(ix, format = format) 
+    else FUN(ix, format = format, tz = tz)
+  }
   
   ## sanity checking
   if(any(is.na(ix))) stop("index contains NAs")

@@ -189,7 +189,7 @@ Analogously, the series can be aggregated to the last-traded-day of each week
 employing a convenience function \code{nextfri} that computes for each \code{"Date"}
 the next friday.
 <<last day of week>>=
-nextfri <- function(x) 7 * ceiling(as.numeric(x - 1)/7) + as.Date(1)
+nextfri <- function(x) 7 * ceiling(as.numeric(x-5+4) / 7) + as.Date(5-4)
 prices2returns(aggregate(na.locf(m), nextfri, tail, 1))
 @
 

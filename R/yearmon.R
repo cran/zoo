@@ -6,9 +6,14 @@ as.yearmon <- function(x, ...) UseMethod("as.yearmon")
 as.yearmon.default <- function(x, ...) as.yearmon(as.numeric(x))
 as.yearmon.numeric <- function(x, ...) yearmon(x)
 as.yearmon.integer <- function(x, ...) structure(x, class = "yearmon")
+as.yearmon.yearqtr <- function(x, frac = 0, ...) {
+    if (frac == 0) yearmon(as.numeric(x)) else
+    as.yearmon(as.Date(x, frac = frac), ...)
+}
 as.yearmon.dates <- 
 as.yearmon.Date <- 
 as.yearmon.POSIXt <- function(x, ...) as.yearmon(with(as.POSIXlt(x, tz="GMT"), 1900 + year + mon/12))
+as.yearmon.factor <- function(x, ...) as.yearmon(as.character(x), ...)
 as.yearmon.character <- function(x, format = "", ...) {
    if (format == "") {
         nch <- nchar(gsub("[^-]", "", x))
@@ -62,8 +67,11 @@ as.data.frame.yearmon <- function(x, row.names = NULL, optional = FALSE, ...)
 c.yearmon <- function(...)
     as.yearmon(do.call("c", lapply(list(...), as.numeric)))
 
+cycle.yearmon <- function(x, ...) as.numeric(months(x))
+
 format.yearmon <- function(x, format = "%b %Y", ...) 
 {
+    if (length(x) == 0) return(character(0))
     xx <- format(as.Date(x), format = format, ...)
     names(xx) <- names(x)
     xx
@@ -72,6 +80,14 @@ format.yearmon <- function(x, format = "%b %Y", ...)
 print.yearmon <- function(x, ...) { 
     print(format(x), ...)
     invisible(x) 
+}
+
+months.yearmon <- function(x, abbreviate) {
+    months(as.Date(x), abbreviate)
+}
+
+quarters.yearmon <- function(x, abbreviate) {
+    quarters(as.Date(x), abbreviate)
 }
 
 "[.yearmon" <- function (x, ..., drop = TRUE) 

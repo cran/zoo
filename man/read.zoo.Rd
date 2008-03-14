@@ -44,13 +44,18 @@ interpreted to be the index/time, the remaining columns the corresponding data.
 (If the file only has only column then that is assumed to be the data column and
 \code{1, 2, ...} are used for the index.)  To assign the appropriate class
 to the index, \code{FUN} can be specified and is applied to the first column.
-By default, \code{read.zoo} uses \code{as.Date(as.character(x), format = format)} if \code{format} is 
-specified and \code{as.POSIXct(as.character(x), tz = tz)} if \code{tz}
-is specified; otherwise it tries to guess between \code{"numeric"},
-\code{"Date"} and \code{"POSIXct"}.
 
-If \code{regular} is set to \code{TRUE} and the resulting series has an underlying
-regularity, it is coerced to a \code{"zooreg"} series.
+To process the index, \code{read.zoo} uses the first of the following that is
+true:  1. If \code{FUN} is specified then \code{read.zoo} calls \code{FUN} with
+the index as the first argument.  2. If \code{tz} is specified then the index 
+column is converted to \code{POSIXct}.  3. If \code{format} is specified
+then the index column is converted to \code{Date}.  4. A heuristic
+attempts to decide among \code{"numeric"}, \code{"Date"} and \code{"POSIXct"}.
+If \code{format} and/or \code{tz} is specified 
+then it is passed to the conversion function as well.
+
+If \code{regular} is set to \code{TRUE} and the resulting series has an 
+underlying regularity, it is coerced to a \code{"zooreg"} series.
 
 \code{write.zoo} is a convenience function for writing \code{"zoo"} series
 to text files. It first coerces its argument to a \code{"data.frame"}, adds
@@ -75,8 +80,23 @@ z <- read.zoo("foo.csv", sep = ",", FUN = as.yearmon)
 f <- function(x) as.yearmon(format(x, nsmall = 2), "\%Y.\%m")
 z <- read.zoo("foo.csv", header = TRUE, FUN = f)
 
-## turn *character* first column into Date index
+## turn *character* first column into "Date" index
 z <- read.zoo("foo.tab", format = "\%m/\%d/\%Y")
+
+## csv file with first column of form YYYY-mm-dd HH:MM:SS
+## Read in times as "chron" class. Requires chron 2.3-22 or later.
+z <- read.zoo("foo.csv", header = TRUE, sep = ",", FUN = as.chron)
+
+## same file format but read it in times as "POSIXct" class.
+z <- read.zoo("foo.csv", header = TRUE, sep = ",", tz = "")
+
+## csv file with first column mm-dd-yyyy. Read times as "Date" class.
+z <- read.zoo("foo.csv", header = TRUE, sep = ",", format = "\%m-\%d-\%Y")
+
+## whitespace separated file with first column of form YYYY-mm-ddTHH:MM:SS
+## and no headers.  T appears literally.  Requires chron 2.3-22 or later.
+z <- read.zoo("foo.csv", FUN = as.chron)
+ 
 }
 }
 \keyword{ts}

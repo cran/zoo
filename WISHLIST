@@ -101,6 +101,9 @@ FEATURES
       read.zoo(..., FUN = as.yearmon, format = "%Y.%m")
       and, in general, if format were passed to FUN if both are specified.
 
+  o identify.zoo
+
+
 INTERFACES
 **********
 
@@ -116,8 +119,6 @@ DOCUMENTATION & COMMUNICATION
   o some data to include with zoo
 
   o more examples for the help files
-
-  o FAQ
 
   o as of R 2.6.0 the example in aggregate.zoo.Rd that uses 
     duplicates(..., fromLast=) could be taken out of the \dontrun{}

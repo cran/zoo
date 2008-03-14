@@ -41,7 +41,7 @@ by interpolating the non-\code{NA} values before and after it.
 Leading \code{NA}s are omitted (if \code{na.rm = TRUE}) or not replaced (if \code{na.rm = FALSE}). 
 }
 
-\seealso{\code{\link{zoo}}, \code{\link{approx}}, \code{\link{spline}}, \code{\link[stinepack]{stinterp}}}
+\seealso{\code{\link{zoo}}, \code{\link{approx}}, \code{\link{na.contiguous}}, \code{link{na.locf}}, \code{\link{na.omit}}, \code{\link{na.trim}}, \code{\link{spline}}, \code{\link[stinepack]{stinterp}}} 
 
 \examples{
 

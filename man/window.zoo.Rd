@@ -17,14 +17,14 @@ of \code{"zoo"} objects and replacing it.
   \item{index}{the index/time window which should be extracted.}
   \item{start}{an index/time value. Only the indexes in \code{index}
     which are greater or equal to \code{start} are used.  If the index
-    class supports comparisons to character variables, as does \code{Date}
-    class and the \code{chron} package \code{dates} class, then \code{start} 
-    may alternately be a character variable.}
+    class supports comparisons to character variables, as does \code{"Date"}
+    class, \code{"yearmon"} class, \code{"yearqtr"} class and 
+    the \code{chron} package classes \code{"dates"} and \code{"times"}
+    then \code{start} may alternately be a character variable.}
   \item{end}{an index/time value. Only the indexes in \code{index}
-    which are lower or equal to \code{end} are used. (If the index
-    class supports comparisons to character variables, as does \code{Date}
-    class and the \code{chron} package \code{dates} class, then \code{end} 
-    may alternately be a character variable.)}
+    which are lower or equal to \code{end} are used.  Similar comments
+    about character variables mentioned under \code{start} apply
+    here too.}
   \item{value}{a suitable value object for use with \code{window(x)}.}
   \item{\dots}{currently not used.}
 }

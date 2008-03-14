@@ -7,6 +7,8 @@
 \alias{str.zoo}
 \alias{is.zoo}
 \alias{[.zoo}
+\alias{$.zoo}
+\alias{$<-.zoo}
 \alias{head.zoo}
 \alias{tail.zoo}
 \alias{Ops.zoo}
@@ -116,7 +118,9 @@ Methods to standard generics for \code{"zoo"} objects currently
 include: \code{print} (see above), \code{summary}, \code{str}, \code{head},
 \code{tail}, \code{[} (subsetting), \code{rbind}, \code{cbind}, \code{merge}
 (see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}), \code{barplot},
-\code{plot} and \code{lines} (see \code{\link{plot.zoo}}).
+\code{plot} and \code{lines} (see \code{\link{plot.zoo}}). For multivariate
+\code{"zoo"} series with column names the \code{$} extractor is available,
+behaving similar as for \code{"data.frame"} objects.
 
 To \dQuote{prettify} printed output of \code{"zoo"} series the generic 
 function \code{index2char} is used for turning index values into character
@@ -257,6 +261,12 @@ x1 <- zoo(1:5, 1:5)
 x2 <- zoo(2:6, 2:6)
 10 * x1 + x2
 
+## $ extractor for multivariate zoo series with column names
+z <- zoo(cbind(foo = rnorm(5), bar = rnorm(5)))
+z$foo
+z$xyz <- zoo(rnorm(3), 2:4)
+z
+
 ## add comments to a zoo object
 comment(x1) <- c("This is a very simple example of a zoo object.", "It can be recreated using this R code: example(zoo)")
 ## comments are not output by default but are still there
@@ -317,7 +327,6 @@ time(z6) <- na.approx(ifelse(duplicated(time(z6)), NA, time(z6)), na.rm = FALSE)
 # wind up as NAs and we cannot have NA times
 z6 <- z6[!is.na(time(z6))]
 z6
-
 }
 
 }
