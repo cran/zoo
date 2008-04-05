@@ -9,7 +9,8 @@ and writing \code{"zoo"} series from/to text files. They are convenience
 interfaces to \code{read.table} and \code{write.table}, respectively.
 }
 \usage{
-read.zoo(file, format = "", tz = "", FUN = NULL, regular = FALSE, index.column = 1, \dots)
+read.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, aggregate = FALSE, \dots)
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
 }
 \arguments{
@@ -31,6 +32,14 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     because the row names are just character representations of the index.}
   \item{col.names}{logical. Should column names be written? Default is to
     write column names only if \code{x} has column names.}
+  \item{aggregate}{logical or function. If set to \code{TRUE}, then \code{\link{aggregate.zoo}}
+    is applied to the zoo object created to compute the \code{\link{mean}} of all values with
+    the same time index. Alternatively, \code{aggregate} can be set to any other
+    function that should be used for aggregation.
+    If \code{FALSE} (the default), no aggregation is performed and a warning
+    is given if there are any duplicated time indexes.  Note that most
+    \code{zoo} functions do not accept objects with duplicate time indexes. 
+    See \code{\link{aggregate.zoo}}.}
   \item{\dots}{further arguments passed to \code{\link{read.table}} or
     \code{\link{write.table}}, respectively.}
 }

@@ -177,3 +177,8 @@ scale.zoo <- function (x, center = TRUE, scale = TRUE) {
 	x
 }
 
+with.zoo <- function(data, expr, ...) {
+    stopifnot(length(dim(data)) == 2)
+    eval(substitute(expr), as.list(data), enclos = parent.frame())
+}
+

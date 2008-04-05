@@ -281,7 +281,8 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
 	rval[[1]]
     # return if vector since remaining processing is only for column names
     if (length(dim(rval)) == 0) {
-      rval <- zoo(rval, indexes)
+      # fixed bug: coredata was missing
+      rval <- zoo(coredata(rval), indexes)
       attr(rval, "frequency") <- freq
       if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
       return(rval)

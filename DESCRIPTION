@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.5-0
-Date: 2008-03-14
+Version: 1.5-2
+Date: 2008-04-05
 Title: Z's ordered observations
 Author: Achim Zeileis, Gabor Grothendieck
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
@@ -16,4 +16,4 @@ Imports: stats, utils, graphics, grDevices, lattice
 LazyLoad: yes
 License: GPL-2
 URL: http://R-Forge.R-project.org/projects/zoo/
-Packaged: Fri Mar 14 17:28:25 2008; zeileis
+Packaged: Sat Apr  5 05:45:21 2008; zeileis

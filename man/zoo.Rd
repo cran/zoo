@@ -1,5 +1,6 @@
 \name{zoo}
 \alias{zoo}
+\alias{with.zoo}
 \alias{range.zoo}
 \alias{print.zoo}
 \alias{as.zoo.factor}

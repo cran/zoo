@@ -141,6 +141,7 @@ export(
   S3method("time<-", "zoo")
   S3method("window", "zoo")
   S3method("window<-", "zoo")
+  S3method("with", "zoo")
   S3method("xyplot", "zoo")
 
 ## methods for class zooreg

@@ -47,8 +47,12 @@ portion of \pkg{zoo} will not accept
 duplicates among the times.  Typically duplicates are eliminated by
 averaging over them, taking the last among each run of duplicates
 or interpolating the duplicates and deleting ones on the end that
-cannot be interpolated.  These three approaches are shown here. Note
-that in the code below that \code{force} is the identity 
+cannot be interpolated.  These three approaches are shown here
+using the \code{aggregate.zoo} function.  Another way to do this
+is to use the \code{aggregate} argument of \code{read.zoo} which 
+will aggregate the zoo object read in by \code{read.zoo} all in one step.
+Note
+that in the example code below that \code{force} is the identity 
 function (i.e. it just returns its argument).  It 
 is an \pkg{R} core function:
 
@@ -323,7 +327,32 @@ plot in R without zoo we get the same behavior.
 
 \mysection{10. What other packages use zoo?}
 
-The packages on CRAN that depend on \pkg{zoo} are: \pkg{FinTS}, \pkg{PerformanceAnalytics}, \pkg{RBloomberg}, \pkg{dyn}, \pkg{dynlm}, \pkg{fUtilities}, \pkg{fda}, \pkg{fxregime}, \pkg{lmtest}, \pkg{party}, \pkg{sandwich}, \pkg{strucchange}, \pkg{tripEstimation}, \pkg{tseries} and \pkg{xts}.  Also these packages suggest the use of zoo with them: \pkg{TSSQLite}, \pkg{TSdbi}, \pkg{Zelig}, \pkg{gsubfn} and \pkg{pscl}.
+\begin{tabular}{|l|p{10cm}|} \hline
+\multicolumn{2}{|l|}{\emph{Depends}} \\ \hline
+\pkg{dyn} & Time-series regression \\
+\pkg{dynlm} & Dynamic linear regression \\
+\pkg{fda} & Functional data analysis \\
+\pkg{FinTS} & Companion to Tsay's ``Analysis of financial time series'' \\
+\pkg{fUtilities} & \pkg{Rmetrics} function utilities \\
+\pkg{fxregime} & Exchange rate regime analysis \\
+\pkg{lmtest} & Testing linear regression models \\
+\pkg{party} & Recursive partytioning toolbox \\
+\pkg{PerformanceAnalytics} & Econometric tools for performance and risk analysis \\
+\pkg{quantmod} & Quantitative financial modelling framework \\
+\pkg{RBloomberg} & \proglang{R}/\pkg{Bloomberg} interface \\
+\pkg{sandwich} & Robust covariance matrix estimators \\
+\pkg{strucchange} & Testing, monitoring, and dating structural changes \\
+\pkg{tripEstimation} & Metropolis sampler and supporting functions for
+  estimating animal movement from archival tags and satellite fixes \\
+\pkg{tseries} & Time series analysis and computational finance \\
+\pkg{xts} & Extensible time series \\ \hline
+\multicolumn{2}{|l|}{\emph{Suggests}} \\ \hline
+\pkg{gsubfn} & Utilities for strings and function arguments \\
+\pkg{pscl} & Political Science Computational Laboratory, Stanford University \\
+\pkg{TSSQLite} & Time series database interface extentions for \pkg{SQLite} \\
+\pkg{TSdbi} & Time series database interface \\
+\pkg{Zelig} & Everyone's statistical software \\ \hline
+\end{tabular}
 
 \end{document}
 
