@@ -25,6 +25,11 @@ as.zoo.its <- function(x, ...)
 	zoo(x, index, ...)
 }
 
+as.zoo.timeSeries <- function(x, ...) {
+  stopifnot(require("fSeries"))
+  zoo(as.matrix(x), time(x), ...)  
+}
+
 as.zoo.zoo <- function(x, ...) x
 
 ## This should be in its now.

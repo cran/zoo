@@ -1,4 +1,4 @@
-\documentclass{Z}
+\documentclass[article,nojss]{jss}
 \DeclareGraphicsExtensions{.pdf,.eps}
 \newcommand{\mysection}[1]{\subsubsection[#1]{\textbf{#1}}}
 
@@ -16,6 +16,16 @@
 
 \Abstract{This is a collection of frequently asked questions (FAQ) about the \pkg{zoo} package together with their answers. }
 
+\Address{
+  Gabor Grothendieck\\
+  GKX Associates Inc.\\
+  E-mail: \email{ggrothendieck@gmail.com}\\
+  
+  Achim Zeileis\\
+  Wirtschaftsuniversit\"at Wien\\
+  E-mail: \email{Achim.Zeileis@R-project.org}\\  
+}
+  
 \begin{document}
 
 \SweaveOpts{engine=R,eps=FALSE}
@@ -94,7 +104,7 @@ plot(z, log = "y", panel = function(..., log) lines(...))
 The following shows an example of creating plot containing a single
 panel in with both left and right axes.  
 
-<<plot-axes,fig=TRUE,height=6,split=TRUE,include=FALSE,prefix=FALSE>>=
+<<plot-axes,fig=TRUE, height=4.5, width=6,split=TRUE,include=FALSE,prefix=FALSE>>=
 set.seed(1)
 z.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
 z <- zoo(cbind(left = rnorm(5), right = rnorm(5, sd = 0.2)), z.Date)
@@ -104,7 +114,7 @@ opar <- par(usr = c(par("usr")[1:2], range(z[,2])))
 lines(z[,2], lty = 2)
 # axis(4)
 Axis(side = 4)
-legend("bottomright", lty = 1:2, legend = colnames(z))
+legend("bottomright", lty = 1:2, legend = colnames(z), bty="n")
 par(opar)
 @
 
@@ -113,7 +123,7 @@ par(opar)
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics{plot-axes}
-\caption{\label{fig:plot-axes} Left and right plot.zoo axes.}
+\caption{\label{fig:plot-axes} Left and right \code{plot.zoo} axes.}
 \end{center}
 \end{figure}
 
@@ -329,6 +339,7 @@ plot in R without zoo we get the same behavior.
 
 \begin{tabular}{|l|p{10cm}|} \hline
 \multicolumn{2}{|l|}{\emph{Depends}} \\ \hline
+\pkg{BootPR} & Bootstrap prediction intervals and bias-corrected forecasting \\
 \pkg{dyn} & Time-series regression \\
 \pkg{dynlm} & Dynamic linear regression \\
 \pkg{fda} & Functional data analysis \\

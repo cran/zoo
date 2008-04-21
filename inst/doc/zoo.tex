@@ -50,23 +50,13 @@
 
 \begin{document}
 
-\SweaveOpts{engine=R,eps=FALSE}
+
 %\VignetteIndexEntry{zoo: An S3 Class and Methods for Indexed Totally Ordered Observations}
 %\VignetteDepends{zoo,tseries,fCalendar,fSeries,strucchange,DAAG}
 %\VignetteKeywords{totally ordered observations, irregular time series, S3, R}
 %\VignettePackage{zoo}
 
 
-<<preliminaries,echo=FALSE,results=hide>>=
-library("zoo")
-library("tseries")
-library("strucchange")
-library("fCalendar")
-library("fSeries")
-online <- FALSE ## if set to FALSE the local copy of MSFT.rda
-                ## is used instead of get.hist.quote()
-options(prompt = "R> ")
-@
 
 \section{Introduction} \label{sec:intro}
 
@@ -201,32 +191,42 @@ non-generic functions \code{order()} and \code{match()} work for this class.
 To illustrate the usage of \code{zoo()}, we first load the package and set the
 random seed to make the examples in this paper exactly reproducible.
 
-<<zoo-prelim>>=
-library("zoo")
-set.seed(1071)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> library("zoo")
+R> set.seed(1071)
+\end{Sinput}
+\end{Schunk}
 
 Then, we create two vectors \code{z1} and \code{z2} with \code{"POSIXct"} 
 indexes, one with random observations
-<<zoo-vectors1>>=
-z1.index <- ISOdatetime(2004, rep(1:2,5), sample(28,10), 0, 0, 0)
-z1.data <- rnorm(10)
-z1 <- zoo(z1.data, z1.index)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z1.index <- ISOdatetime(2004, rep(1:2, 5), sample(28, 10), 0, 
++     0, 0)
+R> z1.data <- rnorm(10)
+R> z1 <- zoo(z1.data, z1.index)
+\end{Sinput}
+\end{Schunk}
 and one with a sine wave
-<<zoo-vectors2>>=
-z2.index <- as.POSIXct(paste(2004, rep(1:2, 5), sample(1:28, 10), sep = "-"))
-z2.data <- sin(2*1:10/pi)
-z2 <- zoo(z2.data, z2.index)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z2.index <- as.POSIXct(paste(2004, rep(1:2, 5), sample(1:28, 
++     10), sep = "-"))
+R> z2.data <- sin(2 * 1:10/pi)
+R> z2 <- zoo(z2.data, z2.index)
+\end{Sinput}
+\end{Schunk}
 Furthermore, we create a matrix \code{Z} with random observations and a \code{"Date"}
 index
-<<zoo-matrix>>=
-Z.index <- as.Date(sample(12450:12500, 10))
-Z.data <- matrix(rnorm(30), ncol = 3)
-colnames(Z.data) <- c("Aa", "Bb", "Cc")
-Z <- zoo(Z.data, Z.index)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> Z.index <- as.Date(sample(12450:12500, 10))
+R> Z.data <- matrix(rnorm(30), ncol = 3)
+R> colnames(Z.data) <- c("Aa", "Bb", "Cc")
+R> Z <- zoo(Z.data, Z.index)
+\end{Sinput}
+\end{Schunk}
 In the examples above, the generation of indexes looks a bit awkward
 due to the fact the indexes need to be randomly generated (and there 
 are no special functions for random indexes because these are rarely 
@@ -245,15 +245,52 @@ the following.
 
 There are three printing code styles for \code{"zoo"} objects: vectors are by default
 printed in \code{"horizontal"} style
-<<print1>>=
-z1
-z1[3:7]
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z1
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
+ 0.74675994  0.02107873 -0.29823529  0.68625772  1.94078850  1.27384445 
+ 2004-02-12  2004-02-16  2004-02-20  2004-02-24 
+ 0.22170438 -2.07607585 -1.78439244 -0.19533304 
+\end{Soutput}
+\begin{Sinput}
+R> z1[3:7]
+\end{Sinput}
+\begin{Soutput}
+2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+-0.2982353  0.6862577  1.9407885  1.2738445  0.2217044 
+\end{Soutput}
+\end{Schunk}
 and matrices in \code{"vertical"} style
-<<print2>>=
-Z
-Z[1:3, 2:3]
-@
+\begin{Schunk}
+\begin{Sinput}
+R> Z
+\end{Sinput}
+\begin{Soutput}
+                   Aa         Bb          Cc
+2004-02-02  1.2554339  0.6815732 -0.63292049
+2004-02-08 -1.4945833  1.3234122 -1.49442269
+2004-02-09 -1.8746225 -0.8732929  0.62733971
+2004-02-21 -0.1453861  0.4523490 -0.14597401
+2004-02-22  0.2254242  0.5383894  0.23136133
+2004-02-29  1.2069552  0.3181422 -0.01129202
+2004-03-05 -1.2086102  1.4237978 -0.81614483
+2004-03-10 -0.1103956  1.3477425  0.95522468
+2004-03-14  0.8420238 -2.7384202  0.23150695
+2004-03-20 -0.1901910  0.1230887 -1.51862157
+\end{Soutput}
+\begin{Sinput}
+R> Z[1:3, 2:3]
+\end{Sinput}
+\begin{Soutput}
+                   Bb         Cc
+2004-02-02  0.6815732 -0.6329205
+2004-02-08  1.3234122 -1.4944227
+2004-02-09 -0.8732929  0.6273397
+\end{Soutput}
+\end{Schunk}
 Additionally, there is a \code{"plain"} style which simply first prints the data 
 and then the index.
 
@@ -264,9 +301,15 @@ like to be able to index with the index class. This is also available in \code{[
 which only uses vector/matrix-type subsetting if its first argument is of class
 \code{"numeric"}, \code{"integer"} or \code{"logical"}.
 
-<<subset>>=
-z1[ISOdatetime(2004, 1, c(14, 25), 0, 0, 0)]
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z1[ISOdatetime(2004, 1, c(14, 25), 0, 0, 0)]
+\end{Sinput}
+\begin{Soutput}
+2004-01-14 2004-01-25 
+0.02107873 0.68625772 
+\end{Soutput}
+\end{Schunk}
 
 If the index class happens to be \code{"numeric"}, the index has to be either insulated in \code{I()}
 like \code{z[I(i)]} or the  \code{window()} method can be used (see Section~\ref{sec:window}).
@@ -275,10 +318,32 @@ Summaries and most other methods for \code{"zoo"} objects are carried out
 column wise, reflecting the rectangular structure. In addition,
 a summary of the index is provided.
 
-<<summary>>=
-summary(z1)
-summary(Z)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> summary(z1)
+\end{Sinput}
+\begin{Soutput}
+     Index                           z1          
+ Min.   :2004-01-05 00:00:00   Min.   :-2.07608  
+ 1st Qu.:2004-01-20 12:00:00   1st Qu.:-0.27251  
+ Median :2004-02-01 12:00:00   Median : 0.12139  
+ Mean   :2004-02-01 09:36:00   Mean   : 0.05364  
+ 3rd Qu.:2004-02-15 00:00:00   3rd Qu.: 0.73163  
+ Max.   :2004-02-24 00:00:00   Max.   : 1.94079  
+\end{Soutput}
+\begin{Sinput}
+R> summary(Z)
+\end{Sinput}
+\begin{Soutput}
+     Index                  Aa                Bb                Cc          
+ Min.   :2004-02-02   Min.   :-1.8746   Min.   :-2.7384   Min.   :-1.51862  
+ 1st Qu.:2004-02-12   1st Qu.:-0.9540   1st Qu.: 0.1719   1st Qu.:-0.77034  
+ Median :2004-02-25   Median :-0.1279   Median : 0.4954   Median :-0.07863  
+ Mean   :2004-02-25   Mean   :-0.1494   Mean   : 0.2597   Mean   :-0.25739  
+ 3rd Qu.:2004-03-08   3rd Qu.: 0.6879   3rd Qu.: 1.1630   3rd Qu.: 0.23147  
+ Max.   :2004-03-20   Max.   : 1.2554   Max.   : 1.4238   Max.   : 0.95522  
+\end{Soutput}
+\end{Schunk}
 
 
 \subsection[Creation of "zooreg" objects]{Creation of \code{"zooreg"} objects}
@@ -330,12 +395,28 @@ and are discussed in Section~\ref{sec:yearmon}.}
 
 The following calls yield equivalent series
 
-<<zooreg1>>=
-zr1 <- zooreg(sin(1:9), start = 2000, frequency = 4)
-zr2 <- zoo(sin(1:9), seq(2000, 2002, by = 1/4), 4)
-zr1
-zr2
-@
+\begin{Schunk}
+\begin{Sinput}
+R> zr1 <- zooreg(sin(1:9), start = 2000, frequency = 4)
+R> zr2 <- zoo(sin(1:9), seq(2000, 2002, by = 1/4), 4)
+R> zr1
+\end{Sinput}
+\begin{Soutput}
+   2000(1)    2000(2)    2000(3)    2000(4)    2001(1)    2001(2)    2001(3) 
+ 0.8414710  0.9092974  0.1411200 -0.7568025 -0.9589243 -0.2794155  0.6569866 
+   2001(4)    2002(1) 
+ 0.9893582  0.4121185 
+\end{Soutput}
+\begin{Sinput}
+R> zr2
+\end{Sinput}
+\begin{Soutput}
+   2000(1)    2000(2)    2000(3)    2000(4)    2001(1)    2001(2)    2001(3) 
+ 0.8414710  0.9092974  0.1411200 -0.7568025 -0.9589243 -0.2794155  0.6569866 
+   2001(4)    2002(1) 
+ 0.9893582  0.4121185 
+\end{Soutput}
+\end{Schunk}
 
 to which methods to standard generic functions for regular series can be
 applied, such as \code{frequency}, \code{deltat}, \code{cycle}.
@@ -343,12 +424,28 @@ applied, such as \code{frequency}, \code{deltat}, \code{cycle}.
 As stated above, the advantage of \code{"zooreg"} series is that they remain
 regular even if an internal observation is dropped:
 
-<<zooreg2>>=
-zr1 <- zr1[-c(3, 5)]
-zr1
-class(zr1)
-frequency(zr1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> zr1 <- zr1[-c(3, 5)]
+R> zr1
+\end{Sinput}
+\begin{Soutput}
+   2000(1)    2000(2)    2000(4)    2001(2)    2001(3)    2001(4)    2002(1) 
+ 0.8414710  0.9092974 -0.7568025 -0.2794155  0.6569866  0.9893582  0.4121185 
+\end{Soutput}
+\begin{Sinput}
+R> class(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] "zooreg" "zoo"   
+\end{Soutput}
+\begin{Sinput}
+R> frequency(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] 4
+\end{Soutput}
+\end{Schunk}
 
 This facilitates \code{NA} handling significantly compared to \code{"ts"} and makes
 \code{"zooreg"} a much more attractive data type, e.g., for time series regression.
@@ -356,29 +453,66 @@ This facilitates \code{NA} handling significantly compared to \code{"ts"} and ma
 \code{zooreg()} can also deal with non-numeric indexes provided that adding \code{"numeric"}
 observations to the index class preserves the class and does not coerce to \code{"numeric"}.
 
-<<zooreg1b>>=
-zooreg(1:5, start = as.Date("2005-01-01"))
-@
+\begin{Schunk}
+\begin{Sinput}
+R> zooreg(1:5, start = as.Date("2005-01-01"))
+\end{Sinput}
+\begin{Soutput}
+2005-01-01 2005-01-02 2005-01-03 2005-01-04 2005-01-05 
+         1          2          3          4          5 
+\end{Soutput}
+\end{Schunk}
 
 
 To check whether a certain series is (strictly) regular, the new generic function
 \code{is.regular(x, strict = FALSE)} can be used:
 
-<<zooreg3>>=
-is.regular(zr1)
-is.regular(zr1, strict = TRUE)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> is.regular(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+R> is.regular(zr1, strict = TRUE)
+\end{Sinput}
+\begin{Soutput}
+[1] FALSE
+\end{Soutput}
+\end{Schunk}
 
 This function (and also the \code{frequency}, \code{deltat} and \code{cycle}) also 
 work for \code{"zoo"} objects if the regularity can still be inferred from the data:
 
-<<zooreg4>>=
-zr1 <- as.zoo(zr1)
-zr1
-class(zr1)
-is.regular(zr1)
-frequency(zr1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> zr1 <- as.zoo(zr1)
+R> zr1
+\end{Sinput}
+\begin{Soutput}
+      2000    2000.25    2000.75    2001.25     2001.5    2001.75       2002 
+ 0.8414710  0.9092974 -0.7568025 -0.2794155  0.6569866  0.9893582  0.4121185 
+\end{Soutput}
+\begin{Sinput}
+R> class(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] "zoo"
+\end{Soutput}
+\begin{Sinput}
+R> is.regular(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+R> frequency(zr1)
+\end{Sinput}
+\begin{Soutput}
+[1] 4
+\end{Soutput}
+\end{Schunk}
 
 Of course, inferring the underlying regularity is not always reliable and it is safer
 to store a regular series as a \code{"zooreg"} object if it is intended to be a regular series.
@@ -388,10 +522,23 @@ with \code{NA}s (see also Section~\ref{sec:NA}).
 For strictly regular series with numeric index, the class can be switched
 between \code{"zoo"} and \code{"ts"} without loss of information.
 
-<<zooreg5>>=
-as.ts(zr1)
-identical(zr2, as.zoo(as.ts(zr2)))
-@
+\begin{Schunk}
+\begin{Sinput}
+R> as.ts(zr1)
+\end{Sinput}
+\begin{Soutput}
+           Qtr1       Qtr2       Qtr3       Qtr4
+2000  0.8414710  0.9092974         NA -0.7568025
+2001         NA -0.2794155  0.6569866  0.9893582
+2002  0.4121185                                 
+\end{Soutput}
+\begin{Sinput}
+R> identical(zr2, as.zoo(as.ts(zr2)))
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\end{Schunk}
 
 This enables direct use of functions such as \code{acf}, \code{arima}, \code{stl} etc. on \code{"zooreg"}
 objects as these methods coerce to \code{"ts"} first. 
@@ -408,31 +555,29 @@ and \code{lines} methods being available for the index class which can
 plot the index against the observations.
 
 By default the \code{plot} method creates a panel for each series
-<<plot1,eval=FALSE>>=
-plot(Z)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> plot(Z)
+\end{Sinput}
+\end{Schunk}
 but can also display all series in a single panel
-<<plot2,eval=FALSE>>=
-plot(Z, plot.type = "single", col = 2:4)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> plot(Z, plot.type = "single", col = 2:4)
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[b!]
 \begin{center}
-<<plot2-repeat,fig=TRUE,height=4,width=6,echo=FALSE>>=
-<<plot2>>
-@
+\includegraphics{zoo-plot2-repeat}
 \caption{\label{fig:plot2} Example of a single panel plot}
 \end{center}
 \end{figure}
 
 \begin{figure}[p]
 \begin{center}
-<<plot1-repeat,fig=TRUE,height=5,width=6,echo=FALSE>>=
-<<plot1>>
-@
-<<plot3,fig=TRUE,height=5,width=6,echo=FALSE>>=
-plot(Z, type = "b", lty = 1:3, pch = list(Aa = 1:5, Bb = 2, Cc = 4), col = list(Bb = 2, 4))
-@
+\includegraphics{zoo-plot1-repeat}
+\includegraphics{zoo-plot3}
 \caption{\label{fig:plot13} Examples of multiple panel plots}
 \end{center}
 \end{figure}
@@ -443,9 +588,12 @@ plotting character \code{pch} and line type \code{lty} can be
 expanded to the number of series. But the \code{plot} method for
 \code{"zoo"} objects offers some more flexibility in specification
 of graphical parameters as in
-<<plot3-repeat,eval=FALSE>>=
-<<plot3>>
-@
+\begin{Schunk}
+\begin{Sinput}
+R> plot(Z, type = "b", lty = 1:3, pch = list(Aa = 1:5, Bb = 2, Cc = 4), 
++     col = list(Bb = 2, 4))
+\end{Sinput}
+\end{Schunk}
 The argument \code{lty} behaves as before and sets every series in another
 line type. The \code{pch} argument is a named list that assigns to each series
 a different vector of plotting characters each of which is expanded to the 
@@ -465,16 +613,46 @@ both methods for combining the rows and columns of \code{"zoo"}
 objects respectively. For the \code{rbind} method the number of
 columns of the combined objects has to be identical and the
 indexes may not overlap.
-<<rbind>>=
-rbind(z1[5:10], z1[2:3])
-@
+\begin{Schunk}
+\begin{Sinput}
+R> rbind(z1[5:10], z1[2:3])
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-14  2004-01-19  2004-01-27  2004-02-07  2004-02-12  2004-02-16 
+ 0.02107873 -0.29823529  1.94078850  1.27384445  0.22170438 -2.07607585 
+ 2004-02-20  2004-02-24 
+-1.78439244 -0.19533304 
+\end{Soutput}
+\end{Schunk}
 The \code{c} method simply calls \code{rbind} and hence behaves in the same way.
 
 The \code{cbind} method by default combines the columns by the union of
 the indexes and fills the created gaps by \code{NA}s.
-<<cbind>>=
-cbind(z1, z2)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> cbind(z1, z2)
+\end{Sinput}
+\begin{Soutput}
+                    z1          z2
+2004-01-03          NA  0.94306673
+2004-01-05  0.74675994 -0.04149429
+2004-01-14  0.02107873          NA
+2004-01-17          NA  0.59448077
+2004-01-19 -0.29823529 -0.52575918
+2004-01-24          NA -0.96739776
+2004-01-25  0.68625772          NA
+2004-01-27  1.94078850          NA
+2004-02-07  1.27384445          NA
+2004-02-08          NA  0.95605566
+2004-02-12  0.22170438 -0.62733473
+2004-02-13          NA -0.92845336
+2004-02-16 -2.07607585          NA
+2004-02-20 -1.78439244          NA
+2004-02-24 -0.19533304          NA
+2004-02-25          NA  0.56060280
+2004-02-26          NA  0.08291711
+\end{Soutput}
+\end{Schunk}
 In fact, the \code{cbind} method is synonymous with the \code{merge}
 method\footnote{Note, that in some situations the column naming in the
 resulting object is somewhat problematic in the \code{cbind} method
@@ -483,9 +661,17 @@ column names.}
 except that the latter provides additional arguments
 which allow for combining the columns by the intersection
 of the indexes using the argument \code{all = FALSE}
-<<merge>>=
-merge(z1, z2, all = FALSE)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> merge(z1, z2, all = FALSE)
+\end{Sinput}
+\begin{Soutput}
+                   z1          z2
+2004-01-05  0.7467599 -0.04149429
+2004-01-19 -0.2982353 -0.52575918
+2004-02-12  0.2217044 -0.62733473
+\end{Soutput}
+\end{Schunk}
 Additionally, the filling pattern can be changed in \code{merge},
 the naming of the
 columns can be modified and the return class of the result can
@@ -505,9 +691,24 @@ then \code{merge} gives plain vectors/factors/matrices the index of the
 first argument (if it is of the same length). Scalars are always added for
 the full index without missing values.
 
-<<merge2>>=
-merge(z1, pi, 1:10)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> merge(z1, pi, 1:10)
+\end{Sinput}
+\begin{Soutput}
+                    z1       pi 1:10
+2004-01-05  0.74675994 3.141593    1
+2004-01-14  0.02107873 3.141593    2
+2004-01-19 -0.29823529 3.141593    3
+2004-01-25  0.68625772 3.141593    4
+2004-01-27  1.94078850 3.141593    5
+2004-02-07  1.27384445 3.141593    6
+2004-02-12  0.22170438 3.141593    7
+2004-02-16 -2.07607585 3.141593    8
+2004-02-20 -1.78439244 3.141593    9
+2004-02-24 -0.19533304 3.141593   10
+\end{Soutput}
+\end{Schunk}
 
 Another function which performs operations along a subset of indexes
 is \code{aggregate}, which is discussed in this section although
@@ -524,11 +725,25 @@ is returned---in the second example, only the function that computes
 the grouping (when applied to \verb/index(Z)/) is supplied and
 the first observation is used for aggregation.
 
-<<aggregate>>=
-firstofmonth <- function(x) as.Date(sub("..$", "01", format(x)))
-aggregate(Z, firstofmonth(index(Z)), mean)
-aggregate(Z, firstofmonth, head, 1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> firstofmonth <- function(x) as.Date(sub("..$", "01", format(x)))
+R> aggregate(Z, firstofmonth(index(Z)), mean)
+\end{Sinput}
+\begin{Soutput}
+                   Aa         Bb         Cc
+2004-02-01 -0.1377964 0.40676219 -0.2376514
+2004-03-01 -0.1667933 0.03905223 -0.2870087
+\end{Soutput}
+\begin{Sinput}
+R> aggregate(Z, firstofmonth, head, 1)
+\end{Sinput}
+\begin{Soutput}
+                  Aa        Bb         Cc
+2004-02-01  1.255434 0.6815732 -0.6329205
+2004-03-01 -1.208610 1.4237978 -0.8161448
+\end{Soutput}
+\end{Schunk}
 
 
 \subsection{Mathematical operations}
@@ -539,19 +754,46 @@ objects, \pkg{zoo} extends group generic functions \code{Ops}.
 These perform the operations only for the intersection of the
 indexes of the objects. As an example, the summation and logical
 comparison with $<$ of \code{z1} and \code{z2} yield
-<<Ops>>=
-z1 + z2
-z1 < z2
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z1 + z2
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-02-12 
+ 0.7052657 -0.8239945 -0.4056304 
+\end{Soutput}
+\begin{Sinput}
+R> z1 < z2
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-02-12 
+     FALSE      FALSE      FALSE 
+\end{Soutput}
+\end{Schunk}
 
 Additionally, methods for transposing \code{t} of \code{"zoo"}
 objects---which coerces to a matrix before---and 
 computing cumulative quantities such as
 \code{cumsum}, \code{cumprod}, \code{cummin}, \code{cummax}
 which are all applied column wise.
-<<cumsum>>=
-cumsum(Z)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> cumsum(Z)
+\end{Sinput}
+\begin{Soutput}
+                   Aa        Bb         Cc
+2004-02-02  1.2554339 0.6815732 -0.6329205
+2004-02-08 -0.2391494 2.0049854 -2.1273432
+2004-02-09 -2.1137718 1.1316925 -1.5000035
+2004-02-21 -2.2591579 1.5840415 -1.6459775
+2004-02-22 -2.0337337 2.1224309 -1.4146162
+2004-02-29 -0.8267785 2.4405731 -1.4259082
+2004-03-05 -2.0353888 3.8643710 -2.2420530
+2004-03-10 -2.1457844 5.2121135 -1.2868283
+2004-03-14 -1.3037606 2.4736933 -1.0553214
+2004-03-20 -1.4939516 2.5967820 -2.5739429
+\end{Soutput}
+\end{Schunk}
 
 
 \subsection{Extracting and replacing the data and the index}
@@ -572,11 +814,25 @@ more general purpose generic functions. See the respective manual
 page for more details.}
 with methods for \code{"zoo"} objects as illustrated in the following
 example.
-<<coredata>>=
-coredata(z1)
-coredata(z1) <- 1:10
-z1
-@
+\begin{Schunk}
+\begin{Sinput}
+R> coredata(z1)
+\end{Sinput}
+\begin{Soutput}
+ [1]  0.74675994  0.02107873 -0.29823529  0.68625772  1.94078850  1.27384445
+ [7]  0.22170438 -2.07607585 -1.78439244 -0.19533304
+\end{Soutput}
+\begin{Sinput}
+R> coredata(z1) <- 1:10
+R> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         1          2          3          4          5          6          7 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         10 
+\end{Soutput}
+\end{Schunk}
 
 The index associated with a \code{"zoo"} object can be extracted
 by \code{index} and modified by \mbox{\code{index<-}.} As the interpretation
@@ -584,21 +840,46 @@ of the index as ``time'' in time series applications is natural,
 there are also synonymous methods \code{time} and \code{time<-}. 
 Hence, the commands \code{index(z2)} and \code{time(z2)}
 return equivalent results.
-<<index>>=
-index(z2)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> index(z2)
+\end{Sinput}
+\begin{Soutput}
+ [1] "2004-01-03 CET" "2004-01-05 CET" "2004-01-17 CET" "2004-01-19 CET"
+ [5] "2004-01-24 CET" "2004-02-08 CET" "2004-02-12 CET" "2004-02-13 CET"
+ [9] "2004-02-25 CET" "2004-02-26 CET"
+\end{Soutput}
+\end{Schunk}
 The index scale of \code{z2} can be changed to that of \code{z1} by
-<<index2>>=
-index(z2) <- index(z1)
-z2
-@
+\begin{Schunk}
+\begin{Sinput}
+R> index(z2) <- index(z1)
+R> z2
+\end{Sinput}
+\begin{Soutput}
+ 2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
+ 0.94306673 -0.04149429  0.59448077 -0.52575918 -0.96739776  0.95605566 
+ 2004-02-12  2004-02-16  2004-02-20  2004-02-24 
+-0.62733473 -0.92845336  0.56060280  0.08291711 
+\end{Soutput}
+\end{Schunk}
 
 The start and the end of the index/time vector can be queried by
 \code{start} and \code{end}:
-<<startend>>=
-start(z1)
-end(z1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> start(z1)
+\end{Sinput}
+\begin{Soutput}
+[1] "2004-01-05 CET"
+\end{Soutput}
+\begin{Sinput}
+R> end(z1)
+\end{Sinput}
+\begin{Soutput}
+[1] "2004-02-24 CET"
+\end{Soutput}
+\end{Schunk}
 
 
 To work on both data and index/time, \pkg{zoo} provides
@@ -611,20 +892,44 @@ where \code{x} is the \code{"zoo"} object, \code{index} is a set
 of indexes to be selected (by default the full index of \code{x})
 and \code{start} and \code{end} can be used to restrict the 
 \code{index} set. 
-<<window>>=
-window(Z, start = as.Date("2004-03-01"))
-window(Z, index = index(Z)[5:8], end = as.Date("2004-03-01"))
-@
+\begin{Schunk}
+\begin{Sinput}
+R> window(Z, start = as.Date("2004-03-01"))
+\end{Sinput}
+\begin{Soutput}
+                   Aa         Bb         Cc
+2004-03-05 -1.2086102  1.4237978 -0.8161448
+2004-03-10 -0.1103956  1.3477425  0.9552247
+2004-03-14  0.8420238 -2.7384202  0.2315069
+2004-03-20 -0.1901910  0.1230887 -1.5186216
+\end{Soutput}
+\begin{Sinput}
+R> window(Z, index = index(Z)[5:8], end = as.Date("2004-03-01"))
+\end{Sinput}
+\begin{Soutput}
+                  Aa        Bb          Cc
+2004-02-22 0.2254242 0.5383894  0.23136133
+2004-02-29 1.2069552 0.3181422 -0.01129202
+\end{Soutput}
+\end{Schunk}
 
 The first example selects all observations starting from 2004-03-01
 whereas the second selects from the from the 5th to 8th observation
 those up to 2004-03-01.
 
 The same syntax can be used for the corresponding replacement function.
-<<window2>>=
-window(z1, end = as.POSIXct("2004-02-01")) <- 9:5
-z1
-@
+\begin{Schunk}
+\begin{Sinput}
+R> window(z1, end = as.POSIXct("2004-02-01")) <- 9:5
+R> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          8          7          6          5          6          7 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         10 
+\end{Soutput}
+\end{Schunk}
 
 Two methods that are standard in time series applications
 are \code{lag} and \code{diff}. These are available with the same
@@ -636,11 +941,42 @@ by default it is positive and shifts the
 observations \emph{forward}, to obtain the more standard \emph{backward}
 shift the lag has to be negative.}
 
-<<lagdiff>>=
-lag(z1, k = -1)
-merge(z1, lag(z1, k = 1))
-diff(z1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> lag(z1, k = -1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 2004-02-16 
+         9          8          7          6          5          6          7 
+2004-02-20 2004-02-24 
+         8          9 
+\end{Soutput}
+\begin{Sinput}
+R> merge(z1, lag(z1, k = 1))
+\end{Sinput}
+\begin{Soutput}
+           z1 lag(z1, k = 1)
+2004-01-05  9              8
+2004-01-14  8              7
+2004-01-19  7              6
+2004-01-25  6              5
+2004-01-27  5              6
+2004-02-07  6              7
+2004-02-12  7              8
+2004-02-16  8              9
+2004-02-20  9             10
+2004-02-24 10             NA
+\end{Soutput}
+\begin{Sinput}
+R> diff(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 2004-02-16 
+        -1         -1         -1         -1          1          1          1 
+2004-02-20 2004-02-24 
+         1          1 
+\end{Soutput}
+\end{Schunk}
 
 \subsection[Coercion to and from "zoo"]{Coercion to and from \code{"zoo"}}
 \label{sec:as.zoo}
@@ -657,9 +993,24 @@ dropping the \code{"frequency"} attribute or trying to add one, respectively.
 
 Furthermore, \code{"zoo"} objects can be coerced to vectors, matrices, lists and
 data frames (the latter dropping the index/time attribute). A simple example is
-<<coercion>>=
-as.data.frame(Z)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> as.data.frame(Z)
+\end{Sinput}
+\begin{Soutput}
+                   Aa         Bb          Cc
+2004-02-02  1.2554339  0.6815732 -0.63292049
+2004-02-08 -1.4945833  1.3234122 -1.49442269
+2004-02-09 -1.8746225 -0.8732929  0.62733971
+2004-02-21 -0.1453861  0.4523490 -0.14597401
+2004-02-22  0.2254242  0.5383894  0.23136133
+2004-02-29  1.2069552  0.3181422 -0.01129202
+2004-03-05 -1.2086102  1.4237978 -0.81614483
+2004-03-10 -0.1103956  1.3477425  0.95522468
+2004-03-14  0.8420238 -2.7384202  0.23150695
+2004-03-20 -0.1901910  0.1230887 -1.51862157
+\end{Soutput}
+\end{Schunk}
 
 
 \subsection[NA handling]{\code{NA} handling}
@@ -680,15 +1031,59 @@ stands for \underline{l}ast \underline{o}bservation \underline{c}arried
 non-\code{NA} prior to it. Leading \code{NA}s, which cannot be replaced
 by previous observations, are removed in both functions by default.
 
-<<na>>=
-z1[sample(1:10, 3)] <- NA
-z1
-na.omit(z1)
-na.contiguous(z1)
-na.approx(z1)
-na.approx(z1, 1:NROW(z1))
-na.locf(z1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> z1[sample(1:10, 3)] <- NA
+R> z1
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9         NA          7          6          5          6         NA 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9         NA 
+\end{Soutput}
+\begin{Sinput}
+R> na.omit(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-16 2004-02-20 
+         9          7          6          5          6          8          9 
+\end{Soutput}
+\begin{Sinput}
+R> na.contiguous(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-19 2004-01-25 2004-01-27 2004-02-07 
+         7          6          5          6 
+\end{Soutput}
+\begin{Sinput}
+R> na.approx(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+  9.000000   7.714286   7.000000   6.000000   5.000000   6.000000   7.111111 
+2004-02-16 2004-02-20 
+  8.000000   9.000000 
+\end{Soutput}
+\begin{Sinput}
+R> na.approx(z1, 1:NROW(z1))
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          8          7          6          5          6          7 
+2004-02-16 2004-02-20 
+         8          9 
+\end{Soutput}
+\begin{Sinput}
+R> na.locf(z1)
+\end{Sinput}
+\begin{Soutput}
+2004-01-05 2004-01-14 2004-01-19 2004-01-25 2004-01-27 2004-02-07 2004-02-12 
+         9          9          7          6          5          6          6 
+2004-02-16 2004-02-20 2004-02-24 
+         8          9          9 
+\end{Soutput}
+\end{Schunk}
 
 As the above example illustrates, \code{na.approx} uses by default
 the underlying time scale for interpolation. This can be changed, e.g.,
@@ -721,10 +1116,36 @@ fewer observations than the original series. But it can be determined whether th
 observations should be padded with \code{NA}s and whether the result should be left-
 or right-aligned or centered (default) with respect to the original index.
 
-<<rollapply>>=
-rollapply(Z, 5, sd)
-rollapply(Z, 5, sd, na.pad = TRUE, align = "left")
-@
+\begin{Schunk}
+\begin{Sinput}
+R> rollapply(Z, 5, sd)
+\end{Sinput}
+\begin{Soutput}
+                  Aa        Bb        Cc
+2004-02-09 1.2814876 0.8018950 0.8218959
+2004-02-21 1.2658555 0.7891358 0.8025043
+2004-02-22 1.2102011 0.8206819 0.5319727
+2004-02-29 0.8662296 0.5266261 0.6411751
+2004-03-05 0.9363400 1.7011273 0.6356144
+2004-03-10 0.9508642 1.6892246 0.9578196
+\end{Soutput}
+\begin{Sinput}
+R> rollapply(Z, 5, sd, na.pad = TRUE, align = "left")
+\end{Sinput}
+\begin{Soutput}
+                  Aa        Bb        Cc
+2004-02-02 1.2814876 0.8018950 0.8218959
+2004-02-08 1.2658555 0.7891358 0.8025043
+2004-02-09 1.2102011 0.8206819 0.5319727
+2004-02-21 0.8662296 0.5266261 0.6411751
+2004-02-22 0.9363400 1.7011273 0.6356144
+2004-02-29 0.9508642 1.6892246 0.9578196
+2004-03-05        NA        NA        NA
+2004-03-10        NA        NA        NA
+2004-03-14        NA        NA        NA
+2004-03-20        NA        NA        NA
+\end{Soutput}
+\end{Schunk}
 
 To improve the performance of \code{rollapply(x, k, }\textit{foo}\code{)} for some frequently
 used functions \textit{foo}, more efficient implementations \code{roll}\textit{foo}\code{(x, k)}
@@ -733,9 +1154,17 @@ Currently, these are the generic functions \code{rollmean}, \code{rollmedian}
 and \code{rollmax} which have methods for \code{"zoo"} and \code{"ts"} series and a 
 default method for plain vectors.
 
-<<rollmean>>=
-rollmean(z2, 5, na.pad = TRUE)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> rollmean(z2, 5, na.pad = TRUE)
+\end{Sinput}
+\begin{Soutput}
+   2004-01-05    2004-01-14    2004-01-19    2004-01-25    2004-01-27 
+           NA            NA  0.0005792538  0.0031770388 -0.1139910497 
+   2004-02-07    2004-02-12    2004-02-16    2004-02-20    2004-02-24 
+-0.4185778750 -0.2013054791  0.0087574946            NA            NA 
+\end{Soutput}
+\end{Schunk}
 
 
 \section[Combining zoo with other packages]{Combining \pkg{zoo} with other packages}
@@ -774,18 +1203,23 @@ The fitted \code{ocus} object contains the OLS-based CUSUM process for the mean
 of the electrical resistance (variable \code{ohms}) indexed by the juice
 content (variable \code{juice}).
 
-<<strucchange1>>=
-library("strucchange")
-library("DAAG")
-data("fruitohms")
-ocus <- gefp(ohms ~ 1, order.by = ~ juice, data = fruitohms)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> library("strucchange")
+R> library("DAAG")
+R> data("fruitohms")
+R> ocus <- gefp(ohms ~ 1, order.by = ~juice, data = fruitohms)
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[h!]
 \begin{center}
-<<strucchange2,fig=TRUE,height=4,width=6>>=
-plot(ocus)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> plot(ocus)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{zoo-strucchange2}
 \caption{\label{fig:strucchange} Empirical M-fluctuation process for \code{fruitohms} data}
 \end{center}
 \end{figure}
@@ -817,21 +1251,14 @@ an online portal quoting data provided by Reuters. The following code
 queries the quotes of Microsoft Corp.\ starting from 2001-01-01
 until 2004-09-30:
 
-<<tseries1,eval=FALSE>>=
-library("tseries")
-MSFT <- get.hist.quote(instrument = "MSFT", start = "2001-01-01",
-  end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
-@
+\begin{Schunk}
+\begin{Sinput}
+R> library("tseries")
+R> MSFT <- get.hist.quote(instrument = "MSFT", start = "2001-01-01", 
++     end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
+\end{Sinput}
+\end{Schunk}
 
-<<tseries1a,echo=FALSE>>=
-if(online) {
-  MSFT <- get.hist.quote("MSFT", start = "2001-01-01",
-  end = "2004-09-30", origin = "1970-01-01", retclass = "ts")
-  save(MSFT, file = "MSFT.rda", compress = TRUE)
-} else {
-  load("MSFT.rda")
-}
-@  
 
 In the returned \code{MSFT} object the irregular data is stored by extending
 it in a regular grid and filling the gaps with \code{NA}s. The time is stored
@@ -840,11 +1267,13 @@ origin used by the \code{"Date"} class.
 This series can be transformed easily into a \code{"zoo"} series 
 using a \code{"Date"} index. 
 
-<<tseries2>>=
-MSFT <- as.zoo(MSFT)
-index(MSFT) <- as.Date(index(MSFT))
-MSFT <- na.omit(MSFT)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> MSFT <- as.zoo(MSFT)
+R> index(MSFT) <- as.Date(index(MSFT))
+R> MSFT <- na.omit(MSFT)
+\end{Sinput}
+\end{Schunk}
 
 Because this is daily data, the series has a natural underlying regularity.
 Thus, \code{as.zoo()} returns a \code{"zooreg"} object by default. To treat it
@@ -852,15 +1281,20 @@ as an irregular series \code{as.zoo()} can be applied a second time, yielding
 a \code{"zoo"} series. The corresponding log-difference returns are
 depicted in Figure~\ref{fig:tseries}.
 
-<<tseries3>>=
-MSFT <- as.zoo(MSFT)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> MSFT <- as.zoo(MSFT)
+\end{Sinput}
+\end{Schunk}
 
 \begin{figure}[h!]
 \begin{center}
-<<tseries3,fig=TRUE,height=8,width=6>>=
-plot(diff(log(MSFT)))
-@
+\begin{Schunk}
+\begin{Sinput}
+R> plot(diff(log(MSFT)))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{zoo-tseries3}
 \caption{\label{fig:tseries} Log-difference returns for Microsoft Corp.}
 \end{center}
 \end{figure}
@@ -887,11 +1321,21 @@ using the associated methods.
 
 The following example illustrates how \code{z2} can be transformed
 to use the \code{"timeDate"} class.
-<<fCalendar2>>=
-library("fCalendar")
-z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
-z2td
-@
+\begin{Schunk}
+\begin{Sinput}
+R> library("fCalendar")
+R> z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
+R> z2td
+\end{Sinput}
+\begin{Soutput}
+2004-01-04 23:00:00 2004-01-13 23:00:00 2004-01-18 23:00:00 2004-01-24 23:00:00 
+         0.94306673         -0.04149429          0.59448077         -0.52575918 
+2004-01-26 23:00:00 2004-02-06 23:00:00 2004-02-11 23:00:00 2004-02-15 23:00:00 
+        -0.96739776          0.95605566         -0.62733473         -0.92845336 
+2004-02-19 23:00:00 2004-02-23 23:00:00 
+         0.56060280          0.08291711 
+\end{Soutput}
+\end{Schunk}
 
 \subsection[The classes "yearmon" and "yearqtr": Roll your own index]{The classes \code{"yearmon"} and \code{"yearqtr"}: Roll your own index}
 \label{sec:yearmon}
@@ -933,32 +1377,71 @@ First, we create a regular series \code{zr3} with \code{"yearmon"} index which
 leads to improved printing compared to the regular series \code{zr1} and \code{zr2}
 from Section~\ref{sec:zooreg}.
 
-<<yearmon1>>=
-zr3 <- zooreg(rnorm(9), start = yearmon(2000), frequency = 12)
-zr3
-@
+\begin{Schunk}
+\begin{Sinput}
+R> zr3 <- zooreg(rnorm(9), start = yearmon(2000), frequency = 12)
+R> zr3
+\end{Sinput}
+\begin{Soutput}
+   Jan 2000    Feb 2000    Mar 2000    Apr 2000    May 2000    Jun 2000 
+-0.30969096  0.08699142 -0.64837101 -0.62786277 -0.61932674 -0.95506154 
+   Jul 2000    Aug 2000    Sep 2000 
+-1.91736406  0.38108885  1.51405511 
+\end{Soutput}
+\end{Schunk}
 
 This could be aggregated to quarterly data via
 
-<<yearmon2>>=
-aggregate(zr3, as.yearqtr, mean)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> aggregate(zr3, as.yearqtr, mean)
+\end{Sinput}
+\begin{Soutput}
+   2000 Q1    2000 Q2    2000 Q3 
+-0.2903569 -0.7340837 -0.0074067 
+\end{Soutput}
+\end{Schunk}
 
 The index can easily be transformed to \code{"Date"}, the default being the first day
 of the month but which can also be changed to the last day of the month.
 
-<<yearmon3>>=
-as.Date(index(zr3))
-as.Date(index(zr3), frac = 1)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> as.Date(index(zr3))
+\end{Sinput}
+\begin{Soutput}
+[1] "2000-01-01" "2000-02-01" "2000-03-01" "2000-04-01" "2000-05-01"
+[6] "2000-06-01" "2000-07-01" "2000-08-01" "2000-09-01"
+\end{Soutput}
+\begin{Sinput}
+R> as.Date(index(zr3), frac = 1)
+\end{Sinput}
+\begin{Soutput}
+[1] "2000-01-31" "2000-02-29" "2000-03-31" "2000-04-30" "2000-05-31"
+[6] "2000-06-30" "2000-07-31" "2000-08-31" "2000-09-30"
+\end{Soutput}
+\end{Schunk}
 
 Furthermore, \code{"yearmon"} indexes can easily be coerced to \code{"POSIXct"} such
 that the series could be exported as a \code{"its"} or \code{"irts"} series.
 
-<<yearmon4>>=
-index(zr3) <- as.POSIXct(index(zr3))
-as.irts(zr3)
-@
+\begin{Schunk}
+\begin{Sinput}
+R> index(zr3) <- as.POSIXct(index(zr3))
+R> as.irts(zr3)
+\end{Sinput}
+\begin{Soutput}
+2000-01-01 00:00:00 GMT -0.3097
+2000-02-01 00:00:00 GMT 0.08699
+2000-03-01 00:00:00 GMT -0.6484
+2000-04-01 00:00:00 GMT -0.6279
+2000-05-01 00:00:00 GMT -0.6193
+2000-06-01 00:00:00 GMT -0.9551
+2000-07-01 00:00:00 GMT -1.917
+2000-08-01 00:00:00 GMT 0.3811
+2000-09-01 00:00:00 GMT 1.514
+\end{Soutput}
+\end{Schunk}
 
 Again, this functionality makes switching between different time scales or index 
 representations particularly easy and \pkg{zoo} provides the user with the flexibility
@@ -1001,12 +1484,12 @@ frames and lists.
 \section*{Computational details}
 
 The results in this paper were obtained using \proglang{R}
-\Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
-\pkg{zoo} \Sexpr{gsub("-", "--", packageDescription("zoo")$Version)},
-\pkg{strucchange} \Sexpr{gsub("-", "--", packageDescription("strucchange")$Version)},
-\pkg{fCalendar} \Sexpr{gsub("-", "--", packageDescription("fCalendar")$Version)},
-\pkg{tseries} \Sexpr{gsub("-", "--", packageDescription("tseries")$Version)} and
-\pkg{DAAG} \Sexpr{gsub("-", "--", packageDescription("DAAG")$Version)}.
+2.6.2 with the packages
+\pkg{zoo} 1.5--3,
+\pkg{strucchange} 1.3--2,
+\pkg{fCalendar} 262.73,
+\pkg{tseries} 0.10--14 and
+\pkg{DAAG} 0.97.
 \proglang{R} itself and all packages used are available from
 CRAN at \url{http://CRAN.R-project.org/}.
 

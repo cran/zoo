@@ -1,10 +1,10 @@
-\documentclass{Z}
+\documentclass[article,nojss]{jss}
 \DeclareGraphicsExtensions{.pdf,.eps}
 \newcommand{\mysection}[1]{\subsubsection[#1]{\textbf{#1}}}
 
 %% need no \usepackage{Sweave}
 
-\author{Ajay Shah\\Ministry of Finance, New Delhi \And
+\author{Ajay Shah\\National Institute of Public\\Finance and Policy, India \And
         Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
         Gabor Grothendieck\\GKX Associates Inc.}
 \Plainauthor{Ajay Shah, Achim Zeileis, Gabor Grothendieck}
@@ -21,6 +21,20 @@
   package's functionality and extensibility see 
   \cite{zoo:Zeileis+Grothendieck:2005} (contained as vignette ``zoo'' in the
   package), the manual pages and the reference card.  
+}
+
+\Address{
+  Ajay Shah\\
+  National Institute of Public Finance and Policy, India\\
+  E-mail: \email{ajayshah@mayin.org}\\
+  
+  Achim Zeileis\\
+  Wirtschaftsuniversit\"at Wien\\
+  E-mail: \email{Achim.Zeileis@R-project.org}\\
+  
+  Gabor Grothendieck\\
+  GKX Associates Inc.\\
+  E-mail: \email{ggrothendieck@gmail.com}
 }
 
 \begin{document}
@@ -270,7 +284,7 @@ eur.usd <- eur.usd[!is.weekend(time(eur.usd))]
 @
 
 The function \code{is.weekend} introduced above exploits the fact that a \code{"Date"}
-is essentially the number of days since 1970-01-01, a Thursday. A mor intelligible
+is essentially the number of days since 1970-01-01, a Thursday. A more intelligible
 function which yields identical results could be based on the \code{"POSIXlt"} class
 
 <<is.weekend based on POSIXlt>>=

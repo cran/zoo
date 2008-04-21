@@ -85,11 +85,12 @@ export(
   "panel.polygon.its",
   "panel.polygon.zoo",
 
-## auxiliary generics
+## auxiliary generics/methods
   "MATCH",
   "MATCH.default",
   "ORDER",
-  "ORDER.default")
+  "ORDER.default",
+  "as.Date.numeric")
 
 ## methods for class zoo
   S3method("Ops", "zoo")
@@ -211,6 +212,11 @@ export(
   S3method("format", "yearqtr")
   S3method("print", "yearqtr")
   S3method("summary", "yearqtr")
+
+## methods for class timeDate/timeSeries 
+  S3method("MATCH", "timeDate")
+  S3method("ORDER", "timeDate")
+  S3method("as.zoo", "timeSeries")
 
 ## methods for misc classes
   S3method("index", "default")
