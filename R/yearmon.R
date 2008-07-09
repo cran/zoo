@@ -17,9 +17,11 @@ as.yearmon.factor <- function(x, ...) as.yearmon(as.character(x), ...)
 as.yearmon.character <- function(x, format = "", ...) {
    if (format == "") {
         nch <- nchar(gsub("[^-]", "", x))
+		nch[is.na(x)] <- NA
+		nch <- na.omit(nch)
         if (length(table(nch)) != 1) 
             stop("yearmon variable can only have one format")
-        format <- if (nch == 1) "%Y-%m" else "%Y-%m-%d"
+        format <- if (all(nch == 1)) "%Y-%m" else "%Y-%m-%d"
    }
    has.short.keys <- rep(regexpr("%[mbByY%]", format) > 0, length(x))
    has.no.others <- regexpr("%", gsub("%[mbByY%]", "", format)) < 0
@@ -159,6 +161,7 @@ axis.yearmon <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 =
 	if (length(format) == 1) format <- c(format, "")
 	if (d <= N2) labels <- format.yearmon(z, format = format[2])
 	idx <- format.yearmon(z, format = "%m") == "01"
+    labels <- rep(NA, length(z))
 	labels[idx] <- format.yearmon(z[idx], format = format[1])
     } else if (identical(labels, FALSE)) 
         labels <- rep("", length(z))

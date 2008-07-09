@@ -114,8 +114,8 @@ panel.polygon.zoo(x, ...)
   \code{plot.panel.custom} facilitates the development of 
   custom panels.   Usually it has one argument \code{"panel"}
   which specifies the custom panel.  That panel typically calls
-  \code{plot.panel.default} and uses the \code{panel.number}
-  argument to take additional special action for particular panels.  
+  \code{plot.panel.default}.  The panel function may use the panel.number()
+  function to find out which panel is currently being executed.
   See the examples.
 }
 \value{
@@ -152,20 +152,15 @@ print(panel.grid(h = 10, v = 10, col = "grey", lty = 3))
 trellis.unfocus()
 
 # Number 2. Using a custom panel routine.
-\dontrun{
-# This example relies on R version 2.3.1.
-# In R version 2.4.0, remove panel.number argument
-# and use panel.number() function.
-p <- function(x, y, groups = NULL, ..., panel.number) {
-  panel.xyplot(x, y, groups = groups, ..., panel.number)
-  if (panel.number == 2) {
+# This example relies on R version 2.40 or higher.
+p <- function(x, y, groups = NULL, ...) {
+  panel.xyplot(x, y, groups = groups, ...)
+  if (panel.number() == 2) {
     panel.lines.zoo(rollmean(zoo(y, x), 3), col = "blue")
     panel.grid(h = 10, v = 10, col = "grey", lty = 3)
   }
 }
 print(xyplot(z, panel = panel.plot.custom(panel = p)))
-}
-
 
 # plot a light grey rectangle "behind" panel b
 trellis.focus("panel", 1, 2)
@@ -210,19 +205,38 @@ trellis.unfocus()
 
 trellis.par.set(strip.background = strip.background)
 
+# separate the panels and suppress the ticks on very top
+my.axis <- function(side, ...) if (side != "top") axis.default(side, ...)
+my.panel <- function(...) {
+       panel.axis(outside = TRUE, lab = FALSE)
+       panel.plot.default(...)
+}
+set.seed(1)
+z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
+xyplot(z, between = list(x = 1.2, y = 1), par.settings = list(panel = "off"),
+       axis = my.axis, panel = my.panel)
+
+# left strips but no top strips
+xyplot(z, screens = colnames(z), strip = FALSE , strip.left = TRUE)
+
+# same but more complex
+xyplot(z, strip = FALSE , strip.left = strip.custom(factor.levels = colnames(z)))
+
+
 \dontrun{
-
-# this requires playwith version 0.8.28 or later
-
-library(plotAndPlayGTK)
+# playwith (>= 0.8-55)
+library("playwith")
+z3 <- zoo(cbind(a = rnorm(100), b = rnorm(100) + 1), as.Date(1:100))
 playwith(xyplot(z3), time.mode = TRUE)
 
 # after running this click on Identify Points and then click on
 # points to identify in graph; right click to finish
 labs <- paste(z3, index(z3), sep = "@")
-playwith(xyplot(z3, type = "o"), labels = labs, label.args = list(cex = 0.7), 
-  time.mode = TRUE)
+playwith(xyplot(z3, type = "o"), labels = labs, label.args = list(cex = 0.7))
 
+# for playwith identify tool this returns indexes into times of clicked points 
+ids <- do.call(rbind, playDevCur()$ids)$which
+z3[ids,]
 }
 
 }

@@ -30,12 +30,12 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if(is.data.frame(rval)) rval <- as.matrix(rval)
     
   ## index transformation functions
-  toDate <- if(missing(format)) function(x, ...) as.Date(as.character(x))
-              else function(x, format) as.Date(as.character(x), format = format)
+  toDate <- if(missing(format)) function(x, ...) as.Date(format(x, scientific = FALSE))
+              else function(x, format) as.Date(format(x, scientific = FALSE), format = format)
   toPOSIXct <- if (missing(format)) {
-        function(x, tz) as.POSIXct(as.character(x), tz = tz)
+        function(x, tz) as.POSIXct(format(x, scientific = FALSE), tz = tz)
   } else function(x, format, tz) {
-        as.POSIXct(strptime(as.character(x), tz = tz, format = format))
+        as.POSIXct(strptime(format(x, scientific = FALSE), tz = tz, format = format))
   }
   toDefault <- function(x, ...) {
     rval <- try(toPOSIXct(x), silent = TRUE)

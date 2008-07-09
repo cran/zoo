@@ -16,7 +16,7 @@ aggregate.zoo <- function(x, by, FUN, ..., regular = NULL, frequency = NULL)
   }
 
   ## aggregate data
-  df <- aggregate(coredata(x), by, FUN, ...)
+  df <- aggregate(coredata(x), by, match.fun(FUN), ...)
   if(length(unique(as.character(df[,1]))) == length(df[,1]))
       row.names(df) <- df[, 1]
   df <- df[, -1]

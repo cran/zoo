@@ -1,3 +1,21 @@
+Changes in Version 1.5-4
+
+  o improvments in read.zoo()
+  
+  o updates in zoo FAQ
+
+  o small bug fix in plot.zoo() (ylim handling)
+
+  o small bug fixes in axis.yearmon() and axis.yearqtr()
+
+  o small bug fixes in aggregate.zoo()
+
+  o extended examples for plot.zoo(), xyplot.zoo(), aggregate.zoo()
+
+  o interactive plots/demos using the packages "TeachingDemos"
+    (plot.zoo) and "playwith" (xyplot.zoo)
+
+
 Changes in Version 1.5-3
 
   o export as.Date.numeric() so that it does not get shadowed

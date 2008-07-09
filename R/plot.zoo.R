@@ -116,11 +116,21 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     nr <- ceiling(ngraph / nc)
     layout(matrix(seq(nr*nc), nr), widths = widths, heights = heights)
     par(mar = mar, oma = oma)
-    ranges <- if (is.null(ylim))
-	tapply(1:ncol(x), screens, function(idx) range(x[,idx], na.rm = TRUE))
-        else tapply(1:ncol(x), screens, function(idx) 
-		if (is.null(ylim[[idx]])) range(x[,idx], na.rm = TRUE)
-		else ylim[[idx]])
+	# TRUE if all elements of L are the same -- else FALSE
+	allsame <- function(L) {
+		f <- function(x, y) if (identical(x, y)) x
+		!is.null(Reduce(f, L))
+	}
+	# idx is vector of indices into ylim.  
+	# If the entries indexed by it are all the same then use that common value;
+	# otherwise, if the ylim are specified use the range of the ylim values;
+	# otherwise, use the range of the data
+	f <- function(idx) if (allsame(ylim)) ylim[idx][[1]]
+		else if (!is.null(ylim) && length(idx) > 0) 
+			range(ylim[idx], finite = TRUE)
+		else range(x[, idx], na.rm = TRUE)
+	# ranges is indexed by screen
+	ranges <- tapply(1:ncol(x), screens, f)
     for(j in seq(along = levels(screens))) {
       panel.number <- j
       range. <- rep(ranges[[j]], length.out = length(time(x)))

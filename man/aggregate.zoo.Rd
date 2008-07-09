@@ -85,7 +85,7 @@ zr.qtr2 <- aggregate(z.day, as.yearqtr, mean, frequency = 4)
 
 ## aggregate on month and extend to monthly time series
 if(require(chron)) {
-y <- zoo(matrix(11:15,nr=5,nc=2), chron(c(15,20,80,100,110)))
+y <- zoo(matrix(11:15, nrow = 5, ncol = 2), chron(c(15, 20, 80, 100, 110)))
 colnames(y) <- c("A", "B")
 
 # aggregate by month using first of month as times for coarser series
@@ -112,5 +112,28 @@ aggregate(zz, as.yearmon, head, 1)
 tt <- seq(10, 2000, 10)
 x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
 aggregate(x, time(x) - as.numeric(time(x)) \%\% 600, mean)
+
+# aggregate weekly series to a series with frequency of 52 per year
+set.seed(1)
+z <- zooreg(1:100 + rnorm(100), start = as.Date("2001-01-01"), deltat = 7)
+
+# new.freq() converts dates to a grid of freq points per year
+# yd is sequence of dates of firsts of years
+# yy is years of the same sequence
+# last line interpolates so dates, d, are transformed to year + frac of year
+# so first week of 2001 is 2001.0, second week is 2001 + 1/52, third week
+# is 2001 + 2/52, etc.
+new.freq <- function(d, freq = 52) {
+       y <- as.Date(cut(range(d), "years")) + c(0, 367)
+       yd <- seq(y[1], y[2], "year")
+       yy <- as.numeric(format(yd, "\%Y"))
+       floor(freq * approx(yd, yy, xout = d)$y) / freq
+}
+
+# take last point in each period
+aggregate(z, new.freq, tail, 1)
+
+# or, take mean of all points in each
+aggregate(z, new.freq, mean)
 }
 \keyword{ts}

@@ -36,8 +36,8 @@
   \link{Date} for details of the date class
 }
 \examples{
-
-as.Date(0) # uses origin = "1970-01-01"
+# uses origin = "1970-01-01"
+as.Date(0) 
 
 # all three result in origin and next 9 days
 as.Date(0:9)

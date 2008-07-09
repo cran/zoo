@@ -17,7 +17,7 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
   \item{file}{character giving the name of the file which the data
     are to be read from/written to. See \code{\link{read.table}} and
     \code{\link{write.table}} for more information.}
-  \item{format}{date format argument passed to \code{\link{as.Date.character}}.}
+  \item{format}{date format argument passed to \code{FUN}.}
   \item{tz}{time zone argument passed to \code{\link{as.POSIXct}}.}
   \item{FUN}{a function for computing the index from the first column
     of the data. See details.}
@@ -63,6 +63,7 @@ attempts to decide among \code{"numeric"}, \code{"Date"} and \code{"POSIXct"}.
 If \code{format} and/or \code{tz} is specified 
 then it is passed to the conversion function as well.
 
+
 If \code{regular} is set to \code{TRUE} and the resulting series has an 
 underlying regularity, it is coerced to a \code{"zooreg"} series.
 
@@ -73,6 +74,29 @@ a column with the index and then calls \code{\link{write.table}}.
 
 \value{
 \code{read.zoo} returns an object of class \code{"zoo"} (or \code{"zooreg"}).
+}
+\note{\code{read.zoo} works by first reading the data in using \code{read.table}
+and then processing it.  This implies that 
+if the index field is entirely numeric the default is to pass it to \code{FUN}
+or the builtin date conversion routine
+a number, rather than a character string. 
+Thus a date field such as code{09122007} intended
+to represent December 12, 2007 would be seen as \code{9122007}
+and interpreted as the 91st day 
+thereby generating an error.  
+
+This comment also applies to trailing decimals so that if 
+\code{2000.10} were intended to represent the 10th month of 2000 in fact
+it would receive
+\code{2000.1} and regard it as the first month of 2000
+unless similar precautions were taken.
+
+In the above cases the index field should be specified to be
+\code{"character"} so that leading or trailing zeros
+are not dropped.  This can be done by specifying a \code{"character"}
+index column in the 
+\code{"colClasses"} argument, which is passed to \code{read.table}, 
+as shown in the examples below.
 }
 
 \seealso{\code{\link{zoo}}}
@@ -90,7 +114,12 @@ f <- function(x) as.yearmon(format(x, nsmall = 2), "\%Y.\%m")
 z <- read.zoo("foo.csv", header = TRUE, FUN = f)
 
 ## turn *character* first column into "Date" index
+## Assume lines look like: 12/22/2007 1 2
 z <- read.zoo("foo.tab", format = "\%m/\%d/\%Y")
+
+# ensure that first column is interpreted as character so leading 0 not dropped
+# Suppose links look like: 09112007 1 2 and there is no header
+z <- read.zoo("foo.txt", format = "\%d\%m\%Y", colClasses = c(V1 = "character"))
 
 ## csv file with first column of form YYYY-mm-dd HH:MM:SS
 ## Read in times as "chron" class. Requires chron 2.3-22 or later.

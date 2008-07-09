@@ -184,6 +184,7 @@ axis.yearqtr <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 =
 	if (length(format) == 1) format <- c(format, "")
 	if (d <= N2) labels <- format.yearqtr(z, format = format[2])
 	idx <- format.yearqtr(z, format = "%q") == "1"
+	labels <- rep(NA, length(z))
 	labels[idx] <- format.yearqtr(z[idx], format = format[1])
     } else if (identical(labels, FALSE)) 
         labels <- rep("", length(z))

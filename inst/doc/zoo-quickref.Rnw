@@ -294,6 +294,60 @@ is.weekend <- function(x) {
 }
 @
 
+\mysection{Summaries}
+
+Here we create a daily series and then find the series of
+quarterly means and standard deviations and also for weekly
+means and standard deviations where we define weeks to end
+on Tuesay.
+
+We do the above separately for mean and standard deviation, binding
+the two results together and then show a different approach in
+which we define a custom \code{ag} function that can accept multiple
+function names as a vector argument.
+
+<<summaries>>=
+date1 <- seq(as.Date("2001-01-01"), as.Date("2002-12-1"), by = "day")
+len1 <- length(date1)
+set.seed(1) # to make it reproducible
+data1 <- zoo(rnorm(len1), date1)
+
+# quarterly summary
+
+data1q.mean <- aggregate(data1, as.yearqtr, mean)
+data1q.sd <- aggregate(data1, as.yearqtr, sd)
+head(cbind(mean = data1q.mean, sd = data1q.sd), main = "Quarterly")
+
+# weekly summary - week ends on tuesday
+
+# Given a date find the next Tuesday.
+# Based on formula in Prices and Returns section.
+nexttue <- function(x) 7 * ceiling(as.numeric(x - 2 + 4)/7) + as.Date(2 - 4)
+
+data1w <- cbind(
+       mean = aggregate(data1, nexttue, mean),
+       sd = aggregate(data1, nexttue, sd)
+)
+head(data1w)
+
+### ALTERNATIVE ###
+
+# Create function ag like aggregate but takes vector of
+# function names.
+
+FUNs <- c(mean, sd)
+ag <- function(z, by, FUNs) {
+       f <- function(f) aggregate(z, by, f)
+       do.call(cbind, sapply(FUNs, f, simplify = FALSE))
+}
+
+data1q <- ag(data1, as.yearqtr, c("mean", "sd"))
+data1w <- ag(data1, nexttue, c("mean", "sd"))
+
+head(data1q)
+head(data1w)
+@
+
 \bibliography{zoo}
 
 \end{document}

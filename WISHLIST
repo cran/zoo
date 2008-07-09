@@ -103,6 +103,10 @@ FEATURES
 
   o identify.zoo
 
+  o allow index.column in read.zoo to be a vector in which case it 
+    pastes them together so that 9999-99-99 99:99:99 99 99 99
+    can be read directly as dates and times.
+
 
 INTERFACES
 **********

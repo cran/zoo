@@ -88,6 +88,7 @@ simple \code{\link{barplot}} method for \code{"zoo"} series.
 \code{\link{xyplot.zoo}}}
 
 \examples{
+## example dates
 x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
 
 ## univariate plotting
@@ -137,7 +138,7 @@ my.panel <- function(x, y, ..., pf = parent.frame()) {
 # 3. plot
 plot(zz, panel = my.panel, xaxt = "n")
 
-# with a single panel plot a fancy X axis is just the same
+# with a single panel plot a fancy x-axis is just the same
 # procedure as for the ordinary plot command
 plot(zz, screen = 1, col = 1:2, xaxt = "n")
 # axis(1, at = time(zz), labels = FALSE)
@@ -150,8 +151,7 @@ labs <- format(tt, fmt)
 Axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
 legend("bottomright", colnames(zz), lty = 1, col = 1:2)
 
-# plot a mulitple ts series with nice X axis using panel function
-
+## plot a mulitple ts series with nice x-axis using panel function
 tab <- ts(cbind(A = 1:24, B = 24:1), start = c(2006, 1), freq = 12)
 pnl.xaxis <- function(...) {
      lines(...)
@@ -172,9 +172,7 @@ pnl.xaxis <- function(...) {
 }
 plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n", main = "Fancy X Axis")
 
-### Another example with a custom axis
-
-library(zoo)
+## Another example with a custom axis
 # test data
 z <- zoo(matrix(1:25, 5), c(10,11,20,21))
 colnames(z) <- letters[1:5]
@@ -195,23 +193,23 @@ set.seed(1)
 z <- zoo(cbind(A = cumsum(rnorm(100)), B = cumsum(rnorm(100, mean = 0.2))))
 opar <- par(mai = c(.8, .8, .2, .8))
 plot(z[,1], type = "l", 
-   xlab = "X axis label", ylab = colnames(z)[1])
+  xlab = "x-axis label", ylab = colnames(z)[1])
 par(new = TRUE)
 plot(z[,2], type = "l", ann = FALSE, yaxt = "n", col = "blue")
 # axis(4)
 Axis(side = 4)
 legend(x = "topleft", bty = "n", lty = c(1,1), col = c("black", "blue"),
-       legend = paste(colnames(z), c("(left scale)", "(right scale)")))
+  legend = paste(colnames(z), c("(left scale)", "(right scale)")))
 usr <- par("usr")
 # if you don't care about srt= in text then mtext is shorter:
-#  mtext(colnames(z)[2], 4, 2, col = "blue")
+#   mtext(colnames(z)[2], 4, 2, col = "blue")
 text(usr[2] + .1 * diff(usr[1:2]), mean(usr[3:4]), colnames(z)[2],
-   srt = -90, xpd = TRUE, col = "blue")
+  srt = -90, xpd = TRUE, col = "blue")
 par(opar)
 
-\dontrun{
 # automatically placed point labels
-library(maptools)
+\dontrun{
+library("maptools")
 pointLabel(time(z), coredata(z[,2]), labels = format(time(z)), cex = 0.5)
 }
 
@@ -223,5 +221,21 @@ plot(x, x2, xy.labels = 1:5, xy.lines = FALSE)
 ## barplot
 x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)
 barplot(x, beside = TRUE)
+
+# interactive plotting
+\dontrun{
+library("TeachingDemos")
+tke.test1 <- list(Parameters = list(
+	pch = list("spinbox", init = 1, from = 0, to = 255, width = 5),
+	cex = list("slider", init = 1.5, from = 0.1, to = 5, resolution = 0.1),
+	type = list("combobox", init = "b",
+	   values = c("p", "l", "b", "o", "c", "h", "s", "S", "n"), width = 5),
+	lwd = list("spinbox", init = 1, from = 0, to = 5, increment = 1, width = 5),
+	lty = list("spinbox", init = 1, from = 0, to = 6, increment = 1, width = 5)
+))
+z <- zoo(rnorm(25))
+tkexamp(plot(z), tke.test1, plotloc = "top")
+}
+
 }
 \keyword{ts}

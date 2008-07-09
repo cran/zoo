@@ -104,5 +104,12 @@ z <- do.call("merge.zoo", lapply(split(DF, DF$ID), ag))
 ## 4. convert to "zooreg" and then to "ts"
 frequency(z) <- 12
 as.ts(z)
+
+xx <- zoo(seq_along(x), x)
+
+## aggregating over year 
+as.year <- function(x) as.numeric(floor(as.yearmon(x)))
+aggregate(xx, as.year, mean)
+
 }
 \keyword{ts}
