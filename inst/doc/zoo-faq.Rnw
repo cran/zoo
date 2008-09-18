@@ -97,6 +97,58 @@ wind up as \code{NA}s and we cannot have \code{NA} times.
 z[!is.na(time(z))]
 @
 
+%% An alternative to aggregating the data is to make the times unique
+%% by changing them slightly.  The facilities here are limited to 
+%% time classes for
+%% which addition by a number makes sense.  See the \code{make.unique.approx}
+%% and \code{make.unique.incr} functions which use interpolation or
+%% incrementing by a fixed number.  Interpolation has the further restriction
+%% that the interpolated result must make sense.  For example, it makes sense to
+%% interpolate \code{"POSIXct"} variables but not \code{"Date"} variables since
+%% the interpolation may fall between dates.
+%% Also see the \code{make.unique}
+%% argument to \code{read.zoo} which allows one to read in the data
+%% and make it unique all in one operation.  
+
+The \code{read.zoo} command has an \code{aggregate} argument that
+supports arbitrary summarization.  For example, in the following
+we take the last value among any duplicate times and sum the volumes
+among all duplicate times.  We do this by reading the data twice,
+once for each aggregate function.  In this example, the first three
+columns are junk that we wish to suppress which is why we specified
+\code{colClasses}; however, in most cases that argument would not
+be necessary.
+<<duplicates>>=
+Lines <- "1|BHARTIARTL|EQ|18:15:05|600|1
+2|BHARTIARTL|EQ|18:15:05|600|99
+3|GLENMARK|EQ|18:15:05|238.1|5
+4|HINDALCO|EQ|18:15:05|43.75|100
+5|BHARTIARTL|EQ|18:15:05|600|1
+6|BHEL|EQ|18:15:05|1100|11
+7|HINDALCO|EQ|18:15:06|43.2|1
+8|CHAMBLFERT|EQ|18:15:06|46|10
+9|CHAMBLFERT|EQ|18:15:06|46|90
+10|BAJAUTOFIN|EQ|18:15:06|80|100"
+
+library("zoo")
+library("chron")
+
+tail1 <- function(x) tail(x, 1)
+cls <- c("NULL", "NULL", "NULL", "character", "numeric", "numeric")
+nms <- c("", "", "", "time", "value", "volume")
+
+z <- read.zoo(textConnection(Lines), aggregate = tail1,
+       FUN = times, sep = "|", colClasses = cls, col.names = nms)
+
+# re-read using sum
+z2 <- read.zoo(textConnection(Lines), aggregate = sum,
+       FUN = times, sep = "|", colClasses = cls, col.names = nms)
+
+z$volume <- z2$volume
+z
+@
+
+
 \mysection[2. When I try to specify a log axis to plot.zoo a warning is issued.  What is wrong?]{2. When I try to specify a log axis to \code{plot.zoo} a warning is issued.  What is wrong?}
 
 Arguments that are part of \code{...} are passed to the \code{panel} 
@@ -117,7 +169,7 @@ plot(z, log = "y", panel = function(..., log) lines(...))
 The following shows an example of creating a plot containing a single
 panel and both left and right axes.  
 
-<<plot-axes,fig=TRUE, height=4.5, width=6,split=TRUE,include=FALSE,prefix=FALSE>>=
+<<plot-axes, echo=TRUE, eval=FALSe>>=
 set.seed(1)
 z.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
 z <- zoo(cbind(left = rnorm(5), right = rnorm(5, sd = 0.2)), z.Date)
@@ -126,16 +178,16 @@ plot(z[,1], xlab = "Time", ylab = "")
 opar <- par(usr = c(par("usr")[1:2], range(z[,2])))
 lines(z[,2], lty = 2)
 
-Axis(side = 4)
+axis(side = 4)
 legend("bottomright", lty = 1:2, legend = colnames(z), bty="n")
 par(opar)
 @
 
-\input{plot-axes}
-
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics{plot-axes}
+<<plot-axes1, fig=TRUE, height=4.5, width=6, echo=FALSE>>=
+<<plot-axes>>
+@
 \caption{\label{fig:plot-axes} Left and right \code{plot.zoo} axes.}
 \end{center}
 \end{figure}
@@ -285,9 +337,12 @@ tt <- time(z)
 m <- unique(as.Date(as.yearmon(tt)))
 jan <- format(m, "%m") == "01"
 mlab <- substr(months(m[!jan]), 1, 1)
-Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
-Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
-Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+
+# vertical grid lines
+abline(v = m, col = grey(0.8), lty = 2)
 @
 
 A multivariate series can either be generated as (1)~multiple single panel
@@ -302,9 +357,9 @@ jan <- format(m, "%m") == "01"
 mlab <- substr(months(m[!jan]), 1, 1)
 for(i in 1:ncol(z3)) {
     plot(z3[,i], xaxt = "n", ylab = colnames(z3)[i], ylim = range(z3))
-    Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
-    Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
-    Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+    axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+    axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+    axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
 }
 par(opar)
 @
@@ -324,9 +379,9 @@ plot(z3, screen = 1:3, xaxt = "n", nc = 2, ylim = range(z3),
          m <- unique(as.Date(as.yearmon(tt)))
          jan <- format(m, "%m") == "01"
          mlab <- substr(months(m[!jan]), 1, 1)
-         Axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
-         Axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
-         Axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+         axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+         axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+         axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
     }
 })
 @
@@ -414,9 +469,11 @@ detach("package:timeSeries")
 \pkg{RBloomberg} & \proglang{R}/\pkg{Bloomberg} interface \\
 \pkg{sandwich} & Robust covariance matrix estimators \\
 \pkg{strucchange} & Testing, monitoring, and dating structural changes \\
+\pkg{tis} & Regular time series package, previously part of fame package \\
 \pkg{tripEstimation} & Metropolis sampler and supporting functions for
   estimating animal movement from archival tags and satellite fixes \\
 \pkg{tseries} & Time series analysis and computational finance \\
+\pkg{VhayuR} & R Interface to the Vhayu time series database \\
 \pkg{xts} & Extensible time series \\ \hline
 \multicolumn{2}{|l|}{\emph{Suggests}} \\ \hline
 \pkg{gsubfn} & Utilities for strings and function arguments \\
@@ -425,13 +482,33 @@ detach("package:timeSeries")
 \pkg{TSdbi} & Time series database interface \\
 \pkg{Zelig} & Everyone's statistical software \\ \hline
 \multicolumn{2}{|l|}{\emph{Uses or Used with}} \\ \hline
-\pkg{fCalendar} & \pkg{Rmetrics} date and time functions: \code{timeDate} usable with \code{zoo} \\ \hline
-\pkg{fSeries} & \pkg{Rmetrics} time series functions: \code{as.timeSeries.zoo}, \code{as.zoo.timeSeries} \\ \hline
+\pkg{timeDate} & \pkg{Rmetrics} date and time functions: \code{timeDate} usable with \code{zoo} \\ \hline
 \pkg{grid} & Graphics infrastructure: use with \code{xyplot.zoo} \\ \hline
 \pkg{its} & Irregular time series: \code{as.its.zoo}, \code{as.zoo.its} \\ \hline
 \pkg{lattice} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ \hline
 \pkg{playwith} & Interactive graphics: works with \code{xylot.zoo} \\ \hline
+\pkg{timeSeries} & \pkg{Rmetrics} time series functions: \code{as.timeSeries.zoo}, \code{as.zoo.timeSeries} \\ \hline
 \pkg{YaleToolkit} & Data exploration tools from Yale University: accepts \code{"zoo"} input \\ \hline
 \end{tabular}
+
+\mysection[12. Why does ifelse not work as I expect?]{Why does \code{ifelse} not work as I expect?}
+The ordinary R \code{ifelse} function only works with zoo objects if all three arguments are zoo objects with the same time index.  \pkg{zoo} provides an \code{ifelse.zoo} function that should be used instead.  The \code{.zoo} part must be written out since \code{ifelse} is not generic.
+
+<<ifelse>>=
+z <- zoo(c(1, 5, 10, 15))
+# wrong !!!
+ifelse(diff(z) > 4, -z, z)
+
+# ok
+ifelse.zoo(diff(z) > 4, -z, z)
+
+# or if we merge first we can use ordinary ifelse
+xm <- merge(z, dif = diff(z))
+with(xm, ifelse(dif > 4, -z, z))
+
+# or in this case we could also use orindary ifelse if we 
+# use na.pad = TRUE to ensure all three have same index
+ifelse(diff(z, na.pad = TRUE) > 4, -z, z)
+@
 
 \end{document}

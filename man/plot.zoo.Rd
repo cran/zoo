@@ -12,7 +12,7 @@ Plotting method for objects of class \code{"zoo"}.
   panel = lines, xlab = "Index", ylab = NULL, main = NULL,
   xlim = NULL, ylim = NULL, xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
-  col = 1, lty = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, \dots)
+  col = 1, lty = 1, lwd = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, \dots)
 \method{lines}{zoo}(x, y = NULL, type = "l", \dots)
 \method{points}{zoo}(x, y = NULL, type = "p", \dots)
 }
@@ -48,7 +48,7 @@ Plotting method for objects of class \code{"zoo"}.
     the scatter plot. Defaults to the value of \code{xy.labels} if that is
     logical, otherwise to \code{FALSE}.}
   \item{xlab, ylab, main, xlim, oma, mar}{graphical arguments, see \code{\link{par}}.}
-  \item{col, lty, pch, type}{graphical arguments that can be vectors or 
+  \item{col, lty, lwd, pch, type}{graphical arguments that can be vectors or 
     (named) lists. See the details for more information.}
   \item{nc}{the number of columns to use when \code{plot.type = "multiple"}.
     Defaults to \code{1} for up to \code{4} series, otherwise to \code{2}.}
@@ -76,7 +76,7 @@ frame the panel is being called from.  See examples.
 \code{par(mfrow=...)} and \code{Axis} can be used in conjunction with 
 single panel plots in the same way as with other classic graphics.
 
-For multipanel graphics, \code{plot.zoo} takes over the layout so
+For multi-panel graphics, \code{plot.zoo} takes over the layout so
 \code{par(mfrow=...)} cannot be used.  \code{Axis} can be used within
 the panels themselves but not outside the panel.  See examples.
 
@@ -110,7 +110,7 @@ plot(x)
 opar <- par(usr = c(par("usr")[1:2], range(x2)))
 lines(x2, lty = 2)
 # axis(4)
-Axis(side = 4)
+axis(side = 4)
 par(opar)
 
 
@@ -129,10 +129,10 @@ my.panel <- function(x, y, ..., pf = parent.frame()) {
    if (with(pf, length(panel.number) == 0 || 
         panel.number \%\% nr == 0 || panel.number == nser)) { 
       # create ticks at x values and then label every third tick
-      Axis(side = 1, at = x, labels = FALSE)
+      axis(side = 1, at = x, labels = FALSE)
       ix <- seq(1, length(x), 3)
       labs <- format(x, fmt)
-      Axis(side = 1, at = x[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
+      axis(side = 1, at = x[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
    }
 }
 # 3. plot
@@ -143,12 +143,12 @@ plot(zz, panel = my.panel, xaxt = "n")
 plot(zz, screen = 1, col = 1:2, xaxt = "n")
 # axis(1, at = time(zz), labels = FALSE)
 tt <- time(zz)
-Axis(side = 1, at = tt, labels = FALSE)
+axis(side = 1, at = tt, labels = FALSE)
 ix <- seq(1, length(tt), 3)
 fmt <- "\%b-\%d" # format for axis labels
 labs <- format(tt, fmt)
 # axis(1, at = time(zz)[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
-Axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
+axis(side = 1, at = tt[ix], labels = labs[ix], tcl = -0.7, cex.axis = 0.7)
 legend("bottomright", colnames(zz), lty = 1, col = 1:2)
 
 ## plot a mulitple ts series with nice x-axis using panel function
@@ -164,10 +164,11 @@ pnl.xaxis <- function(...) {
 	   mon <- as.numeric(format(ym, "\%m"))
 	   yy <- format(ym, "\%y")
 	   mm <- substring(month.abb[mon], 1, 1)
-	   # axis(1, tt[mon == 1], yy[mon == 1], cex.axis = 0.7)
-	   Axis(side = 1, at = tt[mon == 1], labels = yy[mon == 1], cex.axis = 0.7)
+       if (any(mon == 1))
+	    # axis(1, tt[mon == 1], yy[mon == 1], cex.axis = 0.7)
+	    axis(side = 1, at = tt[mon == 1], labels = yy[mon == 1], cex.axis = 0.7)
 	   # axis(1, tt[mon > 1], mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
-	   Axis(side = 1, at = tt[mon > 1], labels = mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
+	   axis(side = 1, at = tt[mon > 1], labels = mm[mon > 1], cex.axis = 0.5, tcl = -0.3)
      }
 }
 plot(as.zoo(tab), panel = pnl.xaxis, xaxt = "n", main = "Fancy X Axis")
@@ -182,7 +183,7 @@ plot(zoo(coredata(z)), xaxt = "n", panel = function(x, y, ..., Time = time(z)) {
     # if bottom panel
     pf <- parent.frame()
     if (with(pf, panel.number \%\% nr == 0 || panel.number == nser)) {
-        Axis(side = 1, at = x, labels = Time)
+        axis(side = 1, at = x, labels = Time)
     }
 })
 
@@ -197,7 +198,7 @@ plot(z[,1], type = "l",
 par(new = TRUE)
 plot(z[,2], type = "l", ann = FALSE, yaxt = "n", col = "blue")
 # axis(4)
-Axis(side = 4)
+axis(side = 4)
 legend(x = "topleft", bty = "n", lty = c(1,1), col = c("black", "blue"),
   legend = paste(colnames(z), c("(left scale)", "(right scale)")))
 usr <- par("usr")
@@ -218,9 +219,39 @@ plot(x, x2)
 plot(x, x2, xy.labels = TRUE)
 plot(x, x2, xy.labels = 1:5, xy.lines = FALSE)
 
+## shade a portion of a plot and make axis fancier
+
+v <- zooreg(rnorm(50), start = as.yearmon(2004), freq = 12)
+
+plot(v, type = "n")
+u <- par("usr")
+rect(as.yearmon("2007-8"), u[3], as.yearmon("2009-11"), u[4], 
+   border = 0, col = "grey")
+lines(v)
+axis(1, floor(time(v)), labels = FALSE, tcl = -1)
+
+## shade certain times to show recessions, etc.
+v <- zooreg(rnorm(50), start = as.yearmon(2004), freq = 12)
+plot(v, type = "n")
+u <- par("usr")
+rect(as.yearmon("2007-8"), u[3], as.yearmon("2009-11"), u[4], 
+   border = 0, col = "grey")
+lines(v)
+axis(1, floor(time(v)), labels = FALSE, tcl = -1)
+
 ## barplot
 x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)
 barplot(x, beside = TRUE)
+
+## 3d plot
+## The persp function in R (not part of zoo) works with zoo objects.
+## The following example is by Enrico Schumann.
+## https://stat.ethz.ch/pipermail/r-sig-finance/2009q1/003710.html
+nC <- 10    # columns
+nO <- 100 # observations
+dataM <- array(runif(nC * nO), dim=c(nO, nC))
+zz <- zoo(dataM, 1:nO)
+persp(1:nO, 1:nC, zz)
 
 # interactive plotting
 \dontrun{

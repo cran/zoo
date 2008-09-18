@@ -7,8 +7,8 @@ as.yearqtr.default <- function(x, ...) as.yearqtr(as.numeric(x))
 as.yearqtr.numeric <- function(x, ...) structure(floor(4*x + .0001)/4, class = "yearqtr")
 as.yearqtr.integer <- function(x, ...) structure(x, class = "yearqtr")
 
-# as.jul.yearqtr <- function(x, ...) jul(as.Date(x, ...)) # jul is from fame
-as.yearqtr.jul <- # jul is in fame package
+# as.jul.yearqtr <- function(x, ...) jul(as.Date(x, ...)) # jul is from tis
+as.yearqtr.jul <- # jul is in tis package
 as.yearqtr.timeDate <-
 as.yearqtr.dates <-
 as.yearqtr.Date <- 
@@ -133,7 +133,7 @@ Ops.yearqtr <- function(e1, e2) {
     e1 <- as.numeric(as.yearqtr(e1))
     e2 <- as.numeric(as.yearqtr(e2))
     rval <- NextMethod(.Generic)
-    if(is.numeric(rval)) rval <- as.yearqtr(rval)
+    rval <- yearqtr(rval)
     return(rval)
 }
 
@@ -148,7 +148,7 @@ Ops.yearqtr <- function(e1, e2) {
         return(as.numeric(e1) - as.numeric(e2))
     if (!is.null(attr(e2, "class"))) 
       stop("can only subtract yearqtr objects and numbers from yearqtr objects")
-    structure(unclass(as.yearqtr(e1)) - e2, class = "yearqtr")
+    yearqtr(unclass(e1) - e2)
 }
 
 is.numeric.yearqtr <- function(x) FALSE

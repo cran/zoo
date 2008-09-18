@@ -9,6 +9,8 @@
 \alias{as.zooreg}
 \alias{as.zooreg.default}
 \alias{as.zooreg.ts}
+\alias{as.zooreg.its}
+\alias{as.zooreg.xts}
 \alias{as.ts.zooreg}
 \alias{as.zoo.zooreg}
 \alias{as.zooreg.zoo}
@@ -58,10 +60,12 @@ and strictly regular series. Internally, it is the same as \code{"zoo"} except
 it also has a \code{"frequency"} attribute. Its index class is more restricted 
 than \code{"zoo"}. The index: 1. must be numeric or a class which can be coerced
 via \code{as.numeric} (such as \code{\link{yearmon}}, \code{\link{yearqtr}},
-\code{\link{Date}}, \code{\link{POSIXct}} etc.). 2. when converted to numeric
-must be expressable as multiples of 1/frequency. 3.
+\code{\link{Date}}, \code{\link{POSIXct}}, \code{\link[tis]{tis}}, 
+\code{\link[xts]{xts}}, etc.). 
+2. when converted to numeric
+must be expressible as multiples of 1/frequency. 3.
 group generic functions \code{\link{Ops}} should be defined, i.e.,
-adding/substracting a numeric to/from the index class should produce the correct
+adding/subtracting a numeric to/from the index class should produce the correct
 value of the index class again.
 
 \code{zooreg} is the \code{zoo} analogue to \code{\link{ts}}. The arguments
@@ -75,7 +79,7 @@ index specified complies with the frequency specified.
 
 The class \code{"zooreg"} offers two advantages over code \code{"ts"}: 1. The
 index does not have to be plain numeric (although that is the default), it just
-must be coercable to numeric, thus printing and plotting can be customized.
+must be coercible to numeric, thus printing and plotting can be customized.
 2. This class can not only represent strictly regular series, but also series
 with an underlying regularity, i.e., where some observations from a regular grid
 are omitted.
@@ -93,6 +97,12 @@ Methods to standard generics for regular series such as \code{\link{frequency}},
 \code{\link{deltat}} and \code{\link{cycle}} are available for both \code{"zooreg"}
 and \code{"zoo"} objects. In the latter case, it is checked first (in a data-driven way)
 whether the series is in fact regular or not.
+
+\code{as.zooreg.tis} has a \code{class} argument whose value represents the
+class of the index of the \code{zooreg} object into which the \code{tis}
+object is converted.  The default value is \code{"ti"}.  Note that the 
+frequency of the \code{zooreg} object will not necessarily be the same
+as the frequency of the \code{tis} object that it is converted from.  
 }
 
 \value{
@@ -124,13 +134,17 @@ zooreg(1:5, end = yearmon(2000))
 ## act differently on zoo and zooreg objects!
 ## lag.zoo moves a point to the adjacent time whereas
 ## lag.zooreg moves a point by deltat
-x <- c(1, 4, 5, 6)
+x <- c(1, 2, 3, 6)
 zz <- zoo(x, x)
 zr <- as.zooreg(zz)
-lag(zz)
-lag(zr)
+lag(zz, k = -1)
+lag(zr, k = -1)
 diff(zz)
 diff(zr)
+
+## lag.zooreg wihtout and with na.pad
+lag(zr, k = -1)
+lag(zr, k = -1, na.pad = TRUE)
 
 ## standard methods available for regular series
 frequency(z)

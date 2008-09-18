@@ -49,7 +49,6 @@ print.zoo <- function (x, style = ifelse(length(dim(x)) == 0,
     if (is.null(dim(x)) && length(x) == 0) style <- "plain"
     if (length(dim(x)) > 0 && style == "horizontal") style <- "plain"
     if (style == "vertical") {
-        # y <- format(eval(as.matrix(x), parent.frame(n = 3)))
 	y <- as.matrix(coredata(x))
         if (length(colnames(x)) < 1) {
             colnames(y) <- rep("", NCOL(x))
@@ -80,7 +79,9 @@ summary.zoo <- function(object, ...)
 		colnames(y) <- if (NCOL(object) == 1) lab
 		  else paste(lab, 1:NCOL(object), sep=".")
 	}
-	summary(cbind(data.frame(Index = index(object)), y), ...)
+	if (NROW(y) > 0) {
+		summary(cbind(data.frame(Index = index(object)), y), ...)
+	} else summary(data.frame(Index = index(object)), ...)
 }
 
 
@@ -236,3 +237,11 @@ names.zoo <- function(x) {
   x
 }
 
+rev.zoo <- function(x) {
+	zoo(coredata(x), time(x)[rev(ORDER(time(x)))])
+}
+
+ifelse.zoo <- function(test, yes, no) {
+	merge(test, yes, no, retclass = NULL)
+	ifelse(test, yes, no)
+}

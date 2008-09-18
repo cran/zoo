@@ -11,9 +11,11 @@ export(
   "as.zooreg.default",
   "cbind.zoo",
   "rbind.zoo",
+  "ifelse.zoo",
   "is.zoo",
   "merge.zoo",
   "read.zoo",
+  "rev.zoo",
   "write.zoo",
   "xtfrm.zoo",
 
@@ -99,8 +101,7 @@ export(
   "MATCH",
   "MATCH.default",
   "ORDER",
-  "ORDER.default",
-  "as.Date.numeric")
+  "ORDER.default")
 
 ## methods for class zoo
   S3method("Ops", "zoo")
@@ -257,7 +258,6 @@ export(
   S3method("ORDER", "times")
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
-  S3method("as.Date", "numeric")
   S3method("as.Date", "ts")
   S3method("as.list", "ts")
   S3method("as.yearmon", "date")

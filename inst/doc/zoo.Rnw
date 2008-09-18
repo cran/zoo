@@ -532,6 +532,20 @@ aggregate(Z, firstofmonth(index(Z)), mean)
 aggregate(Z, firstofmonth, head, 1)
 @
 
+The opposite of aggregation is disaggregation.  For example, the \code{Nile}
+dataset is an annual \code{"ts"} class series.  To disaggregate it into a
+quarterly series, convert it to a \code{"zoo}
+class series, insert intermediate quarterly points containing \code{NA} values
+and then fill the \code{NA} values using \code{na.approx}, \code{na.locf}
+or \code{na.spline}:
+
+<<disaggregate>>=
+Nile.na <- merge(as.zoo(Nile), zoo(, seq(start(Nile)[1], end(Nile)[1], 1/4)))
+head(as.zoo(Nile))
+head(na.approx(Nile.na))
+head(na.locf(Nile.na))
+head(na.spline(Nile.na))
+@
 
 \subsection{Mathematical operations}
 \label{sec:Ops}

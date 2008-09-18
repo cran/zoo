@@ -10,13 +10,17 @@ interfaces to \code{read.table} and \code{write.table}, respectively.
 }
 \usage{
 read.zoo(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, aggregate = FALSE, \dots)
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL,
+  split = NULL, aggregate = FALSE, \dots)
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
 }
 \arguments{
   \item{file}{character giving the name of the file which the data
     are to be read from/written to. See \code{\link{read.table}} and
-    \code{\link{write.table}} for more information.}
+    \code{\link{write.table}} for more information. Alternatively,
+    in \code{read.zoo}, \code{file} can be a \code{data.frame} (e.g.,
+    resulting from a previous \code{read.table} call) that
+    is subsequently processed to a \code{"zoo"} series.}
   \item{format}{date format argument passed to \code{FUN}.}
   \item{tz}{time zone argument passed to \code{\link{as.POSIXct}}.}
   \item{FUN}{a function for computing the index from the first column
@@ -25,6 +29,8 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     (if the series is regular)?}
   \item{index.column}{integer. The column of the data frame in which the index/time
     is stored.}
+  \item{drop}{logical. If the data frame contains just a single data column, should
+    the second dimension be dropped?}
   \item{x}{a \code{"zoo"} object.}
   \item{index.name}{character with name of the index column in the written
     data file.}  
@@ -32,6 +38,17 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     because the row names are just character representations of the index.}
   \item{col.names}{logical. Should column names be written? Default is to
     write column names only if \code{x} has column names.}
+  \item{FUN2}{function. It is applied to the time index after 
+    \code{FUN} and before \code{aggregate}.}
+  \item{split}{NULL or column number or name or vector of numbers or 
+   names. If not NULL then the data is assumed to be in long format and is 
+   split according to the indicated columns.  See the R 
+   \code{\link[stats]{reshape}} command for description of long data.
+   If \code{split=Inf} then the first of each run are made into a separate
+   series, the second of each run and so on.  If \code{split= -Inf} then
+   the last of each run is made into a separate series, the second last
+   and so on.
+}
   \item{aggregate}{logical or function. If set to \code{TRUE}, then \code{\link{aggregate.zoo}}
     is applied to the zoo object created to compute the \code{\link{mean}} of all values with
     the same time index. Alternatively, \code{aggregate} can be set to any other
@@ -78,9 +95,9 @@ a column with the index and then calls \code{\link{write.table}}.
 \note{\code{read.zoo} works by first reading the data in using \code{read.table}
 and then processing it.  This implies that 
 if the index field is entirely numeric the default is to pass it to \code{FUN}
-or the builtin date conversion routine
+or the built-in date conversion routine
 a number, rather than a character string. 
-Thus a date field such as \code{09122007} intended
+Thus, a date field such as \code{09122007} intended
 to represent December 12, 2007 would be seen as \code{9122007}
 and interpreted as the 91st day 
 thereby generating an error.  
@@ -117,13 +134,17 @@ z <- read.zoo("foo.csv", header = TRUE, FUN = f)
 ## Assume lines look like: 12/22/2007 1 2
 z <- read.zoo("foo.tab", format = "\%m/\%d/\%Y")
 
-# ensure that first column is interpreted as character so leading 0 not dropped
-# Suppose links look like: 09112007 1 2 and there is no header
-z <- read.zoo("foo.txt", format = "\%d\%m\%Y", colClasses = c(V1 = "character"))
+# Suppose lines look like: 09112007 1 2 and there is no header
+z <- read.zoo("foo.txt", format = "\%d\%m\%Y")
 
 ## csv file with first column of form YYYY-mm-dd HH:MM:SS
 ## Read in times as "chron" class. Requires chron 2.3-22 or later.
 z <- read.zoo("foo.csv", header = TRUE, sep = ",", FUN = as.chron)
+
+## same but with custom format.  Note as.chron uses POSIXt-style % formats
+## Read in times as "chron" class. Requires chron 2.3-24 or later.
+z <- read.zoo("foo.csv", header = TRUE, sep = ",", FUN = as.chron, 
+	format = "%Y%m%d")
 
 ## same file format but read it in times as "POSIXct" class.
 z <- read.zoo("foo.csv", header = TRUE, sep = ",", tz = "")
@@ -134,8 +155,19 @@ z <- read.zoo("foo.csv", header = TRUE, sep = ",", format = "\%m-\%d-\%Y")
 ## whitespace separated file with first column of form YYYY-mm-ddTHH:MM:SS
 ## and no headers.  T appears literally.  Requires chron 2.3-22 or later.
 z <- read.zoo("foo.csv", FUN = as.chron)
- 
 }
+
+## omit the read.table() phase and directly supply a data.frame
+dat <- data.frame(date = paste("2000-01-", 10:15, sep = ""), a = rnorm(6), b = 1:6)
+z <- read.zoo(dat)
+
+## using built-in data frame BOD
+read.zoo(BOD)
+
+read.zoo(BOD, FUN = as.Date)
+
+read.zoo(BOD[c(1:6, 1), ], aggregate = mean)
+
 }
 \keyword{ts}
 

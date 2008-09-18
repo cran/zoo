@@ -17,17 +17,17 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1, ascending = TRUE, by.co
     itt <- 0
     embedi <- function(n, k, by = 1, ascending = FALSE) {
     # n = no of time points, k = number of columns
-    # by = increment. normally =1 but if =b calc every b-th point 
+    # by = increment. normally = 1 but if = b calc every b-th point 
     # ascending If TRUE, points passed in ascending order else descending.
-    # Note that embed(1:n,k) corresponds to embedi(n,k,by=1,rev=TRUE)
-    # e.g. embedi(10,3)
-    	    s <- seq(1,n-k+1,by)
+    # Note that embed(1:n, k) corresponds to embedi(n, k, by = 1, rev = TRUE)
+    # e.g. embedi(10, 3)
+    	    s <- seq(1, n-k+1, by)
     	    lens <- length(s)
     	    cols <- if (ascending) 1:k else k:1
-    	    matrix(s + rep(cols,rep(lens,k))-1,lens)
+    	    matrix(s + rep(cols, rep(lens,k))-1, lens)
     }
 
-    if (by.column && by == 1 && ascending && is.null(list(...))) 
+    if (by.column && by == 1 && ascending && length(list(...)) < 1)
 	switch(deparse(substitute(FUN)),
 		mean = return(rollmean(data, width, na.pad = na.pad, align = align)),
 		max = return(rollmax(data, width, na.pad = na.pad, align = align)),

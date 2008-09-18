@@ -45,7 +45,7 @@ releases.
 
 \usage{
 
-\method{xyplot}{zoo}(x, data, screens = seq(length = NCOL(x)), 
+\method{xyplot}{zoo}(x, data, screens = seq_len(NCOL(x)), 
     default.scales = list(y = list(relation = "free")), 
     layout = NULL, xlab = "Index", ylab = NULL, 
     lty = trellis.par.get("plot.line")$lty,

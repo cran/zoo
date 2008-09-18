@@ -207,6 +207,18 @@ nextfri <- function(x) 7 * ceiling(as.numeric(x-5+4) / 7) + as.Date(5-4)
 prices2returns(aggregate(na.locf(m), nextfri, tail, 1))
 @
 
+Here is a similar examle of \code{aggregate} where we define \code{to4sec}
+analogously to \code{nextfri} in order to aggregate the \code{zoo} object \code{zsec} every 4 seconds.
+<<four second mark>>=
+zsec <- structure(1:10, index = structure(c(1234760403.968, 1234760403.969, 
+1234760403.969, 1234760404.029, 1234760404.029, 1234760404.03, 
+1234760404.03, 1234760404.072, 1234760404.073, 1234760404.073
+), class = c("POSIXt", "POSIXct"), tzone = ""), class = "zoo")
+
+to4sec <- function(x) as.POSIXct(4*ceiling(as.numeric(x)/4), origin = "1970-01-01")
+aggregate(zsec, to4sec, tail, 1)
+@
+
 \mysection{Query Yahoo! Finance}
 
 When connected to the internet, Yahoo! Finance can be easily queried using

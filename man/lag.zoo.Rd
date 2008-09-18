@@ -51,7 +51,7 @@ The lagged or differenced \code{"zoo"} object.
 }
 
 
-\seealso{\code{\link{zoo}}, \code{\link[stats]{lag}}, \code{\link[stats]{diff}}}
+\seealso{\code{\link{zoo}}, \code{\link[stats]{lag}}, \code{\link[base]{diff}}}
 
 \examples{
 x <- zoo(11:21)

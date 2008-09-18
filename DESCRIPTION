@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.5-8
-Date: 2009-07-22
+Version: 1.6-0
+Date: 2008-09-18
 Title: Z's ordered observations
 Author: Achim Zeileis, Gabor Grothendieck
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
@@ -11,12 +11,12 @@ Description: An S3 class with methods for totally ordered indexed
         consistency with ts and base R by providing methods to extend
         standard generics.
 Depends: R (>= 2.4.1), stats
-Suggests: coda, chron, DAAG, fame, fCalendar, fSeries, fts, its,
-        lattice, strucchange, timeDate, timeSeries, tseries, xts
+Suggests: coda, chron, DAAG, fCalendar, fSeries, fts, its, lattice,
+        strucchange, timeDate, timeSeries, tis, tseries, xts
 Imports: stats, utils, graphics, grDevices, lattice
 LazyLoad: yes
 License: GPL-2
 URL: http://R-Forge.R-project.org/projects/zoo/
-Packaged: 2009-07-22 17:21:04 UTC; zeileis
+Packaged: 2009-11-18 01:01:28 UTC; zeileis
 Repository: CRAN
-Date/Publication: 2009-07-22 19:20:13
+Date/Publication: 2009-11-18 01:15:44

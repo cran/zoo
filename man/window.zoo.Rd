@@ -8,13 +8,13 @@ of \code{"zoo"} objects and replacing it.
 }
 
 \usage{
-\method{window}{zoo}(x, index = index.zoo(x), start = NULL, end = NULL, \dots)
-\method{window}{zoo}(x, index = index.zoo(x), start = NULL, end = NULL, \dots) <- value
+\method{window}{zoo}(x, index. = index(x), start = NULL, end = NULL, \dots)
+\method{window}{zoo}(x, index. = index(x), start = NULL, end = NULL, \dots) <- value
 }
 
 \arguments{
   \item{x}{an object.}
-  \item{index}{the index/time window which should be extracted.}
+  \item{index.}{the index/time window which should be extracted.}
   \item{start}{an index/time value. Only the indexes in \code{index}
     which are greater or equal to \code{start} are used.  If the index
     class supports comparisons to character variables, as does \code{"Date"}
@@ -56,5 +56,12 @@ window(x, start = "2003-02-01")
 z <- zooreg(rnorm(10), start = 2000, freq = 4)
 window(z, start = 2001.75)
 window(z, start = c(2001, 4))
+
+## replace data at times of d0 which are in dn
+d1 <- d0 <- zoo(1:10) + 100
+dn <- - head(d0, 4)
+
+window(d1, time(dn)) <- coredata(dn)
+
 }
 \keyword{ts}

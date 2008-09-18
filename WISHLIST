@@ -107,6 +107,10 @@ FEATURES
     pastes them together so that 9999-99-99 99:99:99 99 99 99
     can be read directly as dates and times.
 
+  o add class= arg to as.zoo.ts
+
+  o cut/seq/floor/ceiling/round/trunc on yearmon/yearqtr objects
+
 
 INTERFACES
 **********

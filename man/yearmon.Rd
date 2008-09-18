@@ -55,7 +55,7 @@ yearmon(x)
   and coercions to and from \code{"yearmon"} to \code{"Date"} (see below), 
   \code{"POSIXct"},
   \code{"POSIXlt"}, \code{"numeric"}, \code{"character"} and \code{"jul"}.  
-  The last one is from the \code{"fame"} package available on CRAN.
+  The last one is from the \code{"tis"} package available on CRAN.
   In the case of
   \code{as.yearmon.character} the \code{format} argument uses the same
   percent code as 

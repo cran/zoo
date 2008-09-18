@@ -40,7 +40,7 @@ na.contiguous.zoo <- function(object, ...)
         stop("all times contain an NA")
     tt <- cumsum(!good)
     ln <- sapply(0:max(tt), function(i) sum(tt == i))
-    seg <- (seq(along = ln)[ln == max(ln)])[1] - 1
+    seg <- (seq_along(ln)[ln == max(ln)])[1] - 1
     keep <- (tt == seg)
     st <- min(which(keep))
     if (!good[st]) 

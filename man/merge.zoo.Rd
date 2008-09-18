@@ -108,5 +108,23 @@ merge(z, z0)
 merge(z, z0, fill = 0)
 
 merge(z, coredata(z),  1)
+
+
+## merge multiple series represented in a long form data frame 
+## into a multivariate zoo series and plot, one series for each site.
+## Additional examples can be found here:
+## https://stat.ethz.ch/pipermail/r-help/2009-February/187094.html
+## https://stat.ethz.ch/pipermail/r-help/2009-February/187096.html
+##
+m <- 5 # no of years
+n <- 6 # no of sites
+sites <- LETTERS[1:n]
+set.seed(1)
+DF <- data.frame(site = sites, year = 2000 + 1:m, data = rnorm(m*n))
+tozoo <- function(x) zoo(x$data, x$year) 
+Data <- do.call(merge, lapply(split(DF, DF$site), tozoo))
+plot(Data, screen = 1, col = 1:n, pch = 1:n, type = "o", xlab = "")
+legend("bottomleft", legend = sites, lty = 1, pch = 1:n, col = 1:n)
+
 }
 \keyword{ts}

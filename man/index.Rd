@@ -8,10 +8,6 @@
 \alias{index<-.zoo}
 \alias{time<-}
 \alias{time<-.zoo}
-\alias{value}
-\alias{value<-}
-\alias{value.default}
-\alias{value<-.default}
 \alias{start.zoo}
 \alias{end.zoo}
 \title{Extracting/Replacing the Index of Objects}

@@ -5,7 +5,7 @@ index <- function(x, ...)
 
 index.default <- function(x, ...)
 {
-  seq(length = NROW(x))
+  seq_len(NROW(x))
 }
 
 index.zoo <- function(x, ...)

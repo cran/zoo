@@ -1,3 +1,28 @@
+Changes in Version 1.6-0
+
+  o tis graphics support
+
+  o workaround to eliminate as.Date.numeric() warning when zoo loads
+
+  o read.zoo() now optionally accepts a data frame for the file argument
+
+  o better error message in read.zoo() if NAs found in index
+
+  o read.zoo() now accepts a split argument that allows reading in of datasets
+    in long format (where long is as defined in R's reshape command)
+
+  o methods for cbind(), merge(), rbind(), and c() now ignore NULL arguments
+
+  o fixed unique() methods for "yearmon" and "yearqtr" objects  
+
+  o fixed a bug in group generic functions and -() generic for
+    "yearmon" and "yearqtr" objects
+
+  o plot.zoo now accepts vector lwd
+
+  o new rev() method for "zoo" objects
+
+
 Changes in Version 1.5-8
 
   o bug fixes in unique() methods for yearmon/yearqtr
@@ -59,6 +84,9 @@ Changes in Version 1.5-4
   o interactive plots/demos using the packages "TeachingDemos"
     (plot.zoo) and "playwith" (xyplot.zoo)
 
+  o mean.yearmon and Sys.yearmon are defined.  Similarly for yearqtr.
+
+  o min, max and range methods for yearmon are defined via Summary
 
 Changes in Version 1.5-3
 

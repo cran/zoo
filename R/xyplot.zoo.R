@@ -27,7 +27,7 @@ panel.plot.custom <- function(...) {
 xyplot.its <-
 xyplot.ts <-
 xyplot.zoo <- function(x, data,
-  screens = seq(length = NCOL(x)),
+  screens = seq_len(NCOL(x)),
   default.scales = list(y = list(relation = "free")),
   layout = NULL, xlab = "Index", ylab = NULL,
   lty = trellis.par.get("plot.line")$lty,
@@ -41,7 +41,7 @@ xyplot.zoo <- function(x, data,
   x <- as.zoo(x)
   if (length(dim(x)) < 2) x <- zoo(matrix(coredata(x),,1), time(x))
 
-  cn <- if (is.null(colnames(x))) paste("V", seq(length = NCOL(x)), sep = "")
+  cn <- if (is.null(colnames(x))) paste("V", seq_len(NCOL(x)), sep = "")
           else colnames(x)
   screens <- make.par.list(cn, screens, NROW(x), NCOL(x), 1)
   screens <- as.factor(unlist(screens))[drop = TRUE]
@@ -86,7 +86,7 @@ xyplot.zoo <- function(x, data,
 }
 
 xyplot.tis <- function(x, data,
-  screens = seq(length = NCOL(x)),
+  screens = seq_len(NCOL(x)),
   default.scales = list(y = list(relation = "free")),
   layout = NULL, xlab = "Index", ylab = NULL,
   lty = trellis.par.get("plot.line")$lty,
@@ -100,7 +100,7 @@ xyplot.tis <- function(x, data,
   x <- aggregate(as.zoo(x), POSIXct, force)
   if (length(dim(x)) < 2) x <- zoo(matrix(coredata(x),,1), time(x))
 
-  cn <- if (is.null(colnames(x))) paste("V", seq(length = NCOL(x)), sep = "")
+  cn <- if (is.null(colnames(x))) paste("V", seq_len(NCOL(x)), sep = "")
           else colnames(x)
   screens <- make.par.list(cn, screens, NROW(x), NCOL(x), 1)
   screens <- as.factor(unlist(screens))[drop = TRUE]

@@ -28,6 +28,7 @@
 \alias{xtfrm.zoo}
 \alias{names.zoo}
 \alias{names<-.zoo}
+\alias{rev.zoo}
 
 \alias{index2char}
 \alias{index2char.default}
@@ -35,6 +36,8 @@
 
 \alias{head.ts}
 \alias{tail.ts}
+
+\alias{ifelse.zoo}
 
 \title{Z's Ordered Observations}
 \description{
@@ -122,10 +125,13 @@ respective help page and \code{\link{is.regular}} for further details.
 Methods to standard generics for \code{"zoo"} objects currently
 include: \code{print} (see above), \code{summary}, \code{str}, \code{head},
 \code{tail}, \code{[} (subsetting), \code{rbind}, \code{cbind}, \code{merge}
-(see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}), \code{barplot},
+(see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}), \code{rev}, \code{split} (see \code{\link{aggregate.zoo}}), \code{barplot},
 \code{plot} and \code{lines} (see \code{\link{plot.zoo}}). For multivariate
 \code{"zoo"} series with column names the \code{$} extractor is available,
 behaving similar as for \code{"data.frame"} objects.
+
+\code{ifelse.zoo} is not a method (because \code{ifelse} is not a generic) 
+but must be written out including the \code{.zoo} suffix.
 
 To \dQuote{prettify} printed output of \code{"zoo"} series the generic 
 function \code{index2char} is used for turning index values into character
@@ -164,7 +170,7 @@ start and the end of the index/time vector can be queried by
 \code{window<-} (see \code{\link{window.zoo}}).
 
 In addition to standard group generic function (see \code{\link{Ops}}),
-the following mathematical operations are availabe as methods for
+the following mathematical operations are available as methods for
 \code{"zoo"} objects: transpose \code{t} which coerces to a matrix 
 first, and \code{cumsum}, \code{cumprod}, \code{cummin}, \code{cummax}
 which are applied column wise.
@@ -199,6 +205,11 @@ over the full sample period. The generic function \code{\link{rollapply}}
 provides this functionality for arbitrary functions and more efficient versions
 \code{\link{rollmean}}, \code{\link{rollmax}}, \code{\link{rollmedian}} are
 available for the mean, maximum and median respectively.
+
+The \code{zoo} package has an \code{as.Date} \code{numeric} method
+which is similar to the one in the core of \code{R} except that the
+\code{origin} argument defaults to January 1, 1970 (whereas the one
+in the core of \code{R} has no default).
 }
 
 \references{
@@ -332,6 +343,42 @@ time(z6) <- na.approx(ifelse(duplicated(time(z6)), NA, time(z6)), na.rm = FALSE)
 # wind up as NAs and we cannot have NA times
 z6 <- z6[!is.na(time(z6))]
 z6
+
+x1. <- x1 <- zoo (matrix (1:12, nrow = 3), as.Date("2008-08-01") + 0:2)
+colnames (x1) <- c ("A", "B", "C", "D")
+x2 <- zoo (matrix (1:12, nrow = 3), as.Date("2008-08-01") + 1:3)
+colnames (x2) <- c ("B", "C", "D", "E")
+
+both.dates = as.Date (intersect (index (t1), index (t2)))
+both.cols = intersect (colnames (t1), colnames (t2))
+
+x1 [both.dates, both.cols]
+
+##
+## there is "[.zoo" but no "[<-.zoo" however these 4 work
+##
+
+## wrong
+## x1[both.dates, both.cols] <- x2[both.dates, both.cols]
+
+# 4 correct alternates
+# #1
+window(x1, both.dates)[, both.cols] <- x2[both.dates, both.cols]
+
+# #2. restore x1 and show a different way
+x1 <- x1.
+window(x1, both.dates)[, both.cols] <- window(x2, both.dates)[, both.cols]
+
+# #3. restore x1 and show a different way
+x1 <- x1.
+x1[time(x1) %in% both.dates, both.cols] <- x2[both.dates, both.cols]
+
+# #4. restore x1 and show a different way
+x1 <- x1.
+x1[time(x1) %in% both.dates, both.cols] <- x2[time(t2) %in% both.dates, both.cols]
+
+
+
 }
 
 }

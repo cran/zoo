@@ -32,8 +32,8 @@ as.zoo(x, \dots)
 
 \details{
 \code{as.zoo} currently has a default method and methods for \code{\link{ts}},
-\code{\link[its]{its}}, \code{\link[fts]{fts}}, \code{\link[tseries]{irts}},
-\code{\link[coda]{mcmc}}, \code{\link[fame]{tis}}, \code{\link[xts]{xts}} 
+\code{\link[its:itsDef]{its}}, \code{\link[fts]{fts}}, \code{\link[tseries]{irts}},
+\code{\link[coda]{mcmc}}, \code{\link[tis]{tis}}, \code{\link[xts]{xts}} 
 objects (and \code{\link{zoo}} objects themselves).
 
 Methods for coercing objects of class \code{"zoo"} to other classes
@@ -50,8 +50,8 @@ always used.
 }
 
 \seealso{\code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}},
-  \code{\link[its]{its}}, \code{\link[tseries]{irts}}, 
-  \code{\link[fame]{tis}}, \code{\link[fts]{fts}}, \code{\link[coda]{mcmc}},
+  \code{\link[its:itsDef]{its}}, \code{\link[tseries]{irts}}, 
+  \code{\link[tis]{tis}}, \code{\link[fts]{fts}}, \code{\link[coda]{mcmc}},
   \code{\link[xts]{xts}}.
 }  
 
