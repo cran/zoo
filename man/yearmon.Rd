@@ -32,6 +32,7 @@
 \alias{Ops.yearmon}
 \alias{Sys.yearmon}
 \alias{-.yearmon}
+\alias{xtfrm.yearmon}
 
 \title{An Index Class for Monthly Data}
 \description{

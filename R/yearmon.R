@@ -113,7 +113,7 @@ Ops.yearmon <- function(e1, e2) {
     e1 <- as.numeric(as.yearmon(e1))
     e2 <- as.numeric(as.yearmon(e2))
     rval <- NextMethod(.Generic)
-    rval <- yearmon(rval)
+    if(is.numeric(rval)) rval <- yearmon(rval)
     return(rval)
 }
 
@@ -206,5 +206,6 @@ unique.yearmon <- function(x, incomparables = FALSE, ...) {
 	as.yearmon(unique.default(x, incomparables = incomparables, ...))
 }
 
+xtfrm.yearmon <- function(x) as.numeric(x)
 
 

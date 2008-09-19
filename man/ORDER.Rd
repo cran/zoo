@@ -26,7 +26,11 @@ ORDER(x, \dots)
 \code{ORDER} is a new generic function which aims at providing
 the functionality of the non-generic base function \code{\link[base]{order}}
 for arbitrary objects. Currently, there is only a default method which
-simply calls \code{\link[base]{order}}.
+simply calls \code{\link[base]{order}}. For objects (more precisely if
+\code{\link[base]{is.object}} is \code{TRUE}) \code{order}
+leverages the generic \code{xtfrm}. Thus, to assure ordering
+works, one can supply either a method to \code{xtfrm} or to \code{ORDER}
+(or both).
 }
 
 

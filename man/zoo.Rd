@@ -101,7 +101,9 @@ generic functions should be created by the user. Note, that to achieve this,
 new generic functions \code{\link{ORDER}} and \code{\link{MATCH}} are created in
 the \code{zoo} package with default methods corresponding to
 the non-generic base functions \code{\link[base]{order}} 
-and \code{\link[base]{match}}. Furthermore, for certain (but not for all)
+and \code{\link[base]{match}}. Note that the \code{\link[base]{order}} 
+and hence the default \code{\link{ORDER}} typically work if there is a
+\code{\link[base]{xtfrm}} method. Furthermore, for certain (but not for all)
 operations the index class should have an \code{as.numeric} method (in 
 particular for regular series) and an \code{as.character} method might improve
 printed output (see also below).

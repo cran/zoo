@@ -199,6 +199,9 @@ as the corresponding base functions \code{order()} and \code{match()} are
 non-generic. The default methods simply call the corresponding base functions, i.e.,
 no new method needs to be introduced for a particular index class if the 
 non-generic functions \code{order()} and \code{match()} work for this class.
+\emph{\proglang{R} now also provides a new generic \code{xtfrm()} which was not
+available when the new generic \code{ORDER()} was introduced. If there is a
+\code{xtfrm()} for a class, the default \code{ORDER()} method typically works.}
 
 To illustrate the usage of \code{zoo()}, we first load the package and set the
 random seed to make the examples in this paper exactly reproducible.

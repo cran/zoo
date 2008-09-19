@@ -133,7 +133,7 @@ Ops.yearqtr <- function(e1, e2) {
     e1 <- as.numeric(as.yearqtr(e1))
     e2 <- as.numeric(as.yearqtr(e2))
     rval <- NextMethod(.Generic)
-    rval <- yearqtr(rval)
+    if(is.numeric(rval)) rval <- yearqtr(rval)
     return(rval)
 }
 
@@ -226,3 +226,4 @@ unique.yearqtr <- function(x, incomparables = FALSE, ...) {
 	as.yearqtr(unique.default(x, incomparables = incomparables, ...))
 }
 
+xtfrm.yearqtr <- function(x) as.numeric(x)

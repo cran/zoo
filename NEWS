@@ -1,3 +1,15 @@
+Changes in Version 1.6-1
+
+  o xtfrm() methods for yearmon/yearqtr added.
+
+  o enhanced documentation to emphasize that there is typically no
+    need for an ORDER() method if there is an appropriate xtfrm()
+    method.
+
+  o Bug fix in group generic functions for yearmon/yearqtr with
+    non-numeric return values.
+
+
 Changes in Version 1.6-0
 
   o tis graphics support
