@@ -1,3 +1,8 @@
+Changes in Version 1.5-5
+
+  o documentation enhancements for new Rd parser
+
+
 Changes in Version 1.5-4
 
   o improvments in read.zoo()

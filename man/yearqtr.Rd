@@ -76,7 +76,7 @@ as.yearqtr(x, \dots)
 }
 
 \seealso{\code{\link{yearmon}}, \code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}},
-  code{\link{strptime}}.}
+  \code{\link{strptime}}.}
 
 \examples{
 x <- yearqtr(2000 + seq(0, 7)/4)

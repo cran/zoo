@@ -50,7 +50,7 @@ included.  This allows intersection, union and left and right joins
 to be expressed.
 
 If \code{retclass} is \code{"zoo"} (the default) a single merged \code{"zoo"}
-object is returned. If it is set to \code{"list"} a list of \code{"zoo}
+object is returned. If it is set to \code{"list"} a list of \code{"zoo"}
 objects is returned. If \code{retclass = NULL} then instead of returning a value it updates each
 argument (if it is a variable rather than an expression) in
 place so as to extend or reduce it to use the common index vector.
