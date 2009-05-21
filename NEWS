@@ -1,3 +1,9 @@
+Changes in Version 1.5-6
+
+  o changed dependency in coercion functions and vignettes from
+    fCalendar/fSeries to timeDate/timeSeries
+
+
 Changes in Version 1.5-5
 
   o documentation enhancements for new Rd parser

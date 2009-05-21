@@ -26,8 +26,8 @@ as.zoo.its <- function(x, ...)
 }
 
 as.zoo.timeSeries <- function(x, ...) {
-  stopifnot(require("fSeries"))
-  zoo(as.matrix(x), time(x), ...)  
+  stopifnot(require("timeSeries"))
+  zoo(as.matrix(x), timeSeries::time(x), ...)  
 }
 
 as.zoo.zoo <- function(x, ...) x

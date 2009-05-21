@@ -79,14 +79,16 @@ computational finance with \proglang{R} over the last years
 several implementations of classes for irregular time series 
 emerged which are aimed particularly at finance applications.
 These include the \proglang{S4} classes \code{"timeSeries"}
-in package \pkg{fSeries} from the \pkg{Rmetrics} suite \citep{zoo:Rmetrics:2008},
+in package \pkg{timeSeries} (previously \pkg{fSeries}) from the
+\pkg{Rmetrics} suite \citep{zoo:Rmetrics:2008},
 \code{"its"} in package \pkg{its} \citep{zoo:its:2004}
 and the \proglang{S3} class \code{"irts"} in package \pkg{tseries} \citep{zoo:tseries:2007}.
 With these packages available, why would anybody want yet another 
 package providing infrastructure for irregular time series?
 The above mentioned implementations have in common that they are restricted to a particular
 class for the time scale: the former implementation comes with its own time class
-\code{"timeDate"} from package \pkg{fCalendar} built on top of the \code{"POSIXct"} class
+\code{"timeDate"} from package \pkg{timeDate} (previously \pkg{fCalendar})
+built on top of the \code{"POSIXct"} class
 available in base \proglang{R} whereas the latter two use \code{"POSIXct"} directly.
 And this was the starting point for the \pkg{zoo} project: the first author
 of the present paper needed
@@ -187,10 +189,10 @@ in interpolation. Both methods are not necessary for working with \code{"zoo"}
 objects but could be used if available.
 All these methods are available, e.g., for standard numeric and character vectors and for
 vectors of classes \code{"Date"}, \code{"POSIXct"} or \code{"times"}
-from package \pkg{chron}, but not for the class \code{"dateTime"} in \pkg{fCalendar}.
-In the last case, the solution is to provide methods for the above mentioned
-functions so that indexing \code{"zoo"} objects with \code{"dateTime"} vectors works
-(see Section~\ref{sec:fCalendar} for an example).
+from package \pkg{chron} and \code{"timeDate"} in \pkg{timeDate}.
+Because not all required methods used to be available for \code{"timeDate"} in older
+versions of \pkg{fCalendar}, Section~\ref{sec:fCalendar} has a somewhat outdated example how
+to provide such methods so that \code{"zoo"} objects work with \code{"timeDate"} indexes.
 To achieve this  independence of the index class, new generic functions for
 ordering (\code{ORDER()}) and value matching (\code{MATCH()}) are introduced
 as the corresponding base functions \code{order()} and \code{match()} are 
@@ -869,8 +871,8 @@ plot(diff(log(MSFT)))
 \subsection[fCalendar: Indexes of class "timeDate"]{\pkg{fCalendar}: Indexes of class \code{"timeDate"}}
 \label{sec:fCalendar}
 
-\emph{The original version of this section was written when \pkg{fCalendar} and \pkg{zoo}
-did not yet include enough methods to attach \code{"timeDate"} indexes to \code{"zoo"}
+\emph{The original version of this section was written when \pkg{fCalendar} (now: \pkg{timeDate})
+and \pkg{zoo} did not yet include enough methods to attach \code{"timeDate"} indexes to \code{"zoo"}
 series. For historical reasons and completeness, we still briefly comment on the communcation
 between the packages and their classes.}
 
@@ -879,7 +881,7 @@ it might be necessary for some index classes to provide \code{c()}, \code{length
 \code{ORDER()} and \code{MATCH()} methods such that the methods in \pkg{zoo} 
 work properly. Previously, this was the case \code{"timeDate"} from the \pkg{fCalendar} package
 which is why it was used as an example in this vigntte. 
-Meanwhile however, both \pkg{zoo} and \pkg{fCalendar}
+Meanwhile however, both \pkg{zoo} and \pkg{fCalendar}/\pkg{timeDate}
 have been enhanced: The latter contains the methods for \code{c()}, \code{length()}, and \code{[},
 while \pkg{zoo} has methods for \code{ORDER()} and \code{MATCH()} for class \code{"timeDate"}.
 The last two functions essentially work by coercing to the underlying \code{"POSIXct"} and then
@@ -934,7 +936,7 @@ leads to improved printing compared to the regular series \code{zr1} and \code{z
 from Section~\ref{sec:zooreg}.
 
 <<yearmon1>>=
-zr3 <- zooreg(rnorm(9), start = yearmon(2000), frequency = 12)
+zr3 <- zooreg(rnorm(9), start = as.yearmon(2000), frequency = 12)
 zr3
 @
 

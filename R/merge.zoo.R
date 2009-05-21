@@ -146,7 +146,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
            table(MATCH(x, x))
 	}
 	union <- do.call("c", list)
-	sort.unique(union)[ my.table(union) == length(list) ]
+	sort.unique(union)[which(my.table(union) == length(list))]
     }
     indexintersect <- intersect.list(indexlist)
 
