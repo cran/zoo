@@ -44,12 +44,13 @@ as.zoo.timeSeries <- function(x, ...) {
 }
 
 as.zoo.xts <- function(x, ...) {
-	require("xts")
-	zoo(coredata(x), order.by = index(x), ...)
+  stopifnot(require("xts"))
+  zoo(coredata(x), order.by = index(x), ...)
 }
 
 as.zooreg.xts <- function(x, ...) {
-	as.zooreg(as.zoo(x, ...))
+  stopifnot(require("xts"))
+  as.zooreg(as.zoo(x, ...))
 }
 
 as.zoo.zoo <- function(x, ...) x

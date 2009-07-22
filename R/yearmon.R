@@ -202,8 +202,8 @@ range.yearmon <- function(..., na.rm = FALSE) {
 	as.yearmon(range.default(..., na.rm = na.rm))
 }
 
-unique.yearmon <- function(..., incomparables = FALSE) {
-	as.yearmon(range.default(..., incomparables = incomparables))
+unique.yearmon <- function(x, incomparables = FALSE, ...) {
+	as.yearmon(unique.default(x, incomparables = incomparables, ...))
 }
 
 

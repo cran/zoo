@@ -222,7 +222,7 @@ range.yearqtr <- function(..., na.rm = FALSE) {
 	as.yearqtr(range.default(..., na.rm = na.rm))
 }
 
-unique.yearqtr <- function(..., incomparables = FALSE) {
-	as.yearqtr(range.default(..., incomparables = incomparables))
+unique.yearqtr <- function(x, incomparables = FALSE, ...) {
+	as.yearqtr(unique.default(x, incomparables = incomparables, ...))
 }
 
