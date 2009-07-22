@@ -1,3 +1,31 @@
+Changes in Version 1.5-7
+
+  o added "zoo" methods for xtfrm(), split(), and subset()
+
+  o as.zoo() methods for "xts", "tis", "fts", and "mcmc" objects (the other
+    direction being handled by the respective packages)
+  
+  o improvements in yearmon and yearqtr:
+    - added range(), unique(), and is.numeric() methods
+    - is.numeric() methods return FALSE
+    - as.yearmon() now also accepts "%b %Y" as a default format so
+      as.yearmon(as.character(ym)) where ym is yearmon now works
+
+  o fixed strip argument in xyplot() method (thanks to Christian Gunning)
+
+  o lag() method for "zooreg" objects now has an na.pad argument,
+    like the corresponding "zoo" method. Additinal bug fix.
+
+  o head() and tail() methods now allow second argument to be negative
+
+  o added is.na argument to na.trim()
+
+  o ORDER() methods for "chron", "dates", and "times" objects added.
+    Without these order has become very slow when using older versions of
+    the chron package (although the most recent version of chron has no
+    slowdown even without this fix as it implements xtfrm()).
+
+
 Changes in Version 1.5-6
 
   o changed dependency in coercion functions and vignettes from

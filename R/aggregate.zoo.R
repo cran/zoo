@@ -33,3 +33,16 @@ aggregate.zoo <- function(x, by, FUN, ..., regular = NULL, frequency = NULL)
   
   return(rval)
 }
+
+# works even if zoo series has duplicates among its times
+split.zoo <- function(x, f, drop = FALSE, ...) {
+    ix <- time(x)
+	xc <- coredata(x)
+	if (length(dim(xc)) < 2) {
+		lapply(split(seq_along(xc), f, drop = drop, ...), 
+			function(ind) zoo(xc[ind], ix[ind]))
+	} else {
+		lapply(split(seq_len(nrow(xc)), f, drop = drop, ...), 
+			function(ind) zoo(xc[ind, , drop = drop], ix[ind]))
+	}
+}

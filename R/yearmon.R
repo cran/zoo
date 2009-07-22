@@ -13,6 +13,9 @@ as.yearmon.yearqtr <- function(x, frac = 0, ...) {
 as.yearmon.dates <- 
 as.yearmon.Date <- 
 as.yearmon.POSIXt <- function(x, ...) as.yearmon(with(as.POSIXlt(x, tz="GMT"), 1900 + year + mon/12))
+# as.jul.yearmon <- function(x, ...) jul(as.Date(x, ...)) # jul is from fame pkg
+as.yearmon.timeDate <-
+as.yearmon.jul <- function(x, ...) as.yearmon(as.Date(x, ...))
 as.yearmon.factor <- function(x, ...) as.yearmon(as.character(x), ...)
 as.yearmon.character <- function(x, format = "", ...) {
    if (format == "") {
@@ -21,7 +24,8 @@ as.yearmon.character <- function(x, format = "", ...) {
 		nch <- na.omit(nch)
         if (length(table(nch)) != 1) 
             stop("yearmon variable can only have one format")
-        format <- if (all(nch == 1)) "%Y-%m" else "%Y-%m-%d"
+		format <- if (all(nch == 0)) "%B %Y"
+		else if (all(nch == 1)) "%Y-%m" else "%Y-%m-%d"
    }
    has.short.keys <- rep(regexpr("%[mbByY%]", format) > 0, length(x))
    has.no.others <- regexpr("%", gsub("%[mbByY%]", "", format)) < 0
@@ -30,6 +34,7 @@ as.yearmon.character <- function(x, format = "", ...) {
       as.Date(x, format, ...))
    as.yearmon(as.Date(z))
 }
+as.yearmon.ti <- function(x, ...) as.yearmon(as.Date(x), ...)
 
 ## coercion from yearmon
 # returned Date is the fraction of the way through the period given by frac
@@ -125,6 +130,8 @@ Ops.yearmon <- function(e1, e2) {
     structure(unclass(as.yearmon(e1)) - e2, class = "yearmon")
 }
 
+is.numeric.yearmon <- function(x) FALSE
+
 Axis.yearmon <- function(x = NULL, at = NULL, ..., side, labels = NULL)
     axis.yearmon(x = x, at = at, ..., side = side, labels = TRUE)
 
@@ -170,3 +177,34 @@ axis.yearmon <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 =
 
 summary.yearmon <- function(object, ...)
   summary(as.numeric(object), ...)
+
+###
+
+## convert from package date
+as.yearmon.date <- function(x, ...) {
+	as.yearmon(as.Date(x, ...))
+}
+
+mean.yearmon <- function (x, ...) as.yearmon(mean(unclass(x), ...))
+
+Summary.yearmon <- function (..., na.rm)
+{
+    ok <- switch(.Generic, max = , min = , range = TRUE, FALSE)
+    if (!ok) stop(.Generic, " not defined for yearmon objects")
+    val <- NextMethod(.Generic)
+    class(val) <- oldClass(list(...)[[1]])
+    val
+}
+
+Sys.yearmon <- function() as.yearmon(Sys.Date())
+
+range.yearmon <- function(..., na.rm = FALSE) {
+	as.yearmon(range.default(..., na.rm = na.rm))
+}
+
+unique.yearmon <- function(..., incomparables = FALSE) {
+	as.yearmon(range.default(..., incomparables = incomparables))
+}
+
+
+

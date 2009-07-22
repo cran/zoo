@@ -147,24 +147,34 @@ str.zoo <- function(object, ...)
   if(is.na(wi)) {
     object <- cbind(object, value)
     colnames(object)[NCOL(object)] <- x  
-  } else {  
-    object[, wi] <- value
+  } else {
+    if(is.null(value)) {
+      object <- object[, -wi, drop=FALSE]
+    } else {   
+      object[, wi] <- value
+    }
   }
   object
 }
 
 head.zoo <- function(x, n = 6, ...) {
-	if (length(dim(x)) == 0)
-		x[seq(length = min(n, length(x)))]
-	else
-		x[seq(length = min(n, nrow(x))),, drop = FALSE]
+	stopifnot(length(n) == 1L)
+	xlen <- NROW(x)
+    n <- if (n < 0L) 
+        max(NROW(x) + n, 0L)
+    else min(n, xlen)
+	if (length(dim(x)) == 0) x[seq_len(n)]
+	else x[seq_len(n),, drop = FALSE]
 }
  
 tail.zoo <- function(x, n = 6, ...) {
-	if (length(dim(x)) == 0)
-		x[seq(to = length(x), length = min(n, length(x)))]
-	else
-		x[seq(to = nrow(x), length = min(n, nrow(x))),, drop = FALSE]
+    stopifnot(length(n) == 1L)
+    xlen <- NROW(x)
+    n <- if (n < 0L) 
+        max(xlen + n, 0L)
+    else min(n, xlen)
+	if (length(dim(x)) == 0) x[seq.int(to = xlen, length.out = n)]
+	else x[seq.int(to = xlen, length.out = n),, drop = FALSE]
 }
 
 range.zoo <- function(..., na.rm = FALSE)
@@ -180,5 +190,49 @@ scale.zoo <- function (x, center = TRUE, scale = TRUE) {
 with.zoo <- function(data, expr, ...) {
     stopifnot(length(dim(data)) == 2)
     eval(substitute(expr), as.list(data), enclos = parent.frame())
+}
+
+xtfrm.zoo <- function(x) coredata(x)
+
+subset.zoo <- function (x, subset, select, drop = FALSE, ...) 
+{
+    if (missing(select)) 
+        vars <- TRUE
+    else {
+        nl <- as.list(1:ncol(x))
+        names(nl) <- colnames(x)
+        vars <- eval(substitute(select), nl, parent.frame())
+    }
+    if (missing(subset)) {
+        subset <- rep(TRUE, NROW(x))
+    } else {
+        e <- substitute(subset)
+	if("time" %in% colnames(x)) {
+	  xdf <- as.data.frame(x)
+          subset <- eval(e, xdf, parent.frame())
+          xdf$time <- time(x)
+          subset2 <- eval(e, xdf, parent.frame())
+	  if(!identical(subset, subset2))
+  	      warning("'time' is a column in 'x' (not the time index)")
+	} else {
+          subset <- eval(e, cbind(as.data.frame(x), time = time(x)), parent.frame())
+	}
+        if (!is.logical(subset)) stop("'subset' must be logical")
+    }
+    x[subset & !is.na(subset), vars, drop = drop]
+}
+
+names.zoo <- function(x) {
+  cx <- coredata(x)
+  if(is.matrix(cx)) colnames(cx) else names(cx)
+}
+
+"names<-.zoo" <- function(x, value) {
+  if(is.matrix(coredata(x))) {
+    colnames(x) <- value
+  } else {
+    names(coredata(x)) <- value
+  }
+  x
 }
 

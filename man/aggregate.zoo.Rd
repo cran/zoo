@@ -1,6 +1,6 @@
-
 \name{aggregate.zoo}
 \alias{aggregate.zoo}
+\alias{split.zoo}
 \title{Compute Summary Statistics of zoo Objects}
 \description{
 Splits a \code{"zoo"} object into subsets along a coarser index grid,

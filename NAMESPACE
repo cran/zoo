@@ -15,6 +15,7 @@ export(
   "merge.zoo",
   "read.zoo",
   "write.zoo",
+  "xtfrm.zoo",
 
 ## plotting
   "plot.zoo",
@@ -56,33 +57,42 @@ export(
   "yearmon",
   "as.yearmon",
   "as.yearmon.default",
+  "Sys.yearmon",
   "yearqtr",
   "as.yearqtr",
   "as.yearqtr.yearqtr",
   "as.yearqtr.default",
   "format.yearqtr",
+  "Sys.yearqtr",
 
 # *** temporary -- change these to S3Method when lattice creates generics
   "panel.lines.ts",
   "panel.lines.its",
+  "panel.lines.tis",
   "panel.lines.zoo",
   "panel.points.ts",
   "panel.points.its",
+  "panel.points.tis",
   "panel.points.zoo",
   "panel.segments.ts",
   "panel.segments.its",
+  "panel.segments.tis",
   "panel.segments.zoo",
   "panel.text.ts",
   "panel.text.its",
+  "panel.text.tis",
   "panel.text.zoo",
   "panel.rect.ts",
   "panel.rect.its",
+  "panel.rect.tis",
   "panel.rect.zoo",
   "panel.arrows.ts",
   "panel.arrows.its",
+  "panel.arrows.tis",
   "panel.arrows.zoo",
   "panel.polygon.ts",
   "panel.polygon.its",
+  "panel.polygon.tis",
   "panel.polygon.zoo",
 
 ## auxiliary generics/methods
@@ -124,6 +134,8 @@ export(
   S3method("lag", "zoo")
   S3method("lines", "zoo")
   S3method("na.contiguous", "zoo")
+  S3method("names", "zoo")
+  S3method("names<-", "zoo")
   S3method("plot", "zoo")
   S3method("points", "zoo")
   S3method("print", "zoo")
@@ -133,6 +145,8 @@ export(
   S3method("rollmean", "zoo")
   S3method("rollmedian", "zoo")
   S3method("scale", "zoo")
+  S3method("split", "zoo")
+  S3method("subset", "zoo")
   S3method("start", "zoo")
   S3method("str", "zoo")
   S3method("summary", "zoo")
@@ -175,11 +189,15 @@ export(
   S3method("coredata<-", "its")
   S3method("xyplot", "its")
 
+## methods for class tis
+  S3method("xyplot", "tis")
+
 ## methods for class yearmon
   S3method("-", "yearmon")
   S3method("Axis", "yearmon")
   S3method("MATCH", "yearmon")
   S3method("Ops", "yearmon")
+  S3method("Summary", "yearmon")
   S3method("[", "yearmon")
   S3method("as.Date", "yearmon")
   S3method("as.POSIXct", "yearmon")
@@ -191,14 +209,19 @@ export(
   S3method("c", "yearmon")
   S3method("cycle", "yearmon")
   S3method("format", "yearmon")
+  S3method("is.numeric", "yearmon")
+  S3method("mean", "yearmon")
   S3method("print", "yearmon")
+  S3method("range", "yearmon")
   S3method("summary", "yearmon")
+  S3method("unique", "yearmon")
 
 ## methods for class yearqtr 
   S3method("-", "yearqtr")
   S3method("Axis", "yearqtr")
   S3method("MATCH", "yearqtr")
   S3method("Ops", "yearqtr")
+  S3method("Summary", "yearqtr")
   S3method("[", "yearqtr")
   S3method("as.Date", "yearqtr")
   S3method("as.POSIXct", "yearqtr")
@@ -210,8 +233,12 @@ export(
   S3method("c", "yearqtr")
   S3method("cycle", "yearqtr")
   S3method("format", "yearqtr")
+  S3method("is.numeric", "yearqtr")
+  S3method("mean", "yearqtr")
   S3method("print", "yearqtr")
+  S3method("range", "yearqtr")
   S3method("summary", "yearqtr")
+  S3method("unique", "yearqtr")
 
 ## methods for class timeDate/timeSeries 
   S3method("MATCH", "timeDate")
@@ -225,19 +252,28 @@ export(
   S3method("index2char", "numeric")
   S3method("na.contiguous", "data.frame")
   S3method("na.contiguous", "list")
+  S3method("ORDER", "chron")
+  S3method("ORDER", "dates")
+  S3method("ORDER", "times")
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
   S3method("as.Date", "numeric")
   S3method("as.Date", "ts")
   S3method("as.list", "ts")
+  S3method("as.yearmon", "date")
   S3method("as.yearmon", "Date")
+  S3method("as.yearmon", "timeDate")
+  S3method("as.yearmon", "jul")
   S3method("as.yearmon", "POSIXt")
   S3method("as.yearmon", "character")
   S3method("as.yearmon", "dates")
   S3method("as.yearmon", "integer")
   S3method("as.yearmon", "numeric")
   S3method("as.yearmon", "factor")
+  S3method("as.yearqtr", "date")
   S3method("as.yearqtr", "Date")
+  S3method("as.yearqtr", "timeDate")
+  S3method("as.yearqtr", "jul")
   S3method("as.yearqtr", "POSIXt")
   S3method("as.yearqtr", "character")
   S3method("as.yearqtr", "dates")
@@ -245,10 +281,13 @@ export(
   S3method("as.yearqtr", "numeric")
   S3method("as.yearqtr", "factor")
   S3method("as.zoo", "factor")
+  S3method("as.zoo", "fts")
   S3method("as.zoo", "irts")
   S3method("as.zoo", "its")
+  S3method("as.zoo", "mcmc")
   S3method("as.zoo", "ts")
   S3method("as.zoo", "zoo")
   S3method("as.zoo", "zooreg")
   S3method("as.zooreg", "ts")
   S3method("as.zooreg", "zoo")
+  S3method("as.zooreg", "tis")

@@ -80,12 +80,13 @@ lag.zoo <- function(x, k = 1, na.pad = FALSE, ...)
 
 
 
-lag.zooreg <- function(x, k = 1, ...)
+lag.zooreg <- function(x, k = 1, na.pad = FALSE, ...)
 {
    if (length(k) > 1) {
 	if (is.null(names(k))) names(k) <- paste("lag", k, sep = "")
-	return(do.call("merge.zoo", lapply(k, lag.zoo, x = x, ...)))
+	return(do.call("merge.zoo", lapply(k, lag.zooreg, x = x, na.pad = na.pad, ...)))
    }
+   x0 <- x
    nr <- NROW(x)
    freq <- attr(x, "frequency")
    
@@ -96,8 +97,8 @@ lag.zooreg <- function(x, k = 1, ...)
    ix <- if(identical(class(ix), "numeric") | identical(class(ix), "integer"))
      floor(freq*ix - k + .0001)/freq else ix - k/freq
    index(x) <- ix
-   
-   return(x)
+
+   if (na.pad) merge(x, zoo(, time(x0))) else x
 }
 
 diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, ...)

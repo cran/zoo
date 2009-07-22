@@ -4,8 +4,11 @@
 \alias{as.yearqtr.default} 
 \alias{as.yearqtr.numeric}
 \alias{as.yearqtr.integer}
+\alias{as.yearqtr.date}
 \alias{as.yearqtr.dates}
 \alias{as.yearqtr.Date}
+\alias{as.yearqtr.timeDate}
+\alias{as.yearqtr.jul}
 \alias{as.yearqtr.POSIXt}
 \alias{as.yearqtr.character}
 \alias{as.yearqtr.factor}
@@ -19,11 +22,17 @@
 \alias{c.yearqtr}
 \alias{cycle.yearqtr}
 \alias{format.yearqtr}
+\alias{is.numeric.yearqtr}
+\alias{mean.yearqtr}
 \alias{print.yearqtr}
+\alias{range.yearqtr}
 \alias{summary.yearqtr}
+\alias{unique.yearqtr}
 \alias{[.yearqtr}
 \alias{MATCH.yearqtr}
 \alias{Ops.yearqtr}
+\alias{Summary.yearqtr}
+\alias{Sys.yearqtr}
 \alias{-.yearqtr}
 
 \title{An Index Class for Quarterly Data}
@@ -52,7 +61,7 @@ as.yearqtr(x, \dots)
 }
 
 \details{
-  The yearqtr class is used to represent quarterly data. Internally it holds
+  The \code{"yearqtr"} class is used to represent quarterly data. Internally it holds
   the data as year plus 0 for Quarter 1, 1/4 for Quarter 2
   and so on in order that its internal representation is the same as 
   \code{ts} class with \code{frequency = 4}. If \code{x} is not in this
@@ -65,7 +74,21 @@ as.yearqtr(x, \dots)
   There are coercion methods available for various classes including:
   default coercion to \code{"yearqtr"} (which coerces to \code{"numeric"} first)
   and coercion from \code{"yearqtr"} to \code{"Date"} (see below), \code{"POSIXct"},
-  \code{"POSIXlt"}, \code{"numeric"}, \code{"character"}.  
+  \code{"POSIXlt"}, \code{"numeric"}, \code{"character"} and \code{"jul"}.  
+  The last one is from the \code{frame} package on CRAN.
+
+  There is an \code{is.numeric} method which returns \code{FALSE}.
+
+  There is also a \code{date} method for \code{as.yearqtr} usable with objects
+  created with package \code{date}.
+
+  \code{Sys.yearqtr()} returns the current year/month and methods for
+  \code{min}, \code{max} and \code{range} are defined (by defining 
+  a method for \code{Summary}.
+
+  A \code{yearqtr} \code{mean} method is also defined.
+
+  Certain methods support a \code{frac} argument.  See \code{\link{yearmon}}.
 
 }
 \value{
@@ -79,7 +102,7 @@ as.yearqtr(x, \dots)
   \code{\link{strptime}}.}
 
 \examples{
-x <- yearqtr(2000 + seq(0, 7)/4)
+x <- as.yearqtr(2000 + seq(0, 7)/4)
 x
 
 format(x, "\%Y Quarter \%q")

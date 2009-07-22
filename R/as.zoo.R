@@ -13,6 +13,12 @@ as.zoo.factor <- function(x, ...)
   zoo(x, ...)
 }
 
+as.zoo.fts <- function(x, ...) 
+{
+	stopifnot(require("fts"))
+	zoo(as.matrix(x), attr(x, "dates"))
+}
+
 as.zoo.irts <- function(x, ...)
 {
   zoo(x$value, x$time, ...)
@@ -25,16 +31,32 @@ as.zoo.its <- function(x, ...)
 	zoo(x, index, ...)
 }
 
+# as.mcmc.default can handle other direction
+as.zoo.mcmc <- function(x, ...)
+{
+	stopifnot(require("coda"))
+	as.zoo(as.ts(x, ...))
+}
+
 as.zoo.timeSeries <- function(x, ...) {
   stopifnot(require("timeSeries"))
   zoo(as.matrix(x), timeSeries::time(x), ...)  
+}
+
+as.zoo.xts <- function(x, ...) {
+	require("xts")
+	zoo(coredata(x), order.by = index(x), ...)
+}
+
+as.zooreg.xts <- function(x, ...) {
+	as.zooreg(as.zoo(x, ...))
 }
 
 as.zoo.zoo <- function(x, ...) x
 
 ## This should be in its now.
 ## as.its.zoo <- function(x) {
-## 	stopifnot(require(its))
+## 	stopifnot(require("its"))
 ## 	index <- index(x)
 ## 	stopifnot(inherits(index, "POSIXct"))
 ## 	its(coredata(x), index)
@@ -74,7 +96,7 @@ as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE, ...)
 	if (!is.null(row.names)) row.names(y) <- row.names 
 	  else {
 	    tmp <- index2char(index(x), frequency = attr(x, "frequency"))
-	    if (!any(duplicated(tmp))) row.names(y) <- tmp
+	    if (NROW(y) > 0 && !any(duplicated(tmp))) row.names(y) <- tmp
         }
 	return(y)
 }

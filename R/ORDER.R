@@ -8,3 +8,7 @@ ORDER.timeDate <- function(x, ...) {
   stopifnot(require("timeDate"))
   order(as.POSIXct(x), ...)
 }
+
+ORDER.chron <- ORDER.dates <- ORDER.times <- function(x, ...) {
+  order(as.numeric(x), ...)
+}

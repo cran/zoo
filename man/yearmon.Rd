@@ -6,8 +6,11 @@
 \alias{as.yearmon.integer}
 \alias{as.yearmon.dates}
 \alias{as.yearmon.Date}
+\alias{as.yearmon.timeDate}
+\alias{as.yearmon.jul}
 \alias{as.yearmon.POSIXt}
 \alias{as.yearmon.character}
+\alias{as.yearmon.date}
 \alias{as.yearmon.factor}
 \alias{as.Date.yearmon}
 \alias{as.POSIXct.yearmon}
@@ -18,11 +21,16 @@
 \alias{c.yearmon}
 \alias{cycle.yearmon}
 \alias{format.yearmon}
+\alias{is.yearmon}
+\alias{mean.yearmon}
 \alias{print.yearmon}
+\alias{range.yearmon}
 \alias{summary.yearmon}
+\alias{unique.yearmon}
 \alias{[.yearmon}
 \alias{MATCH.yearmon}
 \alias{Ops.yearmon}
+\alias{Sys.yearmon}
 \alias{-.yearmon}
 
 \title{An Index Class for Monthly Data}
@@ -36,7 +44,7 @@ yearmon(x)
   \item{x}{numeric (interpreted as being \dQuote{in years}).}
 }
 \details{
-  The yearmon class is used to represent monthly data. Internally it holds
+  The \code{"yearmon"} class is used to represent monthly data. Internally it holds
   the data as year plus 0 for January, 1/12 for February, 2/12 for March
   and so on in order that its internal representation is the same as 
   \code{ts} class with \code{frequency = 12}. If \code{x} is not in this
@@ -44,18 +52,35 @@ yearmon(x)
   
   There are coercion methods available for various classes including:
   default coercion to \code{"yearmon"} (which coerces to \code{"numeric"} first)
-  and coercion from \code{"yearmon"} to \code{"Date"} (see below), 
+  and coercions to and from \code{"yearmon"} to \code{"Date"} (see below), 
   \code{"POSIXct"},
-  \code{"POSIXlt"}, \code{"numeric"}, \code{"character"}.  In the case of
-  \code{as.yearmon.character} the \code{format} argument is the same as for
-  \code{"Date"}.   One can specify a year and month with no day.  
+  \code{"POSIXlt"}, \code{"numeric"}, \code{"character"} and \code{"jul"}.  
+  The last one is from the \code{"fame"} package available on CRAN.
+  In the case of
+  \code{as.yearmon.character} the \code{format} argument uses the same
+  percent code as 
+  \code{"Date"}.   These are described in \code{\link{strptime}}.  Unlike
+  \code{"Date"} one can specify a year and month with no day.  
+  Default formats of \code{"\%Y-\%m"}, \code{"\%Y-\%m-\%d"} and \code{"\%b \%Y"}.
 
-  \code{as.Date.yearmon} and \code{as.yearmon.yearqtr} both have an optional
+  There is an \code{is.numeric} method which returns \code{FALSE}.
+
+  \code{as.Date.yearmon} and \code{as.yearmon.yearqtr} 
+  each has an optional
   second argument of \code{"frac"} which is a number between 0 and 1 inclusive
   that indicates the fraction of the way through the period that the result
   represents.  The default is 0 which means the beginning of the period.
 
+  There is also a \code{date} method for \code{as.yearmon} usable with objects
+  created with package \code{date}.
+
+  \code{Sys.yearmon()} returns the current year/month and methods for
+  \code{min}, \code{max} and \code{range} are defined (by defining 
+  a method for \code{Summary}).
+
+  A \code{yearmon} \code{mean} method is also defined.
 }
+
 \value{
   Returns its argument converted to class \code{yearmon}.
 }
@@ -63,7 +88,7 @@ yearmon(x)
 \seealso{\code{\link{yearqtr}}, \code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}}}
 
 \examples{
-x <- yearmon(2000 + seq(0, 23)/12)
+x <- as.yearmon(2000 + seq(0, 23)/12)
 x
 
 as.yearmon("mar07", "\%b\%y")

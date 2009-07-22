@@ -1,8 +1,12 @@
 \name{as.zoo}
 \alias{as.zoo}
 \alias{as.zoo.default}
+\alias{as.zoo.fts}
 \alias{as.zoo.its}
 \alias{as.zoo.irts}
+\alias{as.zoo.mcmc}
+\alias{as.zoo.tis}
+\alias{as.zoo.xts}
 \alias{as.zoo.zoo}
 \alias{as.matrix.zoo}
 \alias{as.vector.zoo}
@@ -27,16 +31,15 @@ as.zoo(x, \dots)
 }
 
 \details{
-\code{as.zoo} currently has a default method and methods
-for \code{\link{ts}}, \code{\link[its]{its}} and \code{\link[tseries]{irts}} objects
-(and \code{\link{zoo}} objects themselves).
+\code{as.zoo} currently has a default method and methods for \code{\link{ts}},
+\code{\link[its]{its}}, \code{\link[fts]{fts}}, \code{\link[tseries]{irts}},
+\code{\link[coda]{mcmc}}, \code{\link[fame]{tis}}, \code{\link[xts]{xts}} 
+objects (and \code{\link{zoo}} objects themselves).
 
 Methods for coercing objects of class \code{"zoo"} to other classes
 currently include: \code{\link{as.ts}}, \code{\link{as.matrix}}, \code{\link{as.vector}},
 \code{\link{as.data.frame}}, \code{\link{as.list}} (the latter also being available
-for \code{"ts"} objects). Furthermore the coercion function
-\code{as.its.zoo} is provided, but works only
-if the corresponding package is attached.
+for \code{"ts"} objects). 
 
 In the conversion between \code{zoo} and \code{ts}, the \code{\link{zooreg}} class is
 always used.
@@ -47,7 +50,10 @@ always used.
 }
 
 \seealso{\code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}},
-  \code{\link[its]{its}}, \code{\link[tseries]{irts}}}
+  \code{\link[its]{its}}, \code{\link[tseries]{irts}}, 
+  \code{\link[fame]{tis}}, \code{\link[fts]{fts}}, \code{\link[coda]{mcmc}},
+  \code{\link[xts]{xts}}.
+}  
 
 \examples{
 ## coercion to zoo:

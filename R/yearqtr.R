@@ -6,6 +6,10 @@ as.yearqtr <- function(x, ...) UseMethod("as.yearqtr")
 as.yearqtr.default <- function(x, ...) as.yearqtr(as.numeric(x))
 as.yearqtr.numeric <- function(x, ...) structure(floor(4*x + .0001)/4, class = "yearqtr")
 as.yearqtr.integer <- function(x, ...) structure(x, class = "yearqtr")
+
+# as.jul.yearqtr <- function(x, ...) jul(as.Date(x, ...)) # jul is from fame
+as.yearqtr.jul <- # jul is in fame package
+as.yearqtr.timeDate <-
 as.yearqtr.dates <-
 as.yearqtr.Date <- 
 as.yearqtr.POSIXt <- function(x, ...) as.yearqtr(as.yearmon(x))
@@ -29,6 +33,7 @@ as.yearqtr.character <- function(x, format, ...) {
     } else as.yearmon(x, format)
     as.yearqtr(y)
 }
+as.yearqtr.ti <- function(x, ...) as.yearqtr(as.Date(x), ...)
 
 ## coercion from yearqtr
 # returned Date is the fraction of the way through the period given by frac
@@ -146,6 +151,7 @@ Ops.yearqtr <- function(e1, e2) {
     structure(unclass(as.yearqtr(e1)) - e2, class = "yearqtr")
 }
 
+is.numeric.yearqtr <- function(x) FALSE
 
 Axis.yearqtr <- function(x = NULL, at = NULL, ..., side, labels = NULL)
     axis.yearqtr(x = x, at = at, ..., side = side, labels = TRUE)
@@ -193,3 +199,30 @@ axis.yearqtr <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 =
 
 summary.yearqtr <- function(object, ...)
   summary(as.numeric(object), ...)
+
+## convert from package date
+as.yearqtr.date <- function(x, ...) {
+	as.yearqtr(as.Date(x, ...))
+}
+
+mean.yearqtr <- function (x, ...) as.yearqtr(mean(unclass(x), ...))
+
+Summary.yearqtr <- function (..., na.rm)
+{
+    ok <- switch(.Generic, max = , min = , range = TRUE, FALSE)
+    if (!ok) stop(.Generic, " not defined for yearqtr objects")
+    val <- NextMethod(.Generic)
+    class(val) <- oldClass(list(...)[[1]])
+    val
+}
+
+Sys.yearqtr <- function() as.yearqtr(Sys.Date())
+
+range.yearqtr <- function(..., na.rm = FALSE) {
+	as.yearqtr(range.default(..., na.rm = na.rm))
+}
+
+unique.yearqtr <- function(..., incomparables = FALSE) {
+	as.yearqtr(range.default(..., incomparables = incomparables))
+}
+

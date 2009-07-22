@@ -10,6 +10,7 @@
 \alias{[.zoo}
 \alias{$.zoo}
 \alias{$<-.zoo}
+\alias{subset.zoo}
 \alias{head.zoo}
 \alias{tail.zoo}
 \alias{Ops.zoo}
@@ -24,6 +25,9 @@
 \alias{na.contiguous.default}
 \alias{na.contiguous.zoo}
 \alias{scale.zoo}
+\alias{xtfrm.zoo}
+\alias{names.zoo}
+\alias{names<-.zoo}
 
 \alias{index2char}
 \alias{index2char.default}
