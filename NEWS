@@ -1,3 +1,8 @@
+Changes in Version 1.6-2
+
+  o minor improvement in zoo-faq.Rnw for new R-devel.
+
+
 Changes in Version 1.6-1
 
   o xtfrm() methods for yearmon/yearqtr added.

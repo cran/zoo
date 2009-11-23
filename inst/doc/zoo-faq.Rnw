@@ -446,8 +446,8 @@ as.zoo(as.timeSeries(zz))
 @
 
 <<Rmetrics-detach, echo=FALSE, results=hide>>=
-detach("package:timeDate")
 detach("package:timeSeries")
+detach("package:timeDate")
 @
 
 \mysection[11. What other packages use zoo?]{11. What other packages use \pkg{zoo}?}
