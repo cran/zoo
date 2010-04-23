@@ -22,6 +22,9 @@ export(
 ## plotting
   "plot.zoo",
   "make.par.list",
+  "xblocks",
+  "xblocks.default",
+## *** temporary -- these are Deprecated
   "panel.plot.default", 
   "panel.plot.custom",
 
@@ -54,6 +57,9 @@ export(
   "na.spline.default",
   "na.trim",
   "na.trim.default",
+  "na.trim.ts",
+  "na.aggregate",
+  "na.aggregate.default",
 
 ## new index classes
   "yearmon",
@@ -67,7 +73,7 @@ export(
   "format.yearqtr",
   "Sys.yearqtr",
 
-# *** temporary -- change these to S3Method when lattice creates generics
+# *** temporary -- these are Deprecated
   "panel.lines.ts",
   "panel.lines.its",
   "panel.lines.tis",
@@ -76,22 +82,19 @@ export(
   "panel.points.its",
   "panel.points.tis",
   "panel.points.zoo",
-  "panel.segments.ts",
-  "panel.segments.its",
-  "panel.segments.tis",
-  "panel.segments.zoo",
   "panel.text.ts",
   "panel.text.its",
   "panel.text.tis",
   "panel.text.zoo",
+# *** are these actually used by anyone?
+  "panel.segments.ts",
+  "panel.segments.its",
+  "panel.segments.tis",
+  "panel.segments.zoo",
   "panel.rect.ts",
   "panel.rect.its",
   "panel.rect.tis",
   "panel.rect.zoo",
-  "panel.arrows.ts",
-  "panel.arrows.its",
-  "panel.arrows.tis",
-  "panel.arrows.zoo",
   "panel.polygon.ts",
   "panel.polygon.its",
   "panel.polygon.tis",
@@ -100,6 +103,7 @@ export(
 ## auxiliary generics/methods
   "MATCH",
   "MATCH.default",
+  "MATCH.times",
   "ORDER",
   "ORDER.default")
 
@@ -134,7 +138,12 @@ export(
   S3method("is.regular", "zoo")
   S3method("lag", "zoo")
   S3method("lines", "zoo")
+  S3method("llines", "zoo")
+  S3method("lpoints", "zoo")
+  S3method("ltext", "zoo")
+  S3method("na.approx", "zoo")
   S3method("na.contiguous", "zoo")
+  S3method("na.spline", "zoo")
   S3method("names", "zoo")
   S3method("names<-", "zoo")
   S3method("plot", "zoo")
@@ -158,6 +167,7 @@ export(
   S3method("window", "zoo")
   S3method("window<-", "zoo")
   S3method("with", "zoo")
+  S3method("xblocks", "zoo")
   S3method("xyplot", "zoo")
 
 ## methods for class zooreg
@@ -165,21 +175,24 @@ export(
   S3method("deltat", "zooreg")
   S3method("frequency", "zooreg")
   S3method("frequency<-", "zooreg")
-  S3method("lag", "zooreg")
-  S3method("time<-", "zooreg")
   S3method("index<-", "zooreg")
   S3method("is.regular", "zooreg")
+  S3method("lag", "zooreg")
+  S3method("na.approx", "zooreg")
+  S3method("na.spline", "zooreg")
+  S3method("time<-", "zooreg")
 
 ## methods for class ts
   S3method("coredata", "ts")
   S3method("coredata<-", "ts")
   S3method("index", "ts")
   S3method("is.regular", "ts")
+  S3method("na.approx", "ts")
   S3method("rollapply", "ts")
   S3method("rollmax", "ts")
   S3method("rollmean", "ts")
   S3method("rollmedian", "ts")
-  S3method("xyplot", "ts")
+  S3method("xblocks", "ts")
 
 ## methods for class irts
   S3method("coredata", "irts")
@@ -188,9 +201,15 @@ export(
 ## methods for class its
   S3method("coredata", "its")
   S3method("coredata<-", "its")
+  S3method("llines", "its")
+  S3method("lpoints", "its")
+  S3method("ltext", "its")
   S3method("xyplot", "its")
 
 ## methods for class tis
+  S3method("llines", "tis")
+  S3method("lpoints", "tis")
+  S3method("ltext", "tis")
   S3method("xyplot", "tis")
 
 ## methods for class yearmon
@@ -255,6 +274,7 @@ export(
   S3method("index2char", "numeric")
   S3method("na.contiguous", "data.frame")
   S3method("na.contiguous", "list")
+  S3method("MATCH", "times")
   S3method("ORDER", "chron")
   S3method("ORDER", "dates")
   S3method("ORDER", "times")

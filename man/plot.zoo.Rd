@@ -12,7 +12,8 @@ Plotting method for objects of class \code{"zoo"}.
   panel = lines, xlab = "Index", ylab = NULL, main = NULL,
   xlim = NULL, ylim = NULL, xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
-  col = 1, lty = 1, lwd = 1, pch = 1, type = "l", nc, widths = 1, heights = 1, \dots)
+  col = 1, lty = 1, lwd = 1, pch = 1, type = "l", log = "",
+  nc, widths = 1, heights = 1, \dots)
 \method{lines}{zoo}(x, y = NULL, type = "l", \dots)
 \method{points}{zoo}(x, y = NULL, type = "p", \dots)
 }
@@ -50,6 +51,7 @@ Plotting method for objects of class \code{"zoo"}.
   \item{xlab, ylab, main, xlim, oma, mar}{graphical arguments, see \code{\link{par}}.}
   \item{col, lty, lwd, pch, type}{graphical arguments that can be vectors or 
     (named) lists. See the details for more information.}
+  \item{log}{specification of log scales as \code{"x"}, \code{"y"} or \code{"xy"}.}
   \item{nc}{the number of columns to use when \code{plot.type = "multiple"}.
     Defaults to \code{1} for up to \code{4} series, otherwise to \code{2}.}
   \item{widths, heights}{widths and heights for individual graphs, see
@@ -257,10 +259,6 @@ persp(1:nO, 1:nC, zz)
 \dontrun{
 library("TeachingDemos")
 tke.test1 <- list(Parameters = list(
-	pch = list("spinbox", init = 1, from = 0, to = 255, width = 5),
-	cex = list("slider", init = 1.5, from = 0.1, to = 5, resolution = 0.1),
-	type = list("combobox", init = "b",
-	   values = c("p", "l", "b", "o", "c", "h", "s", "S", "n"), width = 5),
 	lwd = list("spinbox", init = 1, from = 0, to = 5, increment = 1, width = 5),
 	lty = list("spinbox", init = 1, from = 0, to = 6, increment = 1, width = 5)
 ))

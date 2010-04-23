@@ -25,8 +25,9 @@ rollapply(data, width, FUN, \dots, by = 1, ascending = TRUE, by.column = TRUE,
   \item{na.pad}{logical. If \code{TRUE} 
     then additional elements or rows of \code{NA}s are added so that 
     result has same number of elements or rows as \code{data}.}
-  \item{align}{character specifying whether result should be left- or
-    right-aligned or centered (default).}
+  \item{align}{character specifying whether the index of the result
+    should be left- or right-aligned or centered (default) compared
+    to the rolling window of observations.}
 }
 \details{
   Groups time points in successive sets of \code{width} time points and 

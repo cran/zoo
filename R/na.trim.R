@@ -15,4 +15,8 @@ na.trim.default <- function (object, sides = c("both", "left", "right"),
        object[idx,]
 }
 
-
+## need a 'ts' method because indexing destroys ts attributes
+na.trim.ts <- function (object, ...)
+{
+    as.ts(na.trim(as.zoo(object), ...))
+}

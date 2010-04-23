@@ -57,6 +57,8 @@ yearmon(x)
   \code{"POSIXct"},
   \code{"POSIXlt"}, \code{"numeric"}, \code{"character"} and \code{"jul"}.  
   The last one is from the \code{"tis"} package available on CRAN.
+  In the case of \code{as.yearmon.POSIXt} the conversion is with respect to
+  GMT.  (Use \code{as.yearmon(format(...))} for other time zones.)
   In the case of
   \code{as.yearmon.character} the \code{format} argument uses the same
   percent code as 

@@ -1,4 +1,4 @@
-aggregate.zoo <- function(x, by, FUN, ..., regular = NULL, frequency = NULL)
+aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NULL)
 {
   ## index processing
   my.unique <- function(x) x[MATCH(x, x) == seq_len(length(x))]

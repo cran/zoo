@@ -27,11 +27,13 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1, ascending = TRUE, by.co
     	    matrix(s + rep(cols, rep(lens,k))-1, lens)
     }
 
-    if (by.column && by == 1 && ascending && length(list(...)) < 1)
-	switch(deparse(substitute(FUN)),
+    if (by.column && by == 1 && ascending && length(list(...)) < 1 &&
+		length(sw <- deparse(substitute(FUN))) == 1) {
+	switch(sw,
 		mean = return(rollmean(data, width, na.pad = na.pad, align = align)),
 		max = return(rollmax(data, width, na.pad = na.pad, align = align)),
 		median = return(rollmedian(data, width, na.pad = na.pad, align = align)))
+	}
 
     ## evaluate FUN only on coredata(data)
     cdata <- coredata(data)

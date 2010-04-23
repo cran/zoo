@@ -24,8 +24,9 @@ rollmedian(x, k, na.pad = FALSE, align = c("center", "left", "right"), \dots)
   \item{x}{an object (representing a series of observations).}
   \item{k}{integer width of the rolling window. Must be odd for \code{rollmedian}.}  
   \item{na.pad}{logical. Should \code{NA} padding be added at beginning?}
-  \item{align}{character specifying whether result should be left- or
-    right-aligned or centered (default).}
+  \item{align}{character specifying whether the index of the result
+    should be left- or right-aligned or centered (default) compared
+    to the rolling window of observations.}
   \item{\dots}{Further arguments passed to methods.}
 }
 

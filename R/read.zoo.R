@@ -2,11 +2,6 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
   split = NULL, aggregate = FALSE, ...)
 {
-  ## `file' and `...' is simply passed to read.table
-  ## the first column is interpreted to be the index, the rest the coredata
-  ## it is transformed to an arbitrary index class by `FUN'
-  ## defaults for `FUN' are guessed and are numeric, Date or POSIXct
-
   ## read data
   rval <- if (is.data.frame(file)) file else read.table(file, ...)
 
@@ -14,55 +9,73 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if(NROW(rval) < 1) {
     if(is.data.frame(rval)) rval <- as.matrix(rval)
     if(NCOL(rval) > 1) rval <- rval[,-index.column, drop = drop]
-    rval <- zoo(rval)
-    return(rval)
+    rval2 <- zoo(rval)
+    return(rval2)
   }
 
   ## extract index
   if(NCOL(rval) < 1) stop("data file must specify at least one column")
   
   ## extract index, retain rest of the data
-  if (NCOL(rval) == 1) ix <- seq_len(NROW(rval))
-  else {
-    ix <- rval[,index.column]
-	split.values <- if (!is.null(split)) {
-		if (is.finite(split)) rval[, split]
-		else {
-			s <- split
-			split <- 0
-			if (s == Inf) ave(ix, ix, FUN = seq_along)
-			else if (s == -Inf) ave(ix, ix, FUN = function(x) rev(seq_along(x)))
-			else ix
-		}
-	}
-    rval <- rval[,-c(split, index.column), drop = drop]
+  ix <- if (NCOL(rval) == 1) ix <- seq_len(NROW(rval))
+  else rval[,index.column]
+
+  # split. is col number of split column (or Inf, -Inf or NULL)
+  split. <- if (is.character(split)) match(split, colnames(rval), nomatch = 0)
+  else split
+
+  rval2 <- if (is.null(split.)) {
+	 rval[ , - index.column, drop = drop]
+  } else {
+
+     split.values <- if (is.character(split) || is.finite(split)) rval[, split]
+	 else {
+		# Inf: first value in each run is first series, etc.
+	    # -Inf: last value in each run is first series, etc.
+		if (split == Inf) ave(ix, ix, FUN = seq_along)
+	    else if (split == -Inf) ave(ix, ix, FUN = function(x) rev(seq_along(x)))
+	    else ix
+	 }
+
+	 if (split. == 0) {
+		stop(paste("split:", split, "not found in colnames:", colnames(rval)))
+	 }
+	 rval[,-c(split., index.column), drop = drop]
   }
+
   if(is.factor(ix)) ix <- as.character(ix)
-  if(is.data.frame(rval)) rval <- as.matrix(rval)
+  rval3 <- if(is.data.frame(rval2)) as.matrix(rval2) else rval2
     
   ## index transformation functions
-  toDate <- if(missing(format)) function(x, ...) as.Date(format(x, scientific = FALSE))
-              else function(x, format) as.Date(format(x, scientific = FALSE), format = format)
+
+  toDate <- if(missing(format)) {
+     function(x, ...) as.Date(format(x, scientific = FALSE))
+  } else {
+     function(x, format) as.Date(format(x, scientific = FALSE), format = format)
+  }
+
   toPOSIXct <- if (missing(format)) {
         function(x, tz) as.POSIXct(format(x, scientific = FALSE), tz = tz)
   } else function(x, format, tz) {
         as.POSIXct(strptime(format(x, scientific = FALSE), tz = tz, format = format))
   }
+
   toDefault <- function(x, ...) {
-    rval <- try(toPOSIXct(x), silent = TRUE)
-    if(inherits(rval, "try-error"))
-      rval <- try(toDate(x), silent = TRUE)
+    rval. <- try(toPOSIXct(x), silent = TRUE)
+    if(inherits(rval., "try-error"))
+      rval. <- try(toDate(x), silent = TRUE)
     else {
-      hms <- as.POSIXlt(rval)
+      hms <- as.POSIXlt(rval.)
       hms <- hms$sec + 60 * hms$min + 3600 * hms$hour
       if(isTRUE(all.equal(hms, rep.int(hms[1], length(hms))))) {
-        rval2 <- try(toDate(x), silent = TRUE)
-        if(!inherits(rval2, "try-error")) rval <- rval2
+        rval2. <- try(toDate(x), silent = TRUE)
+        if(!inherits(rval2., "try-error")) rval. <- rval2.
       }
     }
-    if(inherits(rval, "try-error")) rval <- rep(NA, length(x))
-    return(rval)
+    if(inherits(rval., "try-error")) rval. <- rep(NA, length(x))
+    return(rval.)
   }
+
   toNumeric <- function(x, ...) x
   
   ## setup default FUN
@@ -98,7 +111,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 		paste(head(idx, 100), collapse = " "), "...")
 	stop(msg)
   }
-  if(length(ix) != NROW(rval)) stop("index does not match data")
+  if(length(ix) != NROW(rval3)) stop("index does not match data")
   
   ## setup zoo object and return 
   ## Suppress duplicates warning if aggregate specified
@@ -113,23 +126,30 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   remove(list = "aggregate")
 
   if (is.null(split)) {
-	rval <- if (!is.null(agg.fun)) aggregate(zoo(rval), ix, agg.fun)
-	else zoo(rval, ix)
-    if(regular && is.regular(rval)) rval <- as.zooreg(rval)
+
+	rval4 <- if (!is.null(agg.fun)) aggregate(zoo(rval3), ix, agg.fun)
+	else zoo(rval3, ix)
+    rval8 <- if(regular && is.regular(rval4)) as.zooreg(rval4) else rval4
+
   } else {
+
 	split.matrix <- split.data.frame
-	rval <- split(rval, split.values)
+	rval4 <- split(rval3, split.values)
 	ix <- split(ix, split.values)
-	rval <- mapply(zoo, rval, ix)
-    if(regular) {
-		rval <- lapply(rval, function(x) if (is.regular(x)) as.zooreg(x) else x)
-	}
-	if (!is.null(agg.fun)) rval <-
-		lapply(seq_along(rval), function(z) aggregate(z, time(z), agg.fun))
-	rval <- do.call(merge, rval)
+	rval5 <- mapply(zoo, rval4, ix)
+    rval6 <- if(regular) {
+		lapply(rval5, function(x) if (is.regular(x)) as.zooreg(x) else x)
+	} else rval5
+
+    rval8 <- if (!is.null(agg.fun)) {
+		f.ag <- function(z) aggregate(z, time(z), agg.fun)
+		rval7 <- lapply(seq_along(rval6), f.ag)
+		do.call(merge, rval7)
+    } else rval6
+
   }
 	
-  return(rval)
+  return(rval8)
 }
 
 write.zoo <- function(x, file = "", index.name = "Index",

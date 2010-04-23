@@ -1,3 +1,27 @@
+Changes in Version 1.6-3
+
+  o new generic function xblocks() for plotting contiguous blocks along
+    the x-axis (intended for base graphics). A default method along with
+    "zoo" and "ts" methods is provided.
+
+  o new function na.aggregate().
+
+  o new maxgap argument for na.*() methods. Further refinements for
+    many na.*() methods, especially na.approx() and na.spline().
+
+  o xyplot() method rewritten; is now a wrapper around the xyplot()
+    method for "ts" objects in the "lattice" package (lattice:::xyplot.ts).
+    Accompanying infrastructure (llines(), lpoints(), ltext(), etc.),
+    help page, and examples have been substantially revised and expanded.    
+
+  o new question #13 added to "zoo-faq" vignette
+
+  o FUN argument of aggregate() method now defaults to sum for consistency with
+    aggregate() method for "ts". Previously it had no default.
+
+  o new MATCH() method for "times" class.
+
+
 Changes in Version 1.6-2
 
   o minor improvement in zoo-faq.Rnw for new R-devel.

@@ -70,7 +70,7 @@ using the \code{aggregate.zoo} function.  Another way to do this
 is to use the \code{aggregate} argument of \code{read.zoo} which 
 will aggregate the zoo object read in by \code{read.zoo} all in one step.
 
-Note that in the example code below that \code{force} is the identity 
+Note that in the example code below that \code{identity} is the identity 
 function (i.e. it just returns its argument).  It 
 is an \pkg{R} core function:
 
@@ -81,11 +81,11 @@ z
 @
 Fix it up by averaging duplicates:
 <<duplicates2>>=
-aggregate(z, force, mean)
+aggregate(z, identity, mean)
 @
 Or, fix it up by taking last in each set of duplicates:
 <<duplicates3>>=
-aggregate(z, force, tail, 1)
+aggregate(z, identity, tail, 1)
 @
 Fix it up via interpolation of duplicate times
 <<duplicates4>>=
@@ -318,7 +318,7 @@ stores and allows recovery of the dates using \code{as.Date} and
 dd <- seq(as.Date("2000-01-01"), length = 5, by = 32)
 z <- zoo(1:5, as.yearmon2(dd))
 z
-aggregate(z, as.Date, force) 
+aggregate(z, as.Date, identity) 
 @
 
 \mysection[8. How are axes added to a plot created using plot.zoo?]{8. How are axes added to a plot created using \code{plot.zoo}?}
@@ -452,6 +452,9 @@ detach("package:timeDate")
 
 \mysection[11. What other packages use zoo?]{11. What other packages use \pkg{zoo}?}
 
+There are 53 other packages that depend on, suggest, can use with or 
+are otherwise used with \pkg{zoo} that we have located:
+
 \begin{tabular}{|l|p{10cm}|} \hline
 \multicolumn{2}{|l|}{\emph{Depends}} \\ \hline
 \pkg{AER} & Applied econometrics with \proglang{R} \\
@@ -460,38 +463,57 @@ detach("package:timeDate")
 \pkg{dynlm} & Dynamic linear regression \\
 \pkg{fda} & Functional data analysis \\
 \pkg{FinTS} & Companion to Tsay's ``Analysis of financial time series'' \\
+\pkg{fractalrock} & Generate fractal time series with non-normal returns distribution \\
 \pkg{fUtilities} & \pkg{Rmetrics} function utilities \\
 \pkg{fxregime} & Exchange rate regime analysis \\
 \pkg{lmtest} & Testing linear regression models \\
+\pkg{meboot} Maximum Entropy Bootstrap for Time Series & \\
+\pkg{MFDF} Modeling Functional Data in Finance & \\
 \pkg{party} & Recursive partytioning toolbox \\
 \pkg{PerformanceAnalytics} & Econometric tools for performance and risk analysis \\
 \pkg{quantmod} & Quantitative financial modelling framework \\
 \pkg{RBloomberg} & \proglang{R}/\pkg{Bloomberg} interface \\
+\pkg{RcppTemplate} & Rcpp R/C++ Object Mapping Library and Package Template \\
 \pkg{sandwich} & Robust covariance matrix estimators \\
+\pkg{sde} & Simulation and Inference for Stochastic Differential Equations \\
+\pkg{StreamMetabollism} & Calculating single station metabolism from diurnal Oxygen curves \\
 \pkg{strucchange} & Testing, monitoring, and dating structural changes \\
+\pkg{tawny} & Provides various portfolio optimization strategies including random matrix theory and shrinkage estimators \\
+\pkg{tgram} & Functions to compute and plot tracheidograms \\
 \pkg{tis} & Regular time series package, previously part of fame package \\
 \pkg{tripEstimation} & Metropolis sampler and supporting functions for
   estimating animal movement from archival tags and satellite fixes \\
 \pkg{tseries} & Time series analysis and computational finance \\
+\pkg{TSfame} & Time Series Database Interface extensions for fame \\
+\pkg{TShirtQuote} & Time Series Database Interface extensions for get.hist.quote \\
 \pkg{VhayuR} & R Interface to the Vhayu time series database \\
 \pkg{xts} & Extensible time series \\ \hline
 \multicolumn{2}{|l|}{\emph{Suggests}} \\ \hline
+\pkg{ChIPSim} & Simulation of ChIP-seq experiments \\
+\pkg{futile} & Utilities for strings and function arguments \\
 \pkg{gsubfn} & Utilities for strings and function arguments \\
+\pkg{playwith} & Interactive graphics: works with \code{xylot.zoo} \\ \hline
 \pkg{pscl} & Political Science Computational Laboratory, Stanford University \\
-\pkg{TSSQLite} & Time series database interface extentions for \pkg{SQLite} \\
+\pkg{tframePlus} Time Frame coding kernel extensions & \\ \hline
 \pkg{TSdbi} & Time series database interface \\
+\pkg{TSMySQL} & Time series database interface extensions for \pkg{MySQL} \\
+\pkg{TSPostgresSQL} & Time series database interface extentions for \pkg{Postgres} \\
+\pkg{TSodbc} & Time series database interface extentions for \pkg{ODBC} \\
+\pkg{TSSQLite} & Time series database interface extentions for \pkg{SQLite} \\
+\pkg{wq} & water quality monitoring \\
+\pkg{UsingR} & A collection of datasets to accompany the textbook "Using R for Introductory Statistics" \\
 \pkg{Zelig} & Everyone's statistical software \\ \hline
 \multicolumn{2}{|l|}{\emph{Uses or Used with}} \\ \hline
 \pkg{timeDate} & \pkg{Rmetrics} date and time functions: \code{timeDate} usable with \code{zoo} \\ \hline
 \pkg{grid} & Graphics infrastructure: use with \code{xyplot.zoo} \\ \hline
 \pkg{its} & Irregular time series: \code{as.its.zoo}, \code{as.zoo.its} \\ \hline
 \pkg{lattice} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ \hline
-\pkg{playwith} & Interactive graphics: works with \code{xylot.zoo} \\ \hline
+\pkg{latticeExtra} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ \hline
 \pkg{timeSeries} & \pkg{Rmetrics} time series functions: \code{as.timeSeries.zoo}, \code{as.zoo.timeSeries} \\ \hline
 \pkg{YaleToolkit} & Data exploration tools from Yale University: accepts \code{"zoo"} input \\ \hline
 \end{tabular}
 
-\mysection[12. Why does ifelse not work as I expect?]{Why does \code{ifelse} not work as I expect?}
+\mysection[12. Why does ifelse not work as I expect?]{12. Why does \code{ifelse} not work as I expect?}
 The ordinary R \code{ifelse} function only works with zoo objects if all three arguments are zoo objects with the same time index.  \pkg{zoo} provides an \code{ifelse.zoo} function that should be used instead.  The \code{.zoo} part must be written out since \code{ifelse} is not generic.
 
 <<ifelse>>=
@@ -509,6 +531,88 @@ with(xm, ifelse(dif > 4, -z, z))
 # or in this case we could also use orindary ifelse if we 
 # use na.pad = TRUE to ensure all three have same index
 ifelse(diff(z, na.pad = TRUE) > 4, -z, z)
+@
+
+
+\mysection[13. In a series which is regular except for a few missing times and values how does one fill in those missing items?]{13. In a series which is regular except for a few missing times and values how does one fill in those missing items?}
+
+There are three approaches:
+
+\begin{itemize}
+\item{\code{merge.zoo}}  
+This approach fills in the missing spots with \code{NA}s.  It
+uses the same \code{tseq} we defined in the last example.  We simply merge the
+original series with a zero width series having the required times.
+
+<<fillin-merge>>=
+# April is missing
+zym <- zoo(1:5, as.yearmon("2000-01-01") + c(0, 1, 2, 4, 5)/12)
+tseq <- seq(start(zym), end(zym), by = 1/12)
+merge(zym, zoo(, tseq))
+@
+
+\item{\code{as.ts}}. Convert the series to a \code{ts} series.  
+That automatically creates a regularly
+spaced series filling in the missing times
+using \code{NA} for the missing values.  
+Then convert it back to \code{zoo}.  Since \code{ts} series is limited in how it represents
+the index class, it is typically necessary to fix up the class after converting 
+back to zoo as shown in the \code{class(...) <- ...} line here:
+
+<<fillin-ts>>=
+zymreg <- as.zoo(as.ts(zym))
+class(time(zymreg)) <- class(time(zym))
+
+zymreg
+@
+
+\item{\code{na.approx.zoo}}  
+Unlike the above two approaches, 
+in this approach we fill in the missing values with linear
+approximations rather than \code{NA}s:
+
+<<fillin-approx>>=
+# using z from above
+na.approx(zym, xout = tseq)
+@
+
+
+
+\end{itemize}
+
+We give a \code{chron} example of these approaches as well.  First via merge:
+
+<<fillin-merge>>=
+
+# 2009-01-09 05:50:00 is missing
+Lines <- "Time,Value
+2009-10-09 5:00:00,210
+2009-10-09 5:10:00,207
+2009-10-09 5:20:00,250
+2009-10-09 5:30:00,193
+2009-10-09 5:40:00,205
+2009-10-09 6:00:00,185"
+
+library(zoo)
+library(chron)
+
+z <- read.zoo(textConnection(Lines), FUN = as.chron, sep = ",", header = TRUE)
+tseq <- seq(start(z), end(z), by = times("00:10:00"))
+merge(z, zoo(, tseq))
+@
+
+And now via \code{as.ts} 
+
+<<fillin-ok>>=
+zz <- as.zoo(as.ts(z))
+time(zz) <- as.chron(time(zz))
+zz
+@
+
+and finally via the \code{na.approx}:
+<<fillin-approx-ok>>=
+tseq <- seq(start(z), end(z), by = times("00:10:00"))
+na.approx(z, xout = tseq)
 @
 
 \end{document}

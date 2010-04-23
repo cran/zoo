@@ -10,7 +10,7 @@ reduced \code{"zoo"} object.
 }
 
 \usage{
-\method{aggregate}{zoo}(x, by, FUN, \dots, regular = NULL, frequency = NULL)
+\method{aggregate}{zoo}(x, by, FUN = sum, \dots, regular = NULL, frequency = NULL)
 }
 
 \arguments{
@@ -145,5 +145,11 @@ aggregate(z, new.freq, mean)
 # example of taking means in the presence of NAs
 z.na <- zooreg(c(1:364, NA), start = as.Date("2001-01-01"))
 aggregate(z.na, as.yearqtr, mean, na.rm = TRUE)
+
+# Find the sd of all days that lie in any Jan, all days that lie in
+# any Feb, ..., all days that lie in any Dec (i.e. output is vector with
+# 12 components)
+aggregate(z, format(time(z), "\%m"), sd)
+
 }
 \keyword{ts}

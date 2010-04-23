@@ -1,6 +1,7 @@
 \name{na.trim}
 \alias{na.trim}
 \alias{na.trim.default}
+\alias{na.trim.ts}
 \title{Trim Leading/Trailing Missing Observations}
 \description{
 Generic function for removing leading and trailing \code{NA}s.

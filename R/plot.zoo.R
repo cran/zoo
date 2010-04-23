@@ -37,7 +37,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
   xlab = "Index", ylab = NULL, main = NULL, xlim = NULL, ylim = NULL,
   xy.labels = FALSE, xy.lines = NULL,
   oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
-  col = 1, lty = 1, lwd = 1, pch = 1, type = "l", 
+  col = 1, lty = 1, lwd = 1, pch = 1, type = "l", log = "",
   nc, widths = 1, heights = 1, ...)
 {
   ## if y supplied: scatter plot y ~ x
@@ -57,7 +57,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     ptype <- if(do.lab) "n" else if(missing(type)) "p" else type
 
     plot.default(xy, type = ptype,col = col, pch = pch, main = main,
-      xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ...)
+      xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, log = log, ...)
     if(do.lab) text(xy, col = col,
       labels = if(!is.logical(xy.labels)) xy.labels else index2char(index(xyzoo)), ...)
     if(xy.lines) lines(xy, col = col, lty = lty, lwd = lwd, type = if(do.lab) "c" else "l", ...)
@@ -138,14 +138,14 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
       range. <- rep(ranges[[j]], length.out = length(time(x)))
       if(j%%nr==0 || j == length(levels(screens))) {
 			args <- list(x.index, range., xlab = "", ylab = ylab[j], 
-				xlim = xlim, ylim = ylim[[j]], ...)
+				xlim = xlim, ylim = ylim[[j]], log = log, ...)
 			args$type <- "n"
 			do.call("plot", args)
 			mtext(xlab, side = 1, line = 3)
       } else {      
 			# args <- list(x.index, range., axes = FALSE, xlab = "", 
 			args <- list(x.index, range., xaxt = "n", xlab = "", 
-				ylab = ylab[j], xlim = xlim, ylim = ylim[[j]], ...)
+				ylab = ylab[j], xlim = xlim, ylim = ylim[[j]], log = log, ...)
 			args$type <- "n"
 			do.call("plot", args)
 			box()
@@ -171,7 +171,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     dummy <- rep(range(x, na.rm = TRUE), 
 	length.out = length(index(x)))
 	    
-    args <- list(x.index, dummy, xlab = xlab, ylab = ylab[1], ylim = ylim, xlim = xlim, ...)
+    args <- list(x.index, dummy, xlab = xlab, ylab = ylab[1], ylim = ylim, xlim = xlim, log = log, ...)
     args$type <- "n"
     do.call("plot", args)
     box()

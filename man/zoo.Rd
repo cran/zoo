@@ -184,7 +184,7 @@ objects can be coerced to \code{"zoo"}, the reverse is available for
 Furthermore, \code{"zoo"} objects can be coerced to vectors, matrices and
 lists and data frames (dropping the index/time attribute). See \code{\link{as.zoo}}.
 
-Six methods are available for \code{NA} handling in the data of 
+Seven methods are available for \code{NA} handling in the data of 
 \code{"zoo"} objects: 
 \code{\link{na.approx}} which uses linear interpolation to fill 
 in \code{NA} values. 
@@ -193,11 +193,13 @@ stretch of non-missing values in a \code{"zoo"} object,
 \code{\link{na.locf}} which
 replaces \code{NA}s by the last previous non-\code{NA}, 
 \code{\link{na.omit}} which returns a \code{"zoo"}
-object with incomplete observations removed, 
-\code{\link{na.spline}} which uses linear interpolation to fill 
+object with incomplete observations removed,
+\code{\link{na.aggregate}} which uses group means to fill in \code{NA}
+values,
+\code{\link{na.spline}} which uses spline interpolation to fill 
 in \code{NA} values and
 \code{\link{na.trim}} which trims runs of \code{NA}s off the beginning and
-end but not in the interior.  A 7th \code{NA} routine can be found in
+end but not in the interior.  An 8th \code{NA} routine can be found in
 the \code{stinepack} package where \code{\link[stinepack]{na.stinterp}} which  
 performs Stineman interpolation.
 
@@ -286,7 +288,8 @@ z$xyz <- zoo(rnorm(3), 2:4)
 z
 
 ## add comments to a zoo object
-comment(x1) <- c("This is a very simple example of a zoo object.", "It can be recreated using this R code: example(zoo)")
+comment(x1) <- c("This is a very simple example of a zoo object.",
+  "It can be recreated using this R code: example(zoo)")
 ## comments are not output by default but are still there
 x1
 comment(x1)
@@ -334,10 +337,10 @@ z6 <- zoo(11:15, c(1, 1, 2, 2, 5))
 z6
 
 # fix it up by averaging duplicates
-aggregate(z6, force, mean)
+aggregate(z6, identity, mean)
 
 # or, fix it up by taking last in each set of duplicates
-aggregate(z6, force, tail, 1)
+aggregate(z6, identity, tail, 1)
 
 # fix it up via interpolation of duplicate times
 time(z6) <- na.approx(ifelse(duplicated(time(z6)), NA, time(z6)), na.rm = FALSE)
@@ -354,16 +357,14 @@ colnames (x2) <- c ("B", "C", "D", "E")
 both.dates = as.Date (intersect (index (t1), index (t2)))
 both.cols = intersect (colnames (t1), colnames (t2))
 
-x1 [both.dates, both.cols]
-
-##
-## there is "[.zoo" but no "[<-.zoo" however these 4 work
-##
+x1[both.dates, both.cols]
+## there is "[.zoo" but no "[<-.zoo" however four of the following
+## five examples work
 
 ## wrong
 ## x1[both.dates, both.cols] <- x2[both.dates, both.cols]
 
-# 4 correct alternates
+# 4 correct alternatives
 # #1
 window(x1, both.dates)[, both.cols] <- x2[both.dates, both.cols]
 
@@ -378,8 +379,6 @@ x1[time(x1) %in% both.dates, both.cols] <- x2[both.dates, both.cols]
 # #4. restore x1 and show a different way
 x1 <- x1.
 x1[time(x1) %in% both.dates, both.cols] <- x2[time(t2) %in% both.dates, both.cols]
-
-
 
 }
 

@@ -40,8 +40,10 @@ as.yearqtr.ti <- function(x, ...) as.yearqtr(as.Date(x), ...)
 as.Date.yearqtr <- function(x, frac = 0, ...) {
 	x <- unclass(x)
 	year <- floor(x + .001)
+    ix <- !is.na(year)
 	month <- floor(12 * (x - year) + 1 + .5 + .001)
-	dd.start <- as.Date(paste(year, month, 1, sep = "-"))
+	dd.start <- as.Date(rep(NA, length(year)))
+    dd.start[ix] <- as.Date(paste(year[ix], month[ix], 1, sep = "-")) 
 	dd.end <- dd.start + 100 - as.numeric(format(dd.start + 100, "%d")) 
 	as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
 }
