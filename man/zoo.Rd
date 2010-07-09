@@ -19,6 +19,7 @@
 \alias{cumprod.zoo}
 \alias{cummin.zoo}
 \alias{cummax.zoo}
+\alias{median.zoo}
 \alias{na.contiguous}
 \alias{na.contiguous.data.frame}
 \alias{na.contiguous.list}
@@ -28,7 +29,9 @@
 \alias{xtfrm.zoo}
 \alias{names.zoo}
 \alias{names<-.zoo}
+\alias{quantile.zoo}
 \alias{rev.zoo}
+\alias{median.zoo}
 
 \alias{index2char}
 \alias{index2char.default}
@@ -130,7 +133,8 @@ include: \code{print} (see above), \code{summary}, \code{str}, \code{head},
 (see \code{\link{merge.zoo}}), \code{aggregate} (see \code{\link{aggregate.zoo}}), \code{rev}, \code{split} (see \code{\link{aggregate.zoo}}), \code{barplot},
 \code{plot} and \code{lines} (see \code{\link{plot.zoo}}). For multivariate
 \code{"zoo"} series with column names the \code{$} extractor is available,
-behaving similar as for \code{"data.frame"} objects.
+behaving similar as for \code{"data.frame"} objects.  Methods are also
+available for \code{median} and \code{quantile}.
 
 \code{ifelse.zoo} is not a method (because \code{ifelse} is not a generic) 
 but must be written out including the \code{.zoo} suffix.

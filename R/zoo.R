@@ -250,3 +250,7 @@ ifelse.zoo <- function(test, yes, no) {
 	merge(test, yes, no, retclass = NULL)
 	ifelse(test, yes, no)
 }
+
+median.zoo <- function(x, na.rm = FALSE)  median(coredata(x, na.rm = na.rm))
+
+quantile.zoo <- function(x, ...) quantile(coredata(x), ...)

@@ -13,8 +13,10 @@ Methods for computing lags and differences of \code{"zoo"} objects.
 
 \arguments{
   \item{x}{a \code{"zoo"} object.}
-  \item{k, lag}{the number of lags (in units of observations).
-    Note the sign of \code{k} behaves as in \code{\link[stats]{lag}}.}
+  \item{k, lag}{For \code{lag} the number of lags (in units of observations).
+    Note the sign of \code{k} behaves as in \code{\link[stats]{lag}}.
+ 	For \code{diff} it is the number of backward lags used (or if negative the
+	number of forward lags.}
   \item{differences}{an integer indicating the order of the difference.}
   \item{arithmetic}{logical. Should arithmetic (or geometric) differences be computed?}
   \item{na.pad}{logical. If \code{TRUE} it adds any times that would not otherwise have been in
@@ -60,7 +62,9 @@ lag(x, k = 1)
 lag(x, k = -1)
 # this pairs each value of x with the next or future value
 merge(x, lag1 = lag(x, k=1))
-diff(x^2)
-diff(x^2, na.pad = TRUE)
+diff(x^3)
+diff(x^3, -1)
+diff(x^3, na.pad = TRUE)
+
 }
 \keyword{ts}

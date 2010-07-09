@@ -33,8 +33,7 @@ na.spline.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, al
     }
 
     if (na.rm) {
-        result <- na.omit(result)
-        attr(result, "na.action") <- NULL
+        result <- na.trim(result)
     }
 
     result
@@ -86,8 +85,7 @@ na.spline.default <- function(object, x = index(object), xout = x, ..., na.rm = 
     }
 
     if (na.rm) {
-        result <- na.omit(result)
-        attr(result, "na.action") <- NULL
+        result <- na.trim(result)
     }
 
     result

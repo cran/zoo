@@ -2,13 +2,24 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
   split = NULL, aggregate = FALSE, ...)
 {
+
+
   ## read data
   rval <- if (is.data.frame(file)) file else read.table(file, ...)
+
+  is.index.column <- seq_along(rval) %in% unname(unlist(index.column))
+
+  ## convert factor columns in index to character
+  # is.fac <- sapply(rval[is.index.column], is.factor)
+  is.fac <- sapply(rval, is.factor)
+  is.fac.index <- is.fac & is.index.column
+  if (any(is.fac.index)) rval[is.fac.index] <- 
+	lapply(rval[is.fac.index], as.character)
 
   ## if `file' does not contain data
   if(NROW(rval) < 1) {
     if(is.data.frame(rval)) rval <- as.matrix(rval)
-    if(NCOL(rval) > 1) rval <- rval[,-index.column, drop = drop]
+    if(NCOL(rval) > 1) rval <- rval[, ! is.index.column, drop = drop]
     rval2 <- zoo(rval)
     return(rval2)
   }
@@ -17,15 +28,17 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if(NCOL(rval) < 1) stop("data file must specify at least one column")
   
   ## extract index, retain rest of the data
-  ix <- if (NCOL(rval) == 1) ix <- seq_len(NROW(rval))
-  else rval[,index.column]
+  ix <- if (NCOL(rval) == 1 || length(index.column) == 0) seq_len(NROW(rval))
+  else if (is.list(index.column)) {
+	sapply(index.column, function(j) rval[,j], simplify = FALSE)
+  } else rval[,index.column]
 
   # split. is col number of split column (or Inf, -Inf or NULL)
   split. <- if (is.character(split)) match(split, colnames(rval), nomatch = 0)
   else split
 
   rval2 <- if (is.null(split.)) {
-	 rval[ , - index.column, drop = drop]
+	 rval[ , ! is.index.column, drop = drop]
   } else {
 
      split.values <- if (is.character(split) || is.finite(split)) rval[, split]
@@ -86,13 +99,19 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
         else toDefault
   }
   FUN <- match.fun(FUN)
+
+  processFUN <- function(...) {
+	if (is.data.frame(..1)) FUN(...)
+	else if (is.list(..1)) do.call(FUN, c(...))
+	else FUN(...)
+  }
   
   ## compute index from (former) first column
   ix <- if (missing(format)) {
-    if (missing(tz)) FUN(ix) else FUN(ix, tz = tz)
+    if (missing(tz)) processFUN(ix) else processFUN(ix, tz = tz)
   } else {
-    if (missing(tz)) FUN(ix, format = format) 
-    else FUN(ix, format = format, tz = tz)
+    if (missing(tz)) processFUN(ix, format = format) 
+    else processFUN(ix, format = format, tz = tz)
   }
 
   if (!is.null(FUN2)) {
@@ -136,16 +155,26 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 	split.matrix <- split.data.frame
 	rval4 <- split(rval3, split.values)
 	ix <- split(ix, split.values)
-	rval5 <- mapply(zoo, rval4, ix)
+	# rval5 <- mapply(zoo, rval4, ix)
+    rval5 <- if (!is.null(agg.fun)) {
+		lapply(seq_along(rval4), function(i) {
+			aggregate(zoo(rval4[[i]]), ix[[i]], agg.fun)
+		})
+	} else lapply(seq_along(rval4), function(i) zoo(rval4[[i]], ix[[i]]))
+	names(rval5) <- names(rval4)
     rval6 <- if(regular) {
 		lapply(rval5, function(x) if (is.regular(x)) as.zooreg(x) else x)
 	} else rval5
 
-    rval8 <- if (!is.null(agg.fun)) {
-		f.ag <- function(z) aggregate(z, time(z), agg.fun)
-		rval7 <- lapply(seq_along(rval6), f.ag)
-		do.call(merge, rval7)
-    } else rval6
+	rval8 <- do.call(merge, rval6)
+
+	if (FALSE) {
+		rval8 <- if (!is.null(agg.fun)) {
+			f.ag <- function(z) aggregate(z, time(z), agg.fun)
+			rval7 <- lapply(seq_along(rval6), f.ag)
+			do.call(merge, rval7)
+		} else do.call(merge, rval6)
+	}
 
   }
 	

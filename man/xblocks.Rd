@@ -118,7 +118,7 @@ plot(flow, type = "s")
 xblocks(time(flow), is.na(flow), col = "gray")
 
 ## Example of alternating colors, here showing calendar months
-flowdates <- Sys.Date() + as.vector(time(flow))
+flowdates <- as.Date("2000-01-01") + as.numeric(time(flow))
 flowz <- zoo(coredata(flow), flowdates)
 plot(flowz)
 xblocks(flowz, months, ## i.e. months(time(flowz)),

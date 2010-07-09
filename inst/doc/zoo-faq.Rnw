@@ -534,85 +534,42 @@ ifelse(diff(z, na.pad = TRUE) > 4, -z, z)
 @
 
 
-\mysection[13. In a series which is regular except for a few missing times and values how does one fill in those missing items?]{13. In a series which is regular except for a few missing times and values how does one fill in those missing items?}
+\mysection[13. In a series which is regular except for a few missing times or for which we wish to align to a grid how is it filled in or aligned?]{13. In a series which is regular except for a few missing times or for which we wish to align to a grid how is it filled or aligned?}
 
-There are three approaches:
-
-\begin{itemize}
-\item{\code{merge.zoo}}  
-This approach fills in the missing spots with \code{NA}s.  It
-uses the same \code{tseq} we defined in the last example.  We simply merge the
-original series with a zero width series having the required times.
-
-<<fillin-merge>>=
+<<fillin>>=
 # April is missing
 zym <- zoo(1:5, as.yearmon("2000-01-01") + c(0, 1, 2, 4, 5)/12)
-tseq <- seq(start(zym), end(zym), by = 1/12)
-merge(zym, zoo(, tseq))
+g <- seq(start(zym), end(zym), by = 1/12)
+na.locf(zym, xout = g)
 @
 
-\item{\code{as.ts}}. Convert the series to a \code{ts} series.  
-That automatically creates a regularly
-spaced series filling in the missing times
-using \code{NA} for the missing values.  
-Then convert it back to \code{zoo}.  Since \code{ts} series is limited in how it represents
-the index class, it is typically necessary to fix up the class after converting 
-back to zoo as shown in the \code{class(...) <- ...} line here:
+A variation of this is where the grid is of a different date/time class than
+the original series.  In that case use the \code{x} argument.  In the example
+that follows the series \code{z} is of \code{"Date"} class whereas the grid
+is of \code{"yearmon"} class:
 
-<<fillin-ts>>=
-zymreg <- as.zoo(as.ts(zym))
-class(time(zymreg)) <- class(time(zym))
-
-zymreg
+<<fillin-2>>=
+z <- zoo(1:3, as.Date(c("2000-01-15", "2000-03-3", "2000-04-29")))
+g <- seq(as.yearmon(start(z)), as.yearmon(end(z)), by = 1/12)
+na.locf(z, x = as.yearmon, xout = g)
 @
 
-\item{\code{na.approx.zoo}}  
-Unlike the above two approaches, 
-in this approach we fill in the missing values with linear
-approximations rather than \code{NA}s:
+Here is a \code{chron} example where we wish to create a 10 minute grid:
 
-<<fillin-approx>>=
-# using z from above
-na.approx(zym, xout = tseq)
-@
-
-
-
-\end{itemize}
-
-We give a \code{chron} example of these approaches as well.  First via merge:
-
-<<fillin-merge>>=
-
+<<fillin-3>>=
 # 2009-01-09 05:50:00 is missing
 Lines <- "Time,Value
 2009-10-09 5:00:00,210
-2009-10-09 5:10:00,207
-2009-10-09 5:20:00,250
+2009-10-09 5:05:00,207
+2009-10-09 5:17:00,250
 2009-10-09 5:30:00,193
-2009-10-09 5:40:00,205
+2009-10-09 5:41:00,205
 2009-10-09 6:00:00,185"
 
-library(zoo)
 library(chron)
-
 z <- read.zoo(textConnection(Lines), FUN = as.chron, sep = ",", header = TRUE)
-tseq <- seq(start(z), end(z), by = times("00:10:00"))
-merge(z, zoo(, tseq))
-@
-
-And now via \code{as.ts} 
-
-<<fillin-ok>>=
-zz <- as.zoo(as.ts(z))
-time(zz) <- as.chron(time(zz))
-zz
-@
-
-and finally via the \code{na.approx}:
-<<fillin-approx-ok>>=
-tseq <- seq(start(z), end(z), by = times("00:10:00"))
-na.approx(z, xout = tseq)
+g <- seq(start(z), end(z), by = times("00:10:00"))
+na.locf(z, xout = g)
 @
 
 \end{document}

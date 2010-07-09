@@ -11,7 +11,7 @@ versions of database \emph{join} operations.
 
 \usage{
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
-  retclass = c("zoo", "list", "data.frame"))
+  check.names = TRUE, retclass = c("zoo", "list", "data.frame"))
 }
 
 \arguments{
@@ -23,6 +23,7 @@ versions of database \emph{join} operations.
   \item{suffixes}{character vector of the same length as the number of
     \code{"zoo"} objects specifying the suffixes to be used for making
     the merged column names unique.}
+  \item{check.names}{See \code{link{read.table}}.}
   \item{retclass}{character that specifies the class of the returned result.
     It can be \code{"zoo"} (the default), \code{"list"} or \code{NULL}. For 
     details see below.}
@@ -125,6 +126,20 @@ tozoo <- function(x) zoo(x$data, x$year)
 Data <- do.call(merge, lapply(split(DF, DF$site), tozoo))
 plot(Data, screen = 1, col = 1:n, pch = 1:n, type = "o", xlab = "")
 legend("bottomleft", legend = sites, lty = 1, pch = 1:n, col = 1:n)
+
+## for each index value in x merge it with the closest index value in y
+## but retaining x's times.
+x<-zoo(1:3,as.Date(c("1992-12-13", "1997-05-12", "1997-07-13")))
+y<-zoo(1:5,as.Date(c("1992-12-15", "1992-12-16", "1997-05-10","1997-05-19", "1997-07-13")))
+f <- function(u) which.min(abs(as.numeric(index(y)) - as.numeric(u)))
+ix <- sapply(index(x), f)
+cbind(x, y = coredata(y)[ix])
+
+## this merges each element of x with the closest time point in y at or
+## after x's time point (whereas in previous example it could be before
+## or after)
+window(na.locf(merge(x, y), fromLast = TRUE), index(x))
+
 
 }
 \keyword{ts}

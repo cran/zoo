@@ -18,7 +18,8 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
   \item{file}{character giving the name of the file which the data
     are to be read from/written to. See \code{\link{read.table}} and
     \code{\link{write.table}} for more information. Alternatively,
-    in \code{read.zoo}, \code{file} can be a \code{data.frame} (e.g.,
+    in \code{read.zoo}, \code{file} can be a \code{connection}.  It can
+	also be a \code{data.frame} (e.g.,
     resulting from a previous \code{read.table} call) that
     is subsequently processed to a \code{"zoo"} series.}
   \item{format}{date format argument passed to \code{FUN}.}
@@ -27,11 +28,17 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     of the data. See details.}
   \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
     (if the series is regular)?}
-  \item{index.column}{integer. The column of the data frame in which the 
-index/time is stored.  If the \code{read.table} \code{colClasses} argument
-is used and \code{"NULL"} is among its componennts then \code{index.column}
-refers to the column numbers after the columns corresponding to \code{"NULL"}
-have been removed.}
+  \item{index.column}{numeric vector or list. The column(s) of the data frame 
+in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
+argument is used and \code{"NULL"} is among its componennts then 
+\code{index.column} refers to the column numbers after the columns 
+corresponding to \code{"NULL"} have been removed.  If specified as a list 
+then one argument will be passed to argument \code{FUN} per component so that, 
+for example, \code{index.column = list(1, 2)} will cause 
+\code{FUN(x[,1], x[,2], ...)} to be called whereas 
+\code{index.column = list(1:2)} will cause 
+\code{FUN(x[,1:2], ...)} to be called. Here \code{...} refers to \code{format}
+and/or \code{tz}, if they specified as arguments.}
   \item{drop}{logical. If the data frame contains just a single data column, should
     the second dimension be dropped?}
   \item{x}{a \code{"zoo"} object.}
@@ -180,8 +187,8 @@ z <- read.zoo(textConnection(Lines),
 		"numeric", "NULL"), 
 	col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", 
 		"Volume", "junk"),
-	index = 1:3,  # do not count columns that are "NULL" in colClasses
-	FUN = function(tt) times(paste(tt[,1], tt[,2], tt[,3], sep = ":")),
+	index = as.list(1:3),  # do not count columns that are "NULL" in colClasses
+	FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
 	FUN2 = function(tt) trunc(tt, "00:00:05"),
 	aggregate = mean)
 

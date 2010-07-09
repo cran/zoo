@@ -11,18 +11,22 @@ non-\code{NA} prior to it.
 \usage{
 na.locf(object, na.rm = TRUE, \dots)
 \method{na.locf}{default}(object, na.rm = TRUE, fromLast, rev,
-        maxgap = Inf, \dots)
+        maxgap = Inf, rule = 2, \dots)
 }
 \arguments{
   \item{object}{an object.}
   \item{na.rm}{logical. Should leading \code{NA}s be removed?}
   \item{fromLast}{logical. Causes observations to be carried backward rather
     than forward.  Default is \code{FALSE}.
-    This corresponds to NOCB (next observation carried backward).}
+    With a value of \code{TRUE} this corresponds to NOCB 
+    (next observation carried backward).
+	It is not supported if \code{x} or \code{xout} is specified.
+  }
   \item{rev}{Use \code{fromLast} instead.  This argument will
     be eliminated in the future in favor of \code{fromLast}.}
   \item{maxgap}{maximum number of consecutive \code{NA}s to
     fill. Any longer gaps will be left unchanged.}
+  \item{rule}{See \code{\link{approx}}.}
   \item{\dots}{further arguments passed to methods.}
 }
 
@@ -30,6 +34,9 @@ na.locf(object, na.rm = TRUE, \dots)
 An object in which each \code{NA} in the input object is replaced
 by the most recent non-\code{NA} prior to it.  If there are no earlier non-\code{NA}s then 
 the \code{NA} is omitted (if \code{na.rm = TRUE}) or it is not replaced (if \code{na.rm = FALSE}).  
+
+The arguments \code{x} and \code{xout} can be used in which case they have
+the same meaning as in \code{\link{approx}}.
 
 Note that if a multi-column zoo object has a column entirely composed of
 \code{NA} then with \code{na.rm = TRUE}, the default,
@@ -50,14 +57,22 @@ cz <- zoo(c(NA,9,3,2,3,2))
 na.locf(cz)
 
 # generate and fill in missing dates
-# by merging with a zero width series having those dates
-# and then applying na.locf
 z <- zoo(c(0.007306621, 0.007659046, 0.007681013,
 	0.007817548, 0.007847579, 0.007867313),
 	as.Date(c("1993-01-01", "1993-01-09", "1993-01-16",
 	"1993-01-23", "1993-01-30", "1993-02-06")))
-dd <- seq(start(z), end(z), "day")
-na.locf(merge(z, zoo(, dd)))
+g <- seq(start(z), end(z), "day")
+na.locf(z, xout = g)
+
+# similar but use a 2 second grid
+
+z <- zoo(1:9, as.POSIXct(c("2010-01-04 09:30:02", "2010-01-04 09:30:06",
+ "2010-01-04 09:30:07", "2010-01-04 09:30:08", "2010-01-04 09:30:09", 
+ "2010-01-04 09:30:10", "2010-01-04 09:30:11", "2010-01-04 09:30:13",
+ "2010-01-04 09:30:14")))
+
+g <- seq(start(z), end(z), by = "2 sec")
+na.locf(z, xout = g)
 
 ## get 5th of every month or most recent date prior to 5th if 5th missing.
 ## Result has index of the date actually used.
@@ -94,5 +109,16 @@ z.na[idx[as.POSIXlt(time(z.na))$mday == 5]]
 ## only fill single-day gaps
 
 merge(z.na, filled1 = na.locf(z.na, maxgap = 1))
+
+## fill NAs in first column by inflating the most recent non-NA
+## by the growth in second column.  Note that elements of x-x
+## are NA if the corresponding element of x is NA and zero else
+
+m <- zoo(cbind(c(1, 2, NA, NA, 5, NA, NA), seq(7)^2), as.Date(1:7))
+
+r <- replace(m[,1], TRUE, 
+	na.locf(m[,1]) * m[,2] / na.locf(m[,2] + (m[,1]-m[,1])))
+cbind(V1 = r, V2 = m[,2])
+
 }
 \keyword{ts}

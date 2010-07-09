@@ -104,11 +104,10 @@ lag.zooreg <- function(x, k = 1, na.pad = FALSE, ...)
 diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, ...)
 {
     ix <- index(x)
-    stopifnot(lag >= 1, differences >= 1)
+    stopifnot(differences >= 1)
     if (!arithmetic) x <- log(x)
-    for(i in 1:differences) {
-	x <- x - lag(x, k = -lag, ...)
-    }
+	if (lag > 0) for(i in 1:differences) x <- x - lag(x, k = -lag, ...)
+	else for(i in 1:differences) x <- lag(x, k = -lag, ...) - x
     if (!arithmetic) x <- exp(x)
     if (na.pad) merge(zoo(,ix), x, all = c(TRUE, FALSE)) else x
 }

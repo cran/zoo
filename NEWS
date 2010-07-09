@@ -1,3 +1,28 @@
+Changes in Version 1.6-4
+
+  o names were automatically added to indexes in some cases hugely increasing
+    the size of the index.  This is no longer done.
+
+  o diff can have a negative lag argument (for forward diffs).  Previously
+    only positive was allowed.
+
+  o na.locf now calls na.approx with method = "constant" unless fromLast = TRUE.
+    In particular, arguments x and xout can be passed to na.locf which is used
+    in alignment applications.
+
+  o merge has check.names argument.  If check.names = TRUE (the default)
+    then column names will be valid syntactic names.
+
+  o read.zoo's index.column argument can be a list such that FUN is called via
+    do.call(FUN, L) where i in list L is replaced with x[,i].
+
+  o added workaround in Ops.zoo to circumvent rare bug in base R
+
+  o added a median.zoo method
+
+  o added a quantile.zoo method
+
+
 Changes in Version 1.6-3
 
   o new generic function xblocks() for plotting contiguous blocks along

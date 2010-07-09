@@ -2,26 +2,26 @@ rbind.zoo <- function(..., deparse.level = 1)
 {  
 
   args <- Filter(Negate(is.null), list(...))
-  indexes <- do.call("c", lapply(args, index))
+  indexes <- do.call("c", unname(lapply(args, index)))
 
   my.table <- function(x) {
     x <- x[ORDER(x)]
     table(MATCH(x,x))
   }
-  if(max(my.table(indexes)) > 1) stop("indexes overlap")
+  if(max(my.table(indexes)) > 1L) stop("indexes overlap")
 
-  if(any(sapply(args, function(x) is.null(dim(x)) && length(x) == 0 && length(index(x)) > 0)))
+  if(any(sapply(args, function(x) is.null(dim(x)) && length(x) == 0L && length(index(x)) > 0L)))
     stop("zero-length vectors with non-zero-length index are not allowed")  
 
-  ncols <- sapply(args, NCOL)  
-  if(!all(ncols == ncols[1])) stop("number of columns differ")
-
+  ncols <- sapply(args, NCOL)
+  if(!all(ncols == ncols[1L])) stop("number of columns differ")
+  
   ## process colnames() if any
   nams <- lapply(args, colnames)
   namsNULL <- sapply(nams, is.null)
   if(all(namsNULL)) namsOK <- TRUE else {
-    if(sum(namsNULL) > 0) namsOK <- FALSE else {
-      nam1 <- nams[[1]]
+    if(sum(namsNULL) > 0L) namsOK <- FALSE else {
+      nam1 <- nams[[1L]]
       namsID <- sapply(nams, function(x) identical(x, nam1))
       if(all(namsID)) namsOK <- TRUE else {
         namsSORT <- sapply(nams, function(x) identical(sort(x), sort(nam1)))
@@ -34,15 +34,31 @@ rbind.zoo <- function(..., deparse.level = 1)
   }
   if(!namsOK) warning("column names differ")
 
-  if((ncols[1] > 1) | !all(sapply(args, function(a) is.null(dim(a)))))
-    rval <- zoo(do.call("rbind", lapply(args, coredata)), indexes)
+  ## collect data
+  argsdata <- lapply(args, coredata)
+
+  ## (special case: rbinding of vectors with one-column matrices)
+  nulldim <- sapply(argsdata, function(a) is.null(dim(a)))
+  if(ncols[1L] == 1L) {
+    if(nulldim[1] & any(!nulldim)) {
+      argsdata <- lapply(argsdata, function(a) if(is.null(dim(a))) a else a[,1, drop = TRUE])
+      nulldim <- rep(TRUE, length(nulldim))
+    }
+    if(!nulldim[1] & any(nulldim)) {
+      argsdata <- lapply(argsdata, function(a) if(is.null(dim(a))) as.matrix(a) else a)
+      nulldim <- rep(FALSE, length(nulldim))
+    }
+  }
+
+  if((ncols[1L] > 1L) | !all(nulldim))
+    rval <- zoo(do.call("rbind", argsdata), indexes)
   else
-    rval <- zoo(do.call("c", lapply(args, coredata)), indexes)
+    rval <- zoo(do.call("c", argsdata), indexes)
 
   freq <- if(!("zooreg" %in% unlist(sapply(args, class)))) NULL
             else {
 	      freq <- c(frequency(rval), unlist(sapply(args, frequency)))
-	      if((length(freq) == (length(args)+1)) && 
+	      if((length(freq) == (length(args)+1L)) && 
 	         identical(all.equal(max(freq)/freq, round(max(freq)/freq)), TRUE))
 		 max(freq) else NULL
 	    }
@@ -62,18 +78,14 @@ cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL)
   merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo")
 }
 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c("zoo", "list", "data.frame"))
+
+merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = TRUE, retclass = c("zoo", "list", "data.frame"))
 {
     if (!is.null(retclass)) retclass <- match.arg(retclass)
     # cl are calls to the args and args is a list of the arguments
     cl <- as.list(match.call())
-    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- NULL
+    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- cl$check.names <- NULL
     args <- list(...)
-
-	# remove NULL args
-	isnull <- sapply(args, is.null)
-	cl <- cl[!isnull]
-	args <- args[!isnull]
 
     parent <- parent.frame()
 
@@ -154,7 +166,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
            x <- x[ORDER(x)]
            table(MATCH(x, x))
 	}
-	union <- do.call("c", list)
+	union <- do.call("c", unname(list))
 	sort.unique(union)[which(my.table(union) == length(list))]
     }
     indexintersect <- intersect.list(indexlist)
@@ -162,7 +174,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
     # get the indexes of the final answer which is the union of
     # all indexes of args corresponding to all=TRUE with the intersection
     # of all indexes
-    indexunion <- do.call("c", indexlist[all])
+    indexunion <- do.call("c", unname(indexlist[all]))
     
     indexes <-  if(is.null(indexunion)) indexintersect
       else sort.unique(c(indexunion, indexintersect))
@@ -328,7 +340,6 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
             suffixes[i], sep = "."), zoocolnames[[i]])
         if (any(duplicated(unlist(zoocolnames)))) 
             zoocolnames <- lapply(seq_along(args), f)
-        colnames(rval) <- make.unique(unlist(zoocolnames))
     } else {
         fixcolnames <- function(a) {
             if (length(a) == 0) 
@@ -338,16 +349,18 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, retclass = c(
             else return(paste(".", 1:NCOL(a), sep = ""))
         }
         zoocolnames <- lapply(args, fixcolnames)
-        zoocolnames <- unlist(lapply(seq_along(args), function(i) 
+        zoocolnames <- lapply(seq_along(args), function(i) 
 		if (!is.null(zoocolnames[[i]])) # NULL returned if false
 			paste(suffixes[i], zoocolnames[[i]], sep = ""))
-	)
-        colnames(rval) <- make.unique(zoocolnames)
     }
+	zoocolnames <- unlist(zoocolnames)
+	colnames(rval) <- if (check.names) make.names(make.unique(zoocolnames))
+		else zoocolnames
     # rval <- zoo(rval, indexes)
     rval <- zoo(coredata(rval), indexes)
     attr(rval, "frequency") <- freq
     if(!is.null(freq)) class(rval) <- c("zooreg", class(rval))
     return(rval)
 }
+
 

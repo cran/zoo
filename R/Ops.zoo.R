@@ -10,10 +10,12 @@ Ops.zoo <- function (e1, e2)
 	merge(e1, e2, all = FALSE, retclass = NULL)
         NextMethod(.Generic)
     }
-    if (is.null(attr(e, "index"))) 
+    out <- if (is.null(attr(e, "index"))) 
 	zoo(e, index(e1), attr(e1, "frequency"))
     else
 	e
+    # the next statement is a workaround for a bug in R
+	structure(out, class = class(out))
 }
 
 t.zoo <- function(x)

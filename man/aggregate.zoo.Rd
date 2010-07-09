@@ -45,12 +45,21 @@ so can be used for aggregation tasks in some cases as well.}
 
 \examples{
 ## averaging over values in a month:
-# long series
-x.date <- as.Date(paste(2004, rep(1:4, 4:1), seq(1,20,2), sep = "-"))
-x <- zoo(rnorm(12), x.date)
-# coarser dates
-x.date2 <- as.Date(paste(2004, rep(1:4, 4:1), 1, sep = "-"))
-x2 <- aggregate(x, x.date2, mean)
+# x.date is jan 1,3,5,7; feb 9,11,13; mar 15,17,19
+x.date <- as.Date(paste(2004, rep(1:4, 4:1), seq(1,20,2), sep = "-")); x.date
+x <- zoo(rnorm(12), x.date); x
+# coarser dates - jan 1 (4 times), feb 1 (3 times), mar 1 (3 times)
+x.date2 <- as.Date(paste(2004, rep(1:4, 4:1), 1, sep = "-")); x.date2
+x2 <- aggregate(x, x.date2, mean); x2
+# same - uses as.yearmon
+x2a <- aggregate(x, as.Date(as.yearmon(time(x))), mean); x2a
+# same - uses by function
+x2b <- aggregate(x, function(tt) as.Date(as.yearmon(tt)), mean); x2b
+# same - uses cut
+x2c <- aggregate(x, as.Date(cut(time(x), "month")), mean); x2c
+# almost same but times of x2d have yearmon class rather than Date class
+x2d <- aggregate(x, as.yearmon, mean); x2d
+
 # compare time series
 plot(x)
 lines(x2, col = 2)

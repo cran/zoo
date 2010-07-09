@@ -13,8 +13,10 @@ export(
   "rbind.zoo",
   "ifelse.zoo",
   "is.zoo",
+  "median.zoo",
   "merge.zoo",
   "read.zoo",
+  "quantile.zoo",
   "rev.zoo",
   "write.zoo",
   "xtfrm.zoo",
@@ -286,6 +288,7 @@ export(
   S3method("as.yearmon", "Date")
   S3method("as.yearmon", "timeDate")
   S3method("as.yearmon", "jul")
+  S3method("as.yearmon", "mondate")
   S3method("as.yearmon", "POSIXt")
   S3method("as.yearmon", "character")
   S3method("as.yearmon", "dates")
@@ -296,6 +299,7 @@ export(
   S3method("as.yearqtr", "Date")
   S3method("as.yearqtr", "timeDate")
   S3method("as.yearqtr", "jul")
+  S3method("as.yearqtr", "mondate")
   S3method("as.yearqtr", "POSIXt")
   S3method("as.yearqtr", "character")
   S3method("as.yearqtr", "dates")
