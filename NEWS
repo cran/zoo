@@ -1,3 +1,9 @@
+Changes in Version 1.6-5
+
+  o Fixed a technical error in the Sweave commands of zoo-faq.Rnw which
+    throws an error in the current R-devel (2.14.0 to be).
+
+
 Changes in Version 1.6-4
 
   o names were automatically added to indexes in some cases hugely increasing
