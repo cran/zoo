@@ -14,5 +14,5 @@ na.aggregate.default <- function(object, by = 1, ..., FUN = mean, na.rm = FALSE,
     }
     object[] <- if (length(dim(object)) == 0) na.aggregate.0(object)
                 else apply(object, 2, na.aggregate.0)
-    if (na.rm) na.omit(object) else object
+    if (na.rm) na.trim(object, is.na = "all") else object
 }

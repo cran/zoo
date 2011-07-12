@@ -5,7 +5,7 @@
 %% need no \usepackage{Sweave}
 
 \author{Ajay Shah\\National Institute of Public\\Finance and Policy, India \And
-        Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
+        Achim Zeileis\\Universit\"at Innsbruck \And
         Gabor Grothendieck\\GKX Associates Inc.}
 \Plainauthor{Ajay Shah, Achim Zeileis, Gabor Grothendieck}
 
@@ -29,7 +29,7 @@
   E-mail: \email{ajayshah@mayin.org}\\
   
   Achim Zeileis\\
-  Wirtschaftsuniversit\"at Wien\\
+  Universit\"at Innsbruck\\
   E-mail: \email{Achim.Zeileis@R-project.org}\\
   
   Gabor Grothendieck\\
@@ -52,6 +52,7 @@ library("tseries")
 online <- FALSE ## if set to FALSE the local copy of
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
+Sys.setenv(TZ = "GMT")
 @
 
 \mysection{Read a series from a text file}

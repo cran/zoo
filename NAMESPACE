@@ -1,6 +1,9 @@
 ## name spaces needed for S3 methods
 import("stats", "utils", "graphics", "lattice", "grDevices")
 
+## C code
+useDynLib("zoo")
+
 export(
 ## zoo core functionality
   "zoo",
@@ -43,20 +46,27 @@ export(
 
 ## rolling operations
   "rollapply",
+  "rollapplyr",
   "rollmax",
+  "rollmaxr",
   "rollmax.default",
   "rollmean",
+  "rollmeanr",
   "rollmean.default",
   "rollmedian",
+  "rollmedianr",
   "rollmedian.default",
 
 ## NA operations
   "na.approx",
   "na.approx.default",
+  "na.fill",
+  "na.fill.default",
   "na.locf",
   "na.locf.default",
   "na.spline",
   "na.spline.default",
+  "na.StructTS",
   "na.trim",
   "na.trim.default",
   "na.trim.ts",
@@ -112,6 +122,7 @@ export(
 ## methods for class zoo
   S3method("Ops", "zoo")
   S3method("[", "zoo")
+  S3method("[<-", "zoo")
   S3method("$", "zoo")
   S3method("$<-", "zoo")
   S3method("aggregate", "zoo")
@@ -145,7 +156,9 @@ export(
   S3method("ltext", "zoo")
   S3method("na.approx", "zoo")
   S3method("na.contiguous", "zoo")
+  S3method("na.fill", "zoo")
   S3method("na.spline", "zoo")
+  S3method("na.StructTS", "zoo")
   S3method("names", "zoo")
   S3method("names<-", "zoo")
   S3method("plot", "zoo")
@@ -166,6 +179,7 @@ export(
   S3method("tail", "zoo")
   S3method("time", "zoo")
   S3method("time<-", "zoo")
+  S3method("transform", "zoo")
   S3method("window", "zoo")
   S3method("window<-", "zoo")
   S3method("with", "zoo")
@@ -182,6 +196,7 @@ export(
   S3method("lag", "zooreg")
   S3method("na.approx", "zooreg")
   S3method("na.spline", "zooreg")
+  S3method("rev", "zooreg")
   S3method("time<-", "zooreg")
 
 ## methods for class ts
@@ -190,6 +205,8 @@ export(
   S3method("index", "ts")
   S3method("is.regular", "ts")
   S3method("na.approx", "ts")
+  S3method("na.fill", "ts")
+  S3method("na.StructTS", "ts")
   S3method("rollapply", "ts")
   S3method("rollmax", "ts")
   S3method("rollmean", "ts")
@@ -276,6 +293,7 @@ export(
   S3method("index2char", "numeric")
   S3method("na.contiguous", "data.frame")
   S3method("na.contiguous", "list")
+  S3method("rollapply", "default")
   S3method("MATCH", "times")
   S3method("ORDER", "chron")
   S3method("ORDER", "dates")
@@ -306,10 +324,12 @@ export(
   S3method("as.yearqtr", "integer")
   S3method("as.yearqtr", "numeric")
   S3method("as.yearqtr", "factor")
+  S3method("as.zoo", "data.frame")
   S3method("as.zoo", "factor")
   S3method("as.zoo", "fts")
   S3method("as.zoo", "irts")
   S3method("as.zoo", "its")
+  S3method("as.zoo", "matrix")
   S3method("as.zoo", "mcmc")
   S3method("as.zoo", "ts")
   S3method("as.zoo", "xts")

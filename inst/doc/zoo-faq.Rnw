@@ -10,41 +10,38 @@
 
 %% need no \usepackage{Sweave}
 
-\author{Gabor Grothendieck\\GKX Associates Inc. \And
-        Achim Zeileis\\Wirtschaftsuniversit\"at Wien}
-\Plainauthor{Achim Zeileis, Gabor Grothendieck}
+\author{\pkg{zoo} Development Team}
+\Plainauthor{zoo Development Team}
+
+\Address{
+  \pkg{zoo} Development Team\\
+  \proglang{R}-Forge: \url{http://R-Forge.R-project.org/projects/zoo/}\\
+  Comprehensive \proglang{R} Archive Network: \url{http://CRAN.R-project.org/package=zoo}
+}
 
 \title{\pkg{zoo} FAQ}
 \Plaintitle{zoo FAQ}
 
-\Keywords{irregular time series, daily data, weekly data, returns}
+\Keywords{irregular time series, ordered observations, time index, daily data, weekly data, returns}
 
 \Abstract{
   This is a collection of frequently asked questions (FAQ) about the
   \pkg{zoo} package together with their answers.
 }
 
-\Address{
-  Gabor Grothendieck\\
-  GKX Associates Inc.\\
-  E-mail: \email{ggrothendieck@gmail.com}\\
-  
-  Achim Zeileis\\
-  Wirtschaftsuniversit\"at Wien\\
-  E-mail: \email{Achim.Zeileis@R-project.org}\\  
-}
   
 \begin{document}
 
 \SweaveOpts{engine=R,eps=FALSE}
 %\VignetteIndexEntry{zoo FAQ}
-%\VignetteDepends{zoo,tseries}
-%\VignetteKeywords{irregular time series, daily data, weekly data, returns}
+%\VignetteDepends{zoo,chron,timeDate,timeSeries}
+%\VignetteKeywords{irregular time series, ordered observations, time index, daily data, weekly data, returns}
 %\VignettePackage{zoo}
 
 
 <<preliminaries, echo=FALSE, results=hide>>=
 library("zoo")
+Sys.setenv(TZ = "GMT")
 @
 
 \mysection[1. I know that duplicate times are not allowed but my data has them. What do I do?]{1. I know that duplicate times are not allowed but my data has them. What do I do?}
@@ -62,7 +59,9 @@ times and rather than give an undesired or unexpected result,
 such illegal objects.   Since \code{merge.zoo}
 is the workhorse behind many \pkg{zoo} functions, a significant
 portion of \pkg{zoo} will not accept
-duplicates among the times.  Typically duplicates are eliminated by
+duplicates among the times.  
+
+Typically duplicates are eliminated by
 (1)~averaging over them, (2)~taking the last among each run of duplicates
 or (3)~interpolating the duplicates and deleting ones on the end that
 cannot be interpolated.  These three approaches are shown here
@@ -72,7 +71,7 @@ will aggregate the zoo object read in by \code{read.zoo} all in one step.
 
 Note that in the example code below that \code{identity} is the identity 
 function (i.e. it just returns its argument).  It 
-is an \pkg{R} core function:
+is an \proglang{R} core function:
 
 A \code{"zoo"} series with duplicated indexes
 <<duplicates1>>=
@@ -118,7 +117,7 @@ once for each aggregate function.  In this example, the first three
 columns are junk that we wish to suppress which is why we specified
 \code{colClasses}; however, in most cases that argument would not
 be necessary.
-<<duplicates>>=
+<<duplicates, keep.source = TRUE>>=
 Lines <- "1|BHARTIARTL|EQ|18:15:05|600|1
 2|BHARTIARTL|EQ|18:15:05|600|99
 3|GLENMARK|EQ|18:15:05|238.1|5
@@ -140,7 +139,6 @@ nms <- c("", "", "", "time", "value", "volume")
 z <- read.zoo(textConnection(Lines), aggregate = tail1,
        FUN = times, sep = "|", colClasses = cls, col.names = nms)
 
-# re-read using sum
 z2 <- read.zoo(textConnection(Lines), aggregate = sum,
        FUN = times, sep = "|", colClasses = cls, col.names = nms)
 
@@ -148,6 +146,21 @@ z$volume <- z2$volume
 z
 @
 
+If the reason for the duplicate times is that the data is stored in long
+format then use \code{read.zoo} (particlarly the \code{split} argument)
+to convert it to wide format.  Wide format is typically a time series
+whereas long format is not so wide format is the suitable one for zoo.
+
+<<readsplit, source = TRUE>>=
+Lines <- "Date Stock Price
+2000-01-01 IBM 10
+2000-01-02 IBM 11
+2000-01-01 ORCL 12
+2000-01-02 ORCL 13"
+
+stocks <- read.zoo(textConnection(Lines), header = TRUE, split = "Stock")
+stocks
+@
 
 \mysection[2. When I try to specify a log axis to plot.zoo a warning is issued.  What is wrong?]{2. When I try to specify a log axis to \code{plot.zoo} a warning is issued.  What is wrong?}
 
@@ -287,7 +300,6 @@ an \code{as.yearmon2} generic together with an
 \code{as.Date.yearmon2}.
 
 <<yearmon2>>=
-# as.yearmon2 generic and as.yearmon2.Date method
 as.yearmon2 <- function(x, ...) UseMethod("as.yearmon2")
 as.yearmon2.Date <- function(x, ...) {
   y <- as.yearmon(with(as.POSIXlt(x, tz = "GMT"), 1900 + year + mon/12))
@@ -341,7 +353,6 @@ axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
 axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
 axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
 
-# vertical grid lines
 abline(v = m, col = grey(0.8), lty = 2)
 @
 
@@ -452,69 +463,97 @@ detach("package:timeDate")
 
 \mysection[11. What other packages use zoo?]{11. What other packages use \pkg{zoo}?}
 
-There are 53 other packages that depend on, suggest, can use with or 
+There are 64 other packages that depend on, suggest, can use with or 
 are otherwise used with \pkg{zoo} that we have located:
 
-\begin{tabular}{|l|p{10cm}|} \hline
+\begin{tabular}{|p{3.6cm}|p{11cm}|} \hline
 \multicolumn{2}{|l|}{\emph{Depends}} \\ \hline
 \pkg{AER} & Applied econometrics with \proglang{R} \\
 \pkg{BootPR} & Bootstrap prediction intervals and bias-corrected forecasting \\
+\pkg{cxxPack} & R/C++ Tools for Literate Statistical Practice \\
+\pkg{delftfews} & timeseries functions used at Nelen en Schuurmans \\
 \pkg{dyn} & Time-series regression \\
 \pkg{dynlm} & Dynamic linear regression \\
 \pkg{fda} & Functional data analysis \\
 \pkg{FinTS} & Companion to Tsay's ``Analysis of financial time series'' \\
 \pkg{fractalrock} & Generate fractal time series with non-normal returns distribution \\
-\pkg{fUtilities} & \pkg{Rmetrics} function utilities \\
 \pkg{fxregime} & Exchange rate regime analysis \\
+\pkg{RghcnV3} & Process GHCN V3 climate series \\
+\pkg{hydroTSM} & Time series for hydrological modelling \\
 \pkg{lmtest} & Testing linear regression models \\
-\pkg{meboot} Maximum Entropy Bootstrap for Time Series & \\
-\pkg{MFDF} Modeling Functional Data in Finance & \\
+\pkg{meboot} & Maximum entropy bootstrap for time series \\
+\pkg{MFDF} & Modeling functional data in finance \\
 \pkg{party} & Recursive partytioning toolbox \\
 \pkg{PerformanceAnalytics} & Econometric tools for performance and risk analysis \\
 \pkg{quantmod} & Quantitative financial modelling framework \\
 \pkg{RBloomberg} & \proglang{R}/\pkg{Bloomberg} interface \\
-\pkg{RcppTemplate} & Rcpp R/C++ Object Mapping Library and Package Template \\
+\pkg{RcppTemplate} & \pkg{Rcpp} \proglang{R}/\proglang{C++} object mapping library and package template \\
 \pkg{sandwich} & Robust covariance matrix estimators \\
 \pkg{sde} & Simulation and Inference for Stochastic Differential Equations \\
+\pkg{solaR} & Solar radiation and performance of photovoltaic systems \\
+\pkg{spacetime} & classes and methods for spatio-temporal data \\
 \pkg{StreamMetabollism} & Calculating single station metabolism from diurnal Oxygen curves \\
 \pkg{strucchange} & Testing, monitoring, and dating structural changes \\
 \pkg{tawny} & Provides various portfolio optimization strategies including random matrix theory and shrinkage estimators \\
+\pkg{termstrc} & Zero-coupon Yield Curve Estimation \\
 \pkg{tgram} & Functions to compute and plot tracheidograms \\
-\pkg{tis} & Regular time series package, previously part of fame package \\
 \pkg{tripEstimation} & Metropolis sampler and supporting functions for
   estimating animal movement from archival tags and satellite fixes \\
 \pkg{tseries} & Time series analysis and computational finance \\
-\pkg{TSfame} & Time Series Database Interface extensions for fame \\
-\pkg{TShirtQuote} & Time Series Database Interface extensions for get.hist.quote \\
-\pkg{VhayuR} & R Interface to the Vhayu time series database \\
+\pkg{TSfame} & Time series database interface extensions for fame \\
+\pkg{TShirtQuote} & Time series database interface extensions for \code{get.hist.quote} \\
+\pkg{VhayuR} & \proglang{R} interface to the Vhayu time series database \\
+\pkg{wq} & Exploring water quality monitoring data \\
 \pkg{xts} & Extensible time series \\ \hline
+\end{tabular}
+
+\begin{tabular}{|p{3.6cm}|p{11cm}|} \hline
+\multicolumn{2}{|l|}{\emph{Imports}} \\ \hline
+\pkg{openair} & Tools for the analysis of air pollution data \\ \hline
+\end{tabular}
+
+\begin{tabular}{|p{3.6cm}|p{11cm}|} \hline
 \multicolumn{2}{|l|}{\emph{Suggests}} \\ \hline
 \pkg{ChIPSim} & Simulation of ChIP-seq experiments \\
 \pkg{futile} & Utilities for strings and function arguments \\
 \pkg{gsubfn} & Utilities for strings and function arguments \\
-\pkg{playwith} & Interactive graphics: works with \code{xylot.zoo} \\ \hline
+\pkg{hydroGOF} & Compare goodness-of-fit of simulated and observed hydrological series \\
+\pkg{latticeExtra} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ 
+\pkg{MeDiChI} & Model-based deconvolution of genome-wide binding (ChIP-chip) data \\
+\pkg{mondate} & Keep track of dates in month units. \\
+\pkg{playwith} & Interactive graphics: works with \code{xylot.zoo} \\ 
 \pkg{pscl} & Political Science Computational Laboratory, Stanford University \\
-\pkg{tframePlus} Time Frame coding kernel extensions & \\ \hline
+\pkg{tframePlus} & Time frame coding kernel extensions \\ \hline
+\pkg{TSAgg} & Time series aggregation for incomplete time series data \\
 \pkg{TSdbi} & Time series database interface \\
 \pkg{TSMySQL} & Time series database interface extensions for \pkg{MySQL} \\
 \pkg{TSPostgresSQL} & Time series database interface extentions for \pkg{Postgres} \\
 \pkg{TSodbc} & Time series database interface extentions for \pkg{ODBC} \\
 \pkg{TSSQLite} & Time series database interface extentions for \pkg{SQLite} \\
-\pkg{wq} & water quality monitoring \\
-\pkg{UsingR} & A collection of datasets to accompany the textbook "Using R for Introductory Statistics" \\
+\pkg{UsingR} & A collection of datasets to accompany the textbook ``Using \proglang{R} for Introductory Statistics'' \\
 \pkg{Zelig} & Everyone's statistical software \\ \hline
+\end{tabular}
+
+\begin{tabular}{|p{3.6cm}|p{11cm}|} \hline
+\multicolumn{2}{|l|}{\emph{Enhances}} \\ \hline
+\pkg{chron} & Chronological objects which can handle dates and times \\ 
+\pkg{lubridate} & Make dealing with dates a little easier \\ 
+\pkg{tis} & Time Indexes and Time Indexed Series \\ \hline
+\end{tabular}
+
+
+\begin{tabular}{|p{3.6cm}|p{11cm}|} \hline
 \multicolumn{2}{|l|}{\emph{Uses or Used with}} \\ \hline
 \pkg{timeDate} & \pkg{Rmetrics} date and time functions: \code{timeDate} usable with \code{zoo} \\ \hline
 \pkg{grid} & Graphics infrastructure: use with \code{xyplot.zoo} \\ \hline
 \pkg{its} & Irregular time series: \code{as.its.zoo}, \code{as.zoo.its} \\ \hline
 \pkg{lattice} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ \hline
-\pkg{latticeExtra} & \pkg{grid}-based graphics: use with \code{xyplot.zoo} \\ \hline
 \pkg{timeSeries} & \pkg{Rmetrics} time series functions: \code{as.timeSeries.zoo}, \code{as.zoo.timeSeries} \\ \hline
 \pkg{YaleToolkit} & Data exploration tools from Yale University: accepts \code{"zoo"} input \\ \hline
 \end{tabular}
 
 \mysection[12. Why does ifelse not work as I expect?]{12. Why does \code{ifelse} not work as I expect?}
-The ordinary R \code{ifelse} function only works with zoo objects if all three arguments are zoo objects with the same time index.  \pkg{zoo} provides an \code{ifelse.zoo} function that should be used instead.  The \code{.zoo} part must be written out since \code{ifelse} is not generic.
+The ordinary \proglang{R} \code{ifelse} function only works with zoo objects if all three arguments are zoo objects with the same time index.  \pkg{zoo} provides an \code{ifelse.zoo} function that should be used instead.  The \code{.zoo} part must be written out since \code{ifelse} is not generic.
 
 <<ifelse>>=
 z <- zoo(c(1, 5, 10, 15))
@@ -529,8 +568,8 @@ xm <- merge(z, dif = diff(z))
 with(xm, ifelse(dif > 4, -z, z))
 
 # or in this case we could also use orindary ifelse if we 
-# use na.pad = TRUE to ensure all three have same index
-ifelse(diff(z, na.pad = TRUE) > 4, -z, z)
+# use fill = NA to ensure all three have same index
+ifelse(diff(z, fill = NA) > 4, -z, z)
 @
 
 
@@ -556,8 +595,7 @@ na.locf(z, x = as.yearmon, xout = g)
 
 Here is a \code{chron} example where we wish to create a 10 minute grid:
 
-<<fillin-3>>=
-# 2009-01-09 05:50:00 is missing
+<<fillin-3, keep.source=TRUE>>=
 Lines <- "Time,Value
 2009-10-09 5:00:00,210
 2009-10-09 5:05:00,207
@@ -566,7 +604,7 @@ Lines <- "Time,Value
 2009-10-09 5:41:00,205
 2009-10-09 6:00:00,185"
 
-library(chron)
+library("chron")
 z <- read.zoo(textConnection(Lines), FUN = as.chron, sep = ",", header = TRUE)
 g <- seq(start(z), end(z), by = times("00:10:00"))
 na.locf(z, xout = g)

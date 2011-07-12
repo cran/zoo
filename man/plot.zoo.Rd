@@ -11,7 +11,8 @@ Plotting method for objects of class \code{"zoo"}.
 \method{plot}{zoo}(x, y = NULL, screens, plot.type,
   panel = lines, xlab = "Index", ylab = NULL, main = NULL,
   xlim = NULL, ylim = NULL, xy.labels = FALSE, xy.lines = NULL,
-  oma = c(6, 0, 5, 0), mar = c(0, 5.1, 0, 2.1), 
+  yax.flip = FALSE, oma = c(6, 0, 5, 0),
+  mar = c(0, 5.1, 0, if(yax.flip) 5.1 else 2.1), 
   col = 1, lty = 1, lwd = 1, pch = 1, type = "l", log = "",
   nc, widths = 1, heights = 1, \dots)
 \method{lines}{zoo}(x, y = NULL, type = "l", \dots)
@@ -48,6 +49,9 @@ Plotting method for objects of class \code{"zoo"}.
   \item{xy.lines}{logical, indicating if \code{\link{lines}} should be drawn in
     the scatter plot. Defaults to the value of \code{xy.labels} if that is
     logical, otherwise to \code{FALSE}.}
+  \item{yax.flip}{logical, indicating if the y-axis (ticks and numbering)
+    should flip from side 2 (left) to 4 (right) from series to series
+    when \code{type = "multiple"}.}
   \item{xlab, ylab, main, xlim, oma, mar}{graphical arguments, see \code{\link{par}}.}
   \item{col, lty, lwd, pch, type}{graphical arguments that can be vectors or 
     (named) lists. See the details for more information.}
@@ -240,6 +244,18 @@ rect(as.yearmon("2007-8"), u[3], as.yearmon("2009-11"), u[4],
    border = 0, col = "grey")
 lines(v)
 axis(1, floor(time(v)), labels = FALSE, tcl = -1)
+
+## fill area under plot
+
+pnl.xyarea <- function(x, y, fill.base = 0, col = 1, ...) {
+       lines(x, y, ...)
+       panel.number <- parent.frame()$panel.number
+	   col <- rep(col, length = panel.number)[panel.number]
+       polygon(c(x[1], x, tail(x, 1), x[1]), 
+		c(fill.base, as.numeric(y), fill.base, fill.base), col = col)
+}
+plot(zoo(EuStockMarkets), col = rainbow(4), panel = pnl.xyarea)
+
 
 ## barplot
 x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)

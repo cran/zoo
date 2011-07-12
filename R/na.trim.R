@@ -12,7 +12,7 @@ na.trim.default <- function (object, sides = c("both", "left", "right"),
    if (length(dim(object)) < 2)
        object[idx]
    else
-       object[idx,]
+       object[idx,, drop = FALSE]
 }
 
 ## need a 'ts' method because indexing destroys ts attributes

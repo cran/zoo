@@ -15,11 +15,12 @@ read.zoo(file, format = "", tz = "", FUN = NULL,
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
 }
 \arguments{
-  \item{file}{character giving the name of the file which the data
+  \item{file}{character string or strings giving the name of the file(s) 
+    which the data
     are to be read from/written to. See \code{\link{read.table}} and
     \code{\link{write.table}} for more information. Alternatively,
-    in \code{read.zoo}, \code{file} can be a \code{connection}.  It can
-	also be a \code{data.frame} (e.g.,
+    in \code{read.zoo}, \code{file} can be a \code{connection} or a
+	\code{data.frame} (e.g.,
     resulting from a previous \code{read.table} call) that
     is subsequently processed to a \code{"zoo"} series.}
   \item{format}{date format argument passed to \code{FUN}.}
@@ -32,13 +33,22 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
 in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
 argument is used and \code{"NULL"} is among its componennts then 
 \code{index.column} refers to the column numbers after the columns 
-corresponding to \code{"NULL"} have been removed.  If specified as a list 
+corresponding to \code{"NULL"} in \code{colClasses} have been removed.  
+If specified as a list 
 then one argument will be passed to argument \code{FUN} per component so that, 
 for example, \code{index.column = list(1, 2)} will cause 
 \code{FUN(x[,1], x[,2], ...)} to be called whereas 
 \code{index.column = list(1:2)} will cause 
-\code{FUN(x[,1:2], ...)} to be called. Here \code{...} refers to \code{format}
-and/or \code{tz}, if they specified as arguments.}
+\code{FUN(x[,1:2], ...)} to be called where \code{x} is a data frame of 
+characters data.  Here \code{...} refers to \code{format}
+and/or \code{tz}, if they specified as arguments.  \code{index.column = 0} can
+be used to specify that the row names be used as the index.  In the case that
+no row names were input sequential numbering is used.
+If \code{index.column} is specified as an ordinary vector then if it has the
+same length as the number of arguments of \code{FUN} (or \code{FUN2} in the
+event that \code{FUN2} is specified and \code{FUN} is not) 
+then \code{index.column} is converted to a
+list.  Also it is always converted to a list if it has length 1.}
   \item{drop}{logical. If the data frame contains just a single data column, should
     the second dimension be dropped?}
   \item{x}{a \code{"zoo"} object.}
@@ -49,10 +59,11 @@ and/or \code{tz}, if they specified as arguments.}
   \item{col.names}{logical. Should column names be written? Default is to
     write column names only if \code{x} has column names.}
   \item{FUN2}{function. It is applied to the time index after 
-    \code{FUN} and before \code{aggregate}.}
+    \code{FUN} and before \code{aggregate}. If \code{FUN} is not specified
+    but \code{FUN2} is specified then only \code{FUN2} is applied.}
   \item{split}{NULL or column number or name or vector of numbers or 
    names. If not NULL then the data is assumed to be in long format and is 
-   split according to the indicated columns.  See the R 
+   split according to the indicated columns.  See the \R 
    \code{\link[stats]{reshape}} command for description of long data.
    If \code{split=Inf} then the first of each run are made into a separate
    series, the second of each run and so on.  If \code{split= -Inf} then
@@ -81,15 +92,15 @@ interpreted to be the index/time, the remaining columns the corresponding data.
 \code{1, 2, ...} are used for the index.)  To assign the appropriate class
 to the index, \code{FUN} can be specified and is applied to the first column.
 
-To process the index, \code{read.zoo} uses the first of the following that is
-true:  1. If \code{FUN} is specified then \code{read.zoo} calls \code{FUN} with
-the index as the first argument.  2. If \code{tz} is specified then the index 
-column is converted to \code{POSIXct}.  3. If \code{format} is specified
-then the index column is converted to \code{Date}.  4. A heuristic
+To process the index, \code{read.zoo} calls \code{FUN} with the index as the
+first argument.  If \code{FUN} is not specified then if there are multiple
+index columns they are pasted together with a space between each.  Using the
+index column or pasted index column: 1. If \code{tz} is specified then the
+index column is converted to \code{POSIXct}.  2. If \code{format} is specified
+then the index column is converted to \code{Date}.  3. Otherwise, a heuristic
 attempts to decide among \code{"numeric"}, \code{"Date"} and \code{"POSIXct"}.
-If \code{format} and/or \code{tz} is specified 
-then it is passed to the conversion function as well.
-
+If \code{format} and/or \code{tz} is specified then they are passed to the
+conversion function as well.
 
 If \code{regular} is set to \code{TRUE} and the resulting series has an 
 underlying regularity, it is coerced to a \code{"zooreg"} series.
@@ -187,7 +198,7 @@ z <- read.zoo(textConnection(Lines),
 		"numeric", "NULL"), 
 	col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", 
 		"Volume", "junk"),
-	index = as.list(1:3),  # do not count columns that are "NULL" in colClasses
+	index = 1:3,  # do not count columns that are "NULL" in colClasses
 	FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
 	FUN2 = function(tt) trunc(tt, "00:00:05"),
 	aggregate = mean)
@@ -202,6 +213,11 @@ read.zoo(BOD)
 read.zoo(BOD, FUN = as.Date)
 
 read.zoo(BOD[c(1:6, 1), ], aggregate = mean)
+
+\dontrun{
+# read in all csv files in the current directory and merge them
+read.zoo(Sys.glob("*.csv"), header = TRUE, sep = ",")
+}
 
 }
 }

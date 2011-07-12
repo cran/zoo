@@ -1,9 +1,11 @@
 \name{as.zoo}
 \alias{as.zoo}
 \alias{as.zoo.default}
+\alias{as.zoo.data.frame}
 \alias{as.zoo.fts}
 \alias{as.zoo.its}
 \alias{as.zoo.irts}
+\alias{as.zoo.matrix}
 \alias{as.zoo.mcmc}
 \alias{as.zoo.tis}
 \alias{as.zoo.xts}

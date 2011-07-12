@@ -107,6 +107,13 @@ as.POSIXct(x)
 # given a Date, x, return the Date of the next Friday
 nextfri <- function(x) 7 * ceiling(as.numeric(x - 1)/7) + as.Date(1)
 
+# given a Date, d, return the same Date in the following month
+# Note that as.Date.yearmon gives first Date of the month.
+d <- as.Date("2005-1-1") + seq(0,90,30)
+next.month <- function(d) as.Date(as.yearmon(d) + 1/12) + 
+	as.numeric(d - as.Date(as.yearmon(d)))
+next.month(d)
+
 # 3rd Friday in last month of the quarter of Date x
 as.Date(as.yearmon(as.yearqtr(x)) + 2/12) + 14
 

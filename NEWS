@@ -1,3 +1,70 @@
+Changes in Version 1.7-0
+
+  o A [<- method was added and the behaviour is now consistent with the
+    [ method.
+
+  o check.names argument of merge() method now defaults to FALSE.
+
+  o Added a new as.zoo() method for "matrix" objects in order to preserve
+    column names. Also, a new "data.frame" method leverages the "matrix"
+    method.
+
+  o In rollapply() width may be a list whose components are offsets. ascending
+    argument is no longer supported. Use width's list form instead.
+
+  o In rollapply() new partial and fill arguments. na.pad argument is deprecated.
+
+  o rollapply() with FUN = mean will no longer call rollmean if the data has
+    any NA values
+  
+  o added yax.flip argument to plot() method for "zoo" objects to be consistent
+    with the "ts" method.
+
+  o New vignette("zoo-read") introducing read.zoo() including several new
+    features (see also below).
+
+  o in read.zoo() if FUN is not specified but FUN2 is specified then FUN2
+    is applied in place of FUN. Previously FUN2 was ignored in this case.
+    Also format and tz arguments can be NULL in which case they are treated
+    as missing.
+
+  o read.zoo() can accept a vector of filenames in which case each is read in
+    and a single zoo object is returned formed by merging the individual ones.
+
+  o if FUN is omitted in read.zoo() and index.column specifies multiple columns
+    then the columns are pasted together separated by spaces and processing
+    continues as if there were one column.
+
+  o in read.zoo() index.column = 0 is now valid in which case 1, 2, 3, ... is
+    used for index
+
+  o read.zoo() can now read in a zoo object with an index but no data
+
+  o in most situations in which a plain numeric vector for index.column in
+    read.zoo() would give an error it now also tries using 
+    as.list(index.column). As a result its almost always possible to use a 
+    plain numeric index.column rather than a list.
+
+  o a new src/ directory containing C code backported from the xts package is now
+    included. This is the start of the process to align some of the faster C
+    internals of xts with zoo.  xts is now using the LinkingTo option to
+    call certain code in the zoo package (previously in xts/src). Subsequent
+    zoo releases will begin to use the new C, which in the current release are
+    not yet available.
+  
+  o new roll*r() wrappers which default to align = "right".
+
+  o new na.fill() function.
+
+  o new na.StructTS() function for seasonal NA interpolation using R's StructTS().
+
+  o rev() method for zooreg objects added.
+
+  o transform() method added.
+  
+  o added "frequency" argument to as.zooreg() generic and associated methods.
+  
+
 Changes in Version 1.6-5
 
   o Fixed a technical error in the Sweave commands of zoo-faq.Rnw which
@@ -7,16 +74,16 @@ Changes in Version 1.6-5
 Changes in Version 1.6-4
 
   o names were automatically added to indexes in some cases hugely increasing
-    the size of the index.  This is no longer done.
+    the size of the index. This is no longer done.
 
-  o diff can have a negative lag argument (for forward diffs).  Previously
+  o diff can have a negative lag argument (for forward diffs). Previously
     only positive was allowed.
 
   o na.locf now calls na.approx with method = "constant" unless fromLast = TRUE.
     In particular, arguments x and xout can be passed to na.locf which is used
     in alignment applications.
 
-  o merge has check.names argument.  If check.names = TRUE (the default)
+  o merge has check.names argument. If check.names = TRUE (the default)
     then column names will be valid syntactic names.
 
   o read.zoo's index.column argument can be a list such that FUN is called via
@@ -43,7 +110,7 @@ Changes in Version 1.6-3
   o xyplot() method rewritten; is now a wrapper around the xyplot()
     method for "ts" objects in the "lattice" package (lattice:::xyplot.ts).
     Accompanying infrastructure (llines(), lpoints(), ltext(), etc.),
-    help page, and examples have been substantially revised and expanded.    
+    help page, and examples have been substantially revised and expanded.
 
   o new question #13 added to "zoo-faq" vignette
 
@@ -156,7 +223,7 @@ Changes in Version 1.5-4
   o interactive plots/demos using the packages "TeachingDemos"
     (plot.zoo) and "playwith" (xyplot.zoo)
 
-  o mean.yearmon and Sys.yearmon are defined.  Similarly for yearqtr.
+  o mean.yearmon and Sys.yearmon are defined. Similarly for yearqtr.
 
   o min, max and range methods for yearmon are defined via Summary
 
@@ -189,7 +256,7 @@ Changes in Version 1.5-0
 
   o new $.zoo and $<-.zoo methods
 
-  o read.zoo now passes format and tz to FUN if they are specified.  If
+  o read.zoo now passes format and tz to FUN if they are specified. If
     FUN is not specified but tz and format specified then POSIXct translation 
     is done with respect to the specified format string.
 
@@ -233,11 +300,11 @@ Changes in Version 1.4-2
     (which will be deprecated).
 
   o comparisons between yearmon variables and character variables
-    that can be coerced to yearmon via as.yearmon now work.  This 
+    that can be coerced to yearmon via as.yearmon now work. This 
     also lets character variables be used in start= and end= 
     arguments of window.zoo for zoo series with a yearmon index
     (since window.zoo already allows such usage for any index class 
-    that can be compared to character).  Similarly for yearqtr.
+    that can be compared to character). Similarly for yearqtr.
 
 
 Changes in Version 1.4-1

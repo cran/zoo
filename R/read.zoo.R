@@ -4,19 +4,48 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 {
 
 
+  ## if file is a vector of file names
+  if (is.character(file) && length(file) > 1) {
+	mc <- match.call()
+	pf <- parent.frame()
+	L <- sapply(file, function(file) eval(replace(mc, 2, file), pf), 
+			simplify = FALSE)
+	return(do.call("merge", L))
+  }
+
   ## read data
   rval <- if (is.data.frame(file)) file else read.table(file, ...)
 
-  is.index.column <- seq_along(rval) %in% unname(unlist(index.column))
+  # returns TRUE if a formal argument x has no default
+  no.default <- function(x) typeof(x) %in% c("symbol", "language")
+
+  if (is.null(FUN) && is.null(FUN2)) {
+	index.column <- as.list(index.column)
+  } else if (identical(FUN, paste)) {
+	index.column <- as.list(index.column)
+  } else if (is.null(FUN) && identical(FUN2, paste)) {
+	index.column <- as.list(index.column)
+  } else if (!is.null(FUN) && !is.list(index.column) && length(index.column) <=
+		length(sapply(formals(match.fun(FUN)), no.default))) {
+	index.column <- as.list(index.column)
+  } else if (is.null(FUN) && !is.null(FUN2) && length(index.column) <= 
+		length(sapply(formals(match.fun(FUN2)), no.default))) {
+	index.column <- as.list(index.column)
+  }
+
+  if (is.list(index.column) && length(index.column) == 1 && 
+	index.column[[1]] == 1) index.column <- unlist(index.column)
+
+  is.index.column <- seq_along(rval) %in% unname(unlist(index.column)) |
+	names(rval) %in% unname(unlist(index.column))
 
   ## convert factor columns in index to character
-  # is.fac <- sapply(rval[is.index.column], is.factor)
   is.fac <- sapply(rval, is.factor)
   is.fac.index <- is.fac & is.index.column
   if (any(is.fac.index)) rval[is.fac.index] <- 
 	lapply(rval[is.fac.index], as.character)
 
-  ## if `file' does not contain data
+  ## if file does not contain index or data
   if(NROW(rval) < 1) {
     if(is.data.frame(rval)) rval <- as.matrix(rval)
     if(NCOL(rval) > 1) rval <- rval[, ! is.index.column, drop = drop]
@@ -28,7 +57,9 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if(NCOL(rval) < 1) stop("data file must specify at least one column")
   
   ## extract index, retain rest of the data
-  ix <- if (NCOL(rval) == 1 || length(index.column) == 0) seq_len(NROW(rval))
+  ix <- if (index.column == 0 || length(index.column) == 0) {
+	attributes(rval)$row.names
+  }
   else if (is.list(index.column)) {
 	sapply(index.column, function(j) rval[,j], simplify = FALSE)
   } else rval[,index.column]
@@ -45,36 +76,36 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 	 else {
 		# Inf: first value in each run is first series, etc.
 	    # -Inf: last value in each run is first series, etc.
-		if (split == Inf) ave(ix, ix, FUN = seq_along)
-	    else if (split == -Inf) ave(ix, ix, FUN = function(x) rev(seq_along(x)))
+		if (identical(split, Inf)) ave(ix, ix, FUN = seq_along)
+	    else if (identical(split, -Inf)) ave(ix, ix, FUN = function(x) rev(seq_along(x)))
 	    else ix
 	 }
 
-	 if (split. == 0) {
+	 if (0 %in% split.) {
 		stop(paste("split:", split, "not found in colnames:", colnames(rval)))
 	 }
-	 rval[,-c(split., index.column), drop = drop]
+	 rval[,-c(if (is.finite(split.)) split. else 0, which(is.index.column)), drop = drop]
   }
 
   if(is.factor(ix)) ix <- as.character(ix)
-  rval3 <- if(is.data.frame(rval2)) as.matrix(rval2) else rval2
+  rval3 <- if(is.data.frame(rval2)) as.matrix(rval2) else  if(is.list(rval2)) t(rval2) else rval2
     
   ## index transformation functions
 
-  toDate <- if(missing(format)) {
+  toDate <- if(missing(format) || is.null(format)) {
      function(x, ...) as.Date(format(x, scientific = FALSE))
   } else {
      function(x, format) as.Date(format(x, scientific = FALSE), format = format)
   }
 
-  toPOSIXct <- if (missing(format)) {
+  toPOSIXct <- if (missing(format) || is.null(format)) {
         function(x, tz) as.POSIXct(format(x, scientific = FALSE), tz = tz)
   } else function(x, format, tz) {
         as.POSIXct(strptime(format(x, scientific = FALSE), tz = tz, format = format))
   }
 
   toDefault <- function(x, ...) {
-    rval. <- try(toPOSIXct(x), silent = TRUE)
+    rval. <- try(toPOSIXct(x, ...), silent = TRUE)
     if(inherits(rval., "try-error"))
       rval. <- try(toDate(x), silent = TRUE)
     else {
@@ -92,25 +123,40 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   toNumeric <- function(x, ...) x
   
   ## setup default FUN
+
+  if ((missing(FUN) || is.null(FUN)) && !missing(FUN2) && !is.null(FUN2)) {
+	FUN <- FUN2
+	FUN2 <- NULL
+  }
+
+  FUN0 <- NULL
   if(is.null(FUN)) {
-    FUN <- if (!missing(tz)) toPOSIXct
-        else if (!missing(format)) toDate
+	if (is.list(index.column)) FUN0 <- paste
+    FUN <- if (!missing(tz) && !is.null(tz)) toPOSIXct
+        else if (!missing(format) && !is.null(format)) toDate
         else if (is.numeric(ix)) toNumeric
         else toDefault
   }
+
   FUN <- match.fun(FUN)
 
-  processFUN <- function(...) {
+ processFUN <- function(...) {
 	if (is.data.frame(..1)) FUN(...)
-	else if (is.list(..1)) do.call(FUN, c(...))
-	else FUN(...)
+	else if (is.list(..1)) {
+		if (is.null(FUN0)) do.call(FUN, c(...))
+		else {
+			L <- list(...)
+			L[[1]] <- do.call(FUN0, L[[1]])
+			do.call(FUN, L)
+		}
+	} else FUN(...)
   }
-  
+
   ## compute index from (former) first column
-  ix <- if (missing(format)) {
-    if (missing(tz)) processFUN(ix) else processFUN(ix, tz = tz)
+  ix <- if (missing(format) || is.null(format)) {
+    if (missing(tz) || is.null(tz)) processFUN(ix) else processFUN(ix, tz = tz)
   } else {
-    if (missing(tz)) processFUN(ix, format = format) 
+    if (missing(tz) || is.null(tz)) processFUN(ix, format = format) 
     else processFUN(ix, format = format, tz = tz)
   }
 

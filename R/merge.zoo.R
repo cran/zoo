@@ -79,7 +79,7 @@ cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL)
 }
 
 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = TRUE, retclass = c("zoo", "list", "data.frame"))
+merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = FALSE, retclass = c("zoo", "list", "data.frame"))
 {
     if (!is.null(retclass)) retclass <- match.arg(retclass)
     # cl are calls to the args and args is a list of the arguments
@@ -262,7 +262,8 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     # apply f to each arg, put result of doing this on all args in list rval
     # and then cbind that list together to produce the required matrix
     rval <- lapply(args, f, ret.zoo = retclass %in% c("list", "data.frame"))
-    for(i in which(scalars)) rval[[i]] <- rval[[i]][] <- zoo(coredata(rval[[i]])[1], index(rval[[1]]), freq)
+    ## have commented this next line out.  Is it needed?
+    # for(i in which(scalars)) rval[[i]] <- rval[[i]][] <- zoo(coredata(rval[[i]])[1], index(rval[[1]]), freq)
     names(rval) <- suffixes
     if (retclass == "list") { 
 	return(rval)

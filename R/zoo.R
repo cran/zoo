@@ -7,7 +7,9 @@ zoo <- function (x = NULL, order.by = index(x), frequency = NULL)
     index <- ORDER(order.by)
     order.by <- order.by[index]
 
-    if(missing(x) || is.null(x)) 
+    if(is.matrix(x) || is.data.frame(x)) x <- as.matrix(x)
+    if(is.matrix(x) && sum(dim(x)) < 1L) x <- NULL
+    if(missing(x) || is.null(x))
       x <- numeric()
     else if(is.factor(x))         
       x <- factor(rep(as.character(x), length.out = length(index))[index],
@@ -17,8 +19,7 @@ zoo <- function (x = NULL, order.by = index(x), frequency = NULL)
         drop = FALSE])[index, , drop = FALSE]
     else if(is.atomic(x)) 
       x <- rep(x, length.out = length(index))[index]
-    else stop(paste(dQuote("x"), ": attempt to define illegal zoo object"))
-    if(is.matrix(x) || is.data.frame(x)) x <- as.matrix(x)
+    else stop(paste(dQuote("x"), ": attempt to define invalid zoo object"))
 
     if(!is.null(frequency)) {
       delta <- suppressWarnings(try(diff(as.numeric(order.by)), silent = TRUE))
@@ -33,8 +34,11 @@ zoo <- function (x = NULL, order.by = index(x), frequency = NULL)
         if(frequency > 1 && identical(all.equal(frequency, round(frequency)), TRUE))
 	  frequency <- round(frequency)
       }
-      if(!is.null(frequency) && identical(class(order.by), "numeric") | identical(class(order.by), "integer"))
+      if(!is.null(frequency) && identical(class(order.by), "numeric") | identical(class(order.by), "integer")) {
+        orig.order.by <- order.by
         order.by <- floor(frequency * order.by + .0001)/frequency
+        if(!isTRUE(all.equal(order.by, orig.order.by))) order.by <- orig.order.by
+      }
     }
 
     attr(x, "oclass") <- attr(x, "class")
@@ -66,11 +70,10 @@ print.zoo <- function (x, style = ifelse(length(dim(x)) == 0,
         print(y, quote = quote, ...)
     }
     else {
-        x.index <- index(x)
         cat("Data:\n")
         print(coredata(x))
         cat("\nIndex:\n")
-        print(x.index)
+        print(index(x))
     }
     invisible(x)
 }
@@ -108,33 +111,84 @@ str.zoo <- function(object, ...)
 "[.zoo" <- function(x, i, j, drop = TRUE, ...)
 {
   if(!is.zoo(x)) stop("method is only for zoo objects")
-  x.index <- index(x)
   rval <- coredata(x)
-  if(missing(i)) i <- 1:NROW(rval)
+  n <- NROW(rval)
+  n2 <- if(nargs() == 1) length(as.vector(rval)) else n
+  if(missing(i)) i <- 1:n
 
   ## also support that i can be index:
   ## if i is not numeric/integer/logical, it is interpreted to be the index
   if (all(class(i) == "logical"))
-    i <- which(i)
+    i <- which(rep(i, length.out = n2))
   else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
     i <- which(coredata(merge(zoo(,time(x)), i)))
   } else if(!((all(class(i) == "numeric") || all(class(i) == "integer")))) 
-    i <- which(MATCH(x.index, i, nomatch = 0) > 0)
+    i <- which(MATCH(index(x), i, nomatch = 0L) > 0L)
   
   if(length(dim(rval)) == 2) {
-	drop. <- if (length(i) == 1) FALSE else drop
-        rval <- if (missing(j)) rval[i, , drop = drop., ...]
-		else rval[i, j, drop = drop., ...]
-	if (drop && length(rval) == 1) rval <- c(rval)
-	rval <- zoo(rval, x.index[i])
+    drop. <- if (length(i) == 1) FALSE else drop
+    rval <- if (missing(j)) rval[i, , drop = drop., ...]
+      else rval[i, j, drop = drop., ...]
+    if (drop && length(rval) == 1) rval <- c(rval)
+    rval <- zoo(rval, index(x)[i])
   } else
-	rval <- zoo(rval[i], x.index[i])
+    rval <- zoo(rval[i], index(x)[i])
 
   attr(rval, "oclass") <- attr(x, "oclass")
   attr(rval, "levels") <- attr(x, "levels")
   attr(rval, "frequency") <- attr(x, "frequency")
   if(!is.null(attr(rval, "frequency"))) class(rval) <- c("zooreg", class(rval))
 
+  return(rval)
+}
+
+"[<-.zoo" <- function (x, i, j, value) 
+{
+  ## x[,j] <- value and x[] <- value can be handled by default method
+  if(missing(i)) return(NextMethod("[<-"))
+
+  ## otherwise do the necessary processing on i
+  n <- NROW(coredata(x))
+  n2 <- if(nargs() == 1) length(as.vector(coredata(x))) else n
+  n.ok <- TRUE
+  value2 <- NULL
+  
+  if (all(class(i) == "matrix")) i <- as.vector(i)
+  if (all(class(i) == "logical")) {
+    i <- which(rep(i, length.out = n2))
+    n.ok <- all(i <= n2)
+  } else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
+    i <- which(coredata(merge(zoo(,time(x)), i)))
+    n.ok <- all(i <= n2)
+  } else if(!((all(class(i) == "numeric") || all(class(i) == "integer")))) {
+    ## all time indexes in index(x)?
+    i.ok <- MATCH(i, index(x), nomatch = 0L) > 0L
+    if(any(!i.ok)) {
+      if(is.null(dim(value))) {
+        value2 <- value[!i.ok]
+        value <- value[i.ok]
+      } else {
+        value2 <- value[!i.ok,, drop = FALSE]
+        value <- value[i.ok,, drop = FALSE]      
+      }
+      i2 <- i[!i.ok]
+      i <- i[i.ok]
+    }
+    i <- which(MATCH(index(x), i, nomatch = 0L) > 0L)
+    n.ok <- all(i <= n)
+  }
+  if(!n.ok | any(i < 1)) stop("Out-of-range assignment not possible.")
+  rval <- NextMethod("[<-")
+
+  if(!is.null(value2)) {
+    rval2 <- if(missing(j)) zoo(value2, i2) else {
+      value2a <- matrix(NA, nrow = length(i2), ncol = NCOL(rval))
+      colnames(value2a) <- colnames(rval)
+      value2a[, j] <- value2
+      zoo(value2a, i2)
+    }
+    rval <- c(rval, rval2)
+  }
   return(rval)
 }
 
@@ -147,14 +201,15 @@ str.zoo <- function(object, ...)
 
 "$<-.zoo" <- function(object, x, value) {
   if(length(dim(object)) != 2) stop("not possible for univariate zoo series")
-  if(is.null(colnames(object))) stop("only possible for zoo series with column names")
+  if(NCOL(object) > 0 & is.null(colnames(object))) stop("only possible for zoo series with column names")
   wi <- match(x, colnames(object))
   if(is.na(wi)) {
     object <- cbind(object, value)
+    if(is.null(dim(object))) dim(object) <- c(length(object), 1)
     colnames(object)[NCOL(object)] <- x  
   } else {
     if(is.null(value)) {
-      object <- object[, -wi, drop=FALSE]
+      object <- object[, -wi, drop = FALSE]
     } else {   
       object[, wi] <- value
     }
@@ -251,6 +306,12 @@ ifelse.zoo <- function(test, yes, no) {
 	ifelse(test, yes, no)
 }
 
-median.zoo <- function(x, na.rm = FALSE)  median(coredata(x, na.rm = na.rm))
+median.zoo <- function(x, na.rm = FALSE)  median(coredata(x), na.rm = na.rm)
 
 quantile.zoo <- function(x, ...) quantile(coredata(x), ...)
+
+transform.zoo <- function(`_data`, ...) {
+  if(is.null(dim(coredata(`_data`)))) warning("transform() is only useful for matrix-based zoo series")
+  zoo(transform.data.frame(data.frame(coredata(`_data`)), ...),
+    index(`_data`), attr(`_data`, "frequency"))
+}

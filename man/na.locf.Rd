@@ -24,8 +24,17 @@ na.locf(object, na.rm = TRUE, \dots)
   }
   \item{rev}{Use \code{fromLast} instead.  This argument will
     be eliminated in the future in favor of \code{fromLast}.}
-  \item{maxgap}{maximum number of consecutive \code{NA}s to
-    fill. Any longer gaps will be left unchanged.}
+  \item{maxgap}{Runs of more than \code{maxgap} 
+\code{NA}s
+are retained,
+other \code{NA}s are removed and the last occurrence in the resulting series
+prior to each time point in \code{xout} is used as that time point's
+output value.
+(If \code{xout} is not specified this
+reduces to retaining runs of more than \code{maxgap} \code{NA}s 
+while filling other \code{NA}s
+with the last occurrence of a non-\code{NA}.)
+}
   \item{rule}{See \code{\link{approx}}.}
   \item{\dots}{further arguments passed to methods.}
 }
@@ -94,13 +103,13 @@ z.na <- merge(z, zoo(, seq(rng[1], rng[2], by = "day")))
 # use na.locf to bring values forward picking off 5th of month
 na.locf(z.na)[as.POSIXlt(time(z.na))$mday == 5]
 
-## this is the same as last one except instead of always using the
+## this is the same as the last one except instead of always using the
 ## 5th of month in the result we show the date actually used
 
 # idx has NAs wherever z.na does but has 1, 2, 3, ... instead of
 # z.na's data values (so idx can be used for indexing)
 
-idx <- na.locf(seq_along(z.na) + (0 * z.na))
+idx <- coredata(na.locf(seq_along(z.na) + (0 * z.na)))
 
 # pick off those elements of z.na that correspond to 5th
 
@@ -116,9 +125,15 @@ merge(z.na, filled1 = na.locf(z.na, maxgap = 1))
 
 m <- zoo(cbind(c(1, 2, NA, NA, 5, NA, NA), seq(7)^2), as.Date(1:7))
 
-r <- replace(m[,1], TRUE, 
-	na.locf(m[,1]) * m[,2] / na.locf(m[,2] + (m[,1]-m[,1])))
+r <- na.locf(m[,1]) * m[,2] / na.locf(m[,2] + (m[,1]-m[,1]))
 cbind(V1 = r, V2 = m[,2])
+
+## repeat a quarterly value every month
+## preserving NAs
+zq <- zoo(c(1, NA, 3, 4), as.yearqtr(2000) + 0:3/4)
+tt <- as.yearmon(start(zq)) + seq(0, len = 3 * length(zq))/12
+na.locf(zq, xout = tt, maxgap = 0)
+
 
 }
 \keyword{ts}

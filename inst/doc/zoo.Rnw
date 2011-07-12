@@ -3,7 +3,7 @@
 
 %% need no \usepackage{Sweave}
 
-\author{Achim Zeileis\\Wirtschaftsuniversit\"at Wien \And
+\author{Achim Zeileis\\Universit\"at Innsbruck \And
         Gabor Grothendieck\\GKX Associates Inc.}
 \Plainauthor{Achim Zeileis, Gabor Grothendieck}
 
@@ -39,7 +39,7 @@
 
 \Address{
   Achim Zeileis\\
-  Wirtschaftsuniversit\"at Wien\\
+  Universit\"at Innsbruck\\
   E-mail: \email{Achim.Zeileis@R-project.org}\\
   
   Gabor Grothendieck\\
@@ -66,6 +66,7 @@ library("fSeries")
 online <- FALSE ## if set to FALSE the local copy of MSFT.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
+Sys.setenv(TZ = "GMT")
 @
 
 \section{Introduction} \label{sec:intro}
@@ -734,15 +735,17 @@ rollapply(data, width, FUN)
 \end{Scode}
 
 where the function \code{FUN} is applied to a rolling window of size \code{width}
-of the observations \code{data}. The function \code{rollapply} currently only evaluates
-the function for windows of full size \code{width}, hence the result has \code{width - 1}
-fewer observations than the original series. But it can be determined whether the `lost'
-observations should be padded with \code{NA}s and whether the result should be left-
-or right-aligned or centered (default) with respect to the original index.
+of the observations \code{data}. The function \code{rollapply} by default only evaluates
+the function for windows of full size \code{width} and then the result has \code{width - 1}
+fewer observations than the original series and is aligned at the center of the rolling
+window. Setting further arguments such as \code{partial}, \code{align}, or \code{fill}
+also allows for rolling computations on partial windows with arbitrary aligning and
+flexible filling. For example, without partial evaluation the `lost'
+observations could be filled with \code{NA}s and aligned at the left of the sample.
 
 <<rollapply>>=
 rollapply(Z, 5, sd)
-rollapply(Z, 5, sd, na.pad = TRUE, align = "left")
+rollapply(Z, 5, sd, fill = NA, align = "left")
 @
 
 To improve the performance of \code{rollapply(x, k, }\textit{foo}\code{)} for some frequently
@@ -753,7 +756,7 @@ and \code{rollmax} which have methods for \code{"zoo"} and \code{"ts"} series an
 default method for plain vectors.
 
 <<rollmean>>=
-rollmean(z2, 5, na.pad = TRUE)
+rollmean(z2, 5, fill = NA)
 @
 
 

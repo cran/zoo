@@ -14,10 +14,10 @@ as.zoo.tis <- function(x, class = "ti", ...) {
 	}
 }
 
-as.zooreg.tis <- function(x, class = "ti", ...) {
+as.zooreg.tis <- function(x, frequency = NULL, class = "ti", ...) {
 	if (class == "ti")
 		zooreg(stripTis(x), start = start(x), ...)
 	else 
-		as.zooreg(as.zoo(x, class = class, ...))
+		as.zooreg(as.zoo(x, class = class, ...), frequency = frequency)
 }
 

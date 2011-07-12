@@ -137,17 +137,21 @@ panel.polygon.zoo(x, ...)
 \examples{
 if(require("lattice") & require("grid")) {
 
+set.seed(1)
+z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
+
+# plot z using same Y axis on all plots
+xyplot(z, scales = list(y = list(relation = "same", alternating = FALSE)))
+ 
+# plot a double-line-width running mean on the panel of b.
+# Also add a grid.
+# We show two ways to do it. 
+
 # change strip background to levels of grey
 # If you like the defaults, this can be omitted.
 strip.background <- trellis.par.get("strip.background")
 trellis.par.set(strip.background = list(col = grey(7:1/8)))
 
-set.seed(1)
-z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
- 
-# plot a double-line-width running mean on the panel of b.
-# Also add a grid.
-# We show two ways to do it. 
 
 # Number 1.  Using trellis.focus.
 print( xyplot(z) )

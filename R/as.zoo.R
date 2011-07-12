@@ -13,6 +13,16 @@ as.zoo.factor <- function(x, ...)
   zoo(x, ...)
 }
 
+as.zoo.matrix <- function(x, ...) 
+{
+  zoo(x, ...)
+}
+
+as.zoo.data.frame <- function(x, ...) 
+{
+  zoo(as.matrix(x), ...)
+}
+
 as.zoo.fts <- function(x, ...) 
 {
 	stopifnot(require("fts"))
@@ -48,9 +58,9 @@ as.zoo.xts <- function(x, ...) {
   zoo(coredata(x), order.by = index(x), ...)
 }
 
-as.zooreg.xts <- function(x, ...) {
+as.zooreg.xts <- function(x, frequency = NULL, ...) {
   stopifnot(require("xts"))
-  as.zooreg(as.zoo(x, ...))
+  as.zooreg(as.zoo(x, ...), frequency = frequency)
 }
 
 as.zoo.zoo <- function(x, ...) x
@@ -118,20 +128,21 @@ as.list.ts <- function(x, ...) {
 
 ## regular series coercions
 
-as.zooreg <- function(x, ...)
+as.zooreg <- function(x, frequency = NULL, ...)
 {
   UseMethod("as.zooreg")
 }
 
-as.zooreg.default <- function(x, ...)
+as.zooreg.default <- function(x, frequency = NULL, ...)
 {
-  as.zooreg(as.zoo(x, ...))
+  as.zooreg(as.zoo(x, ...), frequency = frequency)
 }
 
-as.zooreg.ts <- as.zoo.ts <- function(x, ...)
+as.zooreg.ts <- as.zoo.ts <- function(x, frequency = NULL, ...)
 {
   xtsp <- tsp(x)
-  zooreg(coredata(x), start = xtsp[1], end = xtsp[2], frequency = xtsp[3])
+  if(is.null(frequency)) frequency <- xtsp[3]
+  zooreg(coredata(x), start = xtsp[1], end = xtsp[2], frequency = frequency)
 } 
 
 as.ts.zooreg <- function(x, ...)
@@ -163,15 +174,19 @@ as.zoo.zooreg <- function(x, ...) {
   return(x)
 }
 
-as.zooreg.zoo <- function(x, ...)
+as.zooreg.zoo <- function(x, frequency = NULL, ...)
 {
-  freq <- frequency(x)
-  if(!is.null(freq)) {
-    attr(x, "frequency") <- freq
-    class(x) <- c("zooreg", "zoo")
+  if(!is.null(frequency)) {
+    frequency(x) <- frequency
   } else {
-    warning(paste(sQuote("x"), "does not have an underlying regularity"))
-    x <- zooreg(coredata(x))
+    freq <- frequency(x)
+    if(!is.null(freq)) {
+      attr(x, "frequency") <- freq
+      class(x) <- c("zooreg", "zoo")
+    } else {
+      warning(paste(sQuote("x"), "does not have an underlying regularity"))
+      x <- zooreg(coredata(x))
+    }
   }
   return(x)
 }

@@ -11,7 +11,7 @@ versions of database \emph{join} operations.
 
 \usage{
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
-  check.names = TRUE, retclass = c("zoo", "list", "data.frame"))
+  check.names = FALSE, retclass = c("zoo", "list", "data.frame"))
 }
 
 \arguments{

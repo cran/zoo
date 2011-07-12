@@ -33,7 +33,7 @@ na.approx.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, al
     }
 
     if (na.rm) {
-        result <- na.trim(result)
+        result <- na.trim(result, is.na = "all")
     }
 
     result
@@ -57,13 +57,14 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
         na <- is.na(y)
         yf <- approx(x[!na], y[!na], xout, ...)$y
         if (maxgap < length(y)) {
-            ## construct version of y with only gaps > maxgap
+            ## construct a series like y but with only gaps > maxgap
+            ## (actual values don't matter as we only use is.na(ygap) below)
             ygap <- .fill_short_gaps(y, seq_along(y), maxgap = maxgap)
-            ## construct y values at 'x', keeping NAs from ygap
-            ## (approx() does not allow NAs to be propagated)
+            ## construct y values at 'xout', keeping NAs from ygap
+            ## (using indexing, as approx() does not allow NAs to be propagated)
             ix <- approx(x, seq_along(y), xout, ...)$y
             yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]),
-                    NA, yf)
+                         NA, yf)
             yx
         } else {
             yf
@@ -85,7 +86,7 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
     }
 
     if (na.rm) {
-        result <- na.trim(result)
+        result <- na.trim(result, is.na = "all")
     }
 
     result
@@ -102,7 +103,7 @@ na.approx.ts <- function(object, ...) {
     if (maxgap <= 0)
         return(x)
     if (maxgap >= length(x))
-        return(fill) #return(ifelse(is.na(x), fill, x))
+        return(fill)
     naruns <- rle(is.na(x))
     naruns$values[naruns$lengths > maxgap] <- FALSE
     naok <- inverse.rle(naruns)
