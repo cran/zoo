@@ -62,12 +62,12 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 				return(rollmax(data, width, fill = fill, align = align))
 	      }
 	}
-
+	FUN <- match.fun(FUN)
 
 	if (by.column && length(dim(data)) == 2) {
 		z <- do.call(merge,
 			lapply(1:NCOL(data), function(j)
-				rollapply(data[, j], width = width, FUN = FUN, ...,
+				rollapply(data[, j, drop = TRUE], width = width, FUN = FUN, ...,
 					by = by, by.column = by.column, fill = fill,
 					partial = partial, align = align)
 			)

@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.7-0
-Date: 2011-07-12
+Version: 1.7-1
+Date: 2011-07-18
 Title: S3 Infrastructure for Regular and Irregular Time Series (Z's
         ordered observations)
 Authors@R: c(person(given = "Achim", family = "Zeileis", role =
@@ -25,6 +25,6 @@ Suggests: coda, chron, DAAG, fCalendar, fSeries, fts, its, lattice,
 Imports: stats, utils, graphics, grDevices, lattice (>= 0.18-1)
 License: GPL-2
 URL: http://zoo.R-Forge.R-project.org/
-Packaged: 2011-07-12 15:51:04 UTC; zeileis
+Packaged: 2011-07-18 09:20:50 UTC; zeileis
 Repository: CRAN
-Date/Publication: 2011-07-12 17:51:35
+Date/Publication: 2011-07-18 09:44:08

@@ -1,3 +1,12 @@
+Changes in Version 1.7-1
+
+  o internal change to roll* routines to increase compatibility with classes
+    built on top of "zoo" (especially "xts").  This has no effect on "zoo".
+
+  o as.Date.numeric(x, origin = "0000-00-00") is now also accepted
+    (for MATLAB dates)
+
+
 Changes in Version 1.7-0
 
   o A [<- method was added and the behaviour is now consistent with the
