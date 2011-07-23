@@ -1,10 +1,20 @@
+Changes in Version 1.7-2
+
+  o modified as.Date.numeric() is now in the zoo namespace rather than in
+    the base namespace, own as.Date() generic to assure dispatch.
+    For packages depending on zoo, this means that they may need to import
+    if from zoo (or call zoo:::as.Date.numeric directly).
+
+  o small bug fixes
+
+
 Changes in Version 1.7-1
 
   o internal change to roll* routines to increase compatibility with classes
     built on top of "zoo" (especially "xts").  This has no effect on "zoo".
 
-  o as.Date.numeric(x, origin = "0000-00-00") is now also accepted
-    (for MATLAB dates)
+  o as.Date.numeric(x, origin = "0000-00-00") is now also accepted being
+    equivalent to origin = as.Date("0000-01-01") - 1. (for MATLAB dates)
 
 
 Changes in Version 1.7-0

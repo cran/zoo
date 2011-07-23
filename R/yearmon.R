@@ -33,7 +33,7 @@ as.yearmon.character <- function(x, format = "", ...) {
    z <- ifelse(has.short.keys & has.no.others,
       as.Date( paste("01", x, sep = "-"), paste("%d", format, sep = "-"), ... ),
       as.Date(x, format, ...))
-   as.yearmon(as.Date(z))
+   as.yearmon(as.Date(z, origin = "1970-01-01"))
 }
 as.yearmon.ti <- function(x, ...) as.yearmon(as.Date(x), ...)
 
