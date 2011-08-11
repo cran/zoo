@@ -200,8 +200,15 @@ str.zoo <- function(object, ...)
 }
 
 "$<-.zoo" <- function(object, x, value) {
+  if(length(object) == 0L) {
+    is.plain <- function(x)
+      all(class(x) %in% c("array", "integer", "numeric", "factor", "matrix", "logical"))
+    if(is.plain(value)) value <- zoo(value,
+      if(length(index(object))) index(object) else seq_along(value), attr(object, "frequency"))
+    return(setNames(merge(object, value, drop = FALSE), x))
+  }
   if(length(dim(object)) != 2) stop("not possible for univariate zoo series")
-  if(NCOL(object) > 0 & is.null(colnames(object))) stop("only possible for zoo series with column names")
+  if(NCOL(object) > 0L & is.null(colnames(object))) stop("only possible for zoo series with column names")
   wi <- match(x, colnames(object))
   if(is.na(wi)) {
     object <- cbind(object, value)

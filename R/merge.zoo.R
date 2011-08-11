@@ -73,18 +73,18 @@ c.zoo <- function(...) {
     rbind.zoo(...)
 }
 
-cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL)
+cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, drop = FALSE)
 {
-  merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo")
+  merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo", drop = drop)
 }
 
 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = FALSE, retclass = c("zoo", "list", "data.frame"))
+merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = FALSE, retclass = c("zoo", "list", "data.frame"), drop = TRUE)
 {
     if (!is.null(retclass)) retclass <- match.arg(retclass)
     # cl are calls to the args and args is a list of the arguments
     cl <- as.list(match.call())
-    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- cl$check.names <- NULL
+    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- cl$check.names <- cl$drop <- NULL
     args <- list(...)
 
     parent <- parent.frame()
@@ -296,13 +296,13 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     rval <- rval[sapply(rval, function(x) length(x) > 0)]
     # if there is more than one non-zero length argument then cbind them
     # Note that cbind will create matrices, even when given a single vector, 
-    # so its important not to use it in the single vector case.
-    rval <- if (length(rval) > 1) 
+    # so - if drop=TRUE - we do not to use it in the single vector case.
+    rval <- if (length(rval) > 1L | (length(rval) == 1L & !drop))
 	do.call("cbind", rval)
-    else if (length(rval) > 0)
+    else if (length(rval) > 0L)
 	rval[[1]]
     # return if vector since remaining processing is only for column names
-    if (length(dim(rval)) == 0) {
+    if (length(dim(rval)) == 0L) {
       # fixed bug: coredata was missing
       rval <- zoo(coredata(rval), indexes)
       attr(rval, "frequency") <- freq

@@ -1,3 +1,15 @@
+Changes in Version 1.7-3
+
+  o Added drop=TRUE argument to merge() method. When set to drop=FALSE
+    this allows to merge a zero-column series with a zoo vector to a
+    one-column matrix. The latter is the default in the cbind() method.
+    
+  o Enhanced the $<- method so that z$a <- value works even if z is a
+    zoo series without data.
+
+  o Bug fix in C-version of lag function for xts.
+
+
 Changes in Version 1.7-2
 
   o modified as.Date.numeric() is now in the zoo namespace rather than in

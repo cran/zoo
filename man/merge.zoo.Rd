@@ -11,7 +11,8 @@ versions of database \emph{join} operations.
 
 \usage{
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
-  check.names = FALSE, retclass = c("zoo", "list", "data.frame"))
+  check.names = FALSE, retclass = c("zoo", "list", "data.frame"),
+  drop = TRUE)
 }
 
 \arguments{
@@ -27,6 +28,11 @@ versions of database \emph{join} operations.
   \item{retclass}{character that specifies the class of the returned result.
     It can be \code{"zoo"} (the default), \code{"list"} or \code{NULL}. For 
     details see below.}
+  \item{drop}{logical. If a \code{"zoo"} object without observations is
+    merged with a one-dimensional \code{"zoo"} object (vector or 1-column
+    matrix), should the result be a vector (\code{drop = TRUE}) or a
+    1-column matrix (\code{drop = FALSE})? The former is the default
+    in the \code{Merge} method, the latter in the \code{cbind} method.}
 }
 
 \details{
