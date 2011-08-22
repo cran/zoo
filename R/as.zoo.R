@@ -79,7 +79,7 @@ as.vector.zoo <- function(x, mode = "any")
 as.matrix.zoo <- function(x, ...) 
 {
     y <- as.matrix(coredata(x), ...)
-    if (length(y) > 0) 
+    if (length(y) > 0) {
 	    colnames(y) <- if (length(colnames(x)) > 0) 
 		colnames(x)
 	    else {
@@ -88,7 +88,11 @@ as.matrix.zoo <- function(x, ...)
 		    lab
 		else paste(lab, 1:NCOL(x), sep = ".")
 	    }
-    if(is.null(row.names(y))) row.names(y) <- index2char(index(x), frequency = attr(x, "frequency"))
+	} else if (nrow(y) != length(index(x))) {
+		dim(y) <- c(length(index(x)), 0)
+	}
+    if (!is.null(y) && nrow(y) > 0 && is.null(row.names(y))) 
+		row.names(y) <- index2char(index(x), frequency = attr(x, "frequency"))
     return(y)
 }
 

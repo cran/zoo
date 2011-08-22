@@ -1,8 +1,12 @@
 read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ...)
+  split = NULL, aggregate = FALSE, ..., text)
 {
 
+  if (missing(file) && !missing(text)) {
+        file <- textConnection(text)
+        on.exit(close(file))
+  }
 
   ## if file is a vector of file names
   if (is.character(file) && length(file) > 1) {

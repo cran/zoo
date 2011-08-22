@@ -1,3 +1,10 @@
+Changes in Version 1.7-4
+
+  o fixed bug in rollapply() and slowness in rollmax()
+
+  o read.zoo() gains text= argument similar to that in new read.table()
+
+
 Changes in Version 1.7-3
 
   o Added drop=TRUE argument to merge() method. When set to drop=FALSE

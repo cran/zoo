@@ -92,12 +92,13 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   n <- length(x) 
   rval <- rep(0, n) 
   a <- 0
+  xc <- coredata(x)
   for (i in k:n) {
   rval[i] <- if (is.na(a) || is.na(rval[i=1]) || a==rval[i-1]) 
-      max(x[(i-k+1):i]) # calculate max of window
+      max(xc[(i-k+1):i]) # calculate max of window
   else 
-      max(rval[i-1], x[i]); # max of window = rval[i-1] 
-  a <- x[i-k+1] # point that will be removed from window
+      max(rval[i-1], xc[i]); # max of window = rval[i-1] 
+  a <- xc[i-k+1] # point that will be removed from window
   }
   rval <- rval[-seq(k-1)]
 
@@ -169,5 +170,7 @@ rollmedian.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	align = c("center", "left", "right"), ...) {
 		as.ts(rollmedian(as.zoo(x), k, fill = fill, align = align, ...))
 }
+
+
 
 

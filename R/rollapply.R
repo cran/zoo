@@ -126,7 +126,7 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 	}
 
 	dat <- mapply(f, seq_along(time(data)), width, 
-		MoreArgs = list(data = data), SIMPLIFY = FALSE) 
+		MoreArgs = list(data = data, ...), SIMPLIFY = FALSE) 
 		
 	ix <- !sapply(dat, is.null) # integer indexes of non-nulls
 

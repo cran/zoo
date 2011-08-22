@@ -11,7 +11,7 @@ interfaces to \code{read.table} and \code{write.table}, respectively.
 \usage{
 read.zoo(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL,
-  split = NULL, aggregate = FALSE, \dots)
+  split = NULL, aggregate = FALSE, \dots, text)
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
 }
 \arguments{
@@ -80,6 +80,7 @@ list.  Also it is always converted to a list if it has length 1.}
     See \code{\link{aggregate.zoo}}.}
   \item{\dots}{further arguments passed to \code{\link{read.table}} or
     \code{\link{write.table}}, respectively.}
+  \item{text}{See argument of same name in \code{\link{read.table}}.}
 }
 
 \details{
