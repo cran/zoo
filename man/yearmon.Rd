@@ -14,6 +14,7 @@
 \alias{as.yearmon.factor}
 \alias{as.Date}
 \alias{as.Date.numeric}
+\alias{as.Date.ts}
 \alias{as.Date.yearmon}
 \alias{as.POSIXct.yearmon}
 \alias{as.POSIXlt.yearmon}

@@ -313,11 +313,12 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     # processing from here on is to compute nice column names
     if (length(unlist(sapply(args, colnames))) > 0) {
         fixcolnames <- function(a) {
-            if (length(a) == 0) 
-                return(NULL)
+            # if (length(a) == 0) 
+            #   return(NULL)
             if (length(dim(a)) ==0) {
                 return("")
             } else {
+				if (ncol(a) == 0) return(NULL)
                 rval <- colnames(a)
                 if (is.null(rval)) {
                   rval <- paste(1:NCOL(a), suffixes[i], sep = ".")
@@ -356,7 +357,8 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     }
 	zoocolnames <- unlist(zoocolnames)
 	colnames(rval) <- if (check.names) make.names(make.unique(zoocolnames))
-		else zoocolnames
+		else if (ncol(rval) == length(zoocolnames)) zoocolnames else 
+		colnames(rval)
     # rval <- zoo(rval, indexes)
     rval <- zoo(coredata(rval), indexes)
     attr(rval, "frequency") <- freq

@@ -1,3 +1,16 @@
+Changes in Version 1.7-5
+
+  o fixed a bug in the aggregate() method which occured when using
+    it with "zoo" objects that have a "timeDate" index.
+
+  o in read.zoo index.column can refer to column names or numbers (previously
+    only numbers)
+
+  o fully export all as.Date.* methods so that they can be used more
+    easily (i.e., without extra registration) with as.Date() generics from
+    other packages (base in particular).
+
+
 Changes in Version 1.7-4
 
   o fixed bug in rollapply() and slowness in rollmax()

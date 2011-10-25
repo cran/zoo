@@ -2,7 +2,6 @@ aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NUL
 {
   ## index processing
   my.unique <- function(x) x[MATCH(x, x) == seq_len(length(x))]
-  my.sort <- function(x) x[order(x)]
   if(is.function(by)) by <- by(index(x))
   if(!is.list(by)) by <- list(by)
 
@@ -16,14 +15,15 @@ aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NUL
   }
 
   ## aggregate data
-  df <- aggregate(coredata(x), by, match.fun(FUN), ...)
+  by_integer <- list(MATCH(by[[1]], by[[1]]))
+  df <- aggregate(coredata(x), by_integer, match.fun(FUN), ...)
   if(length(unique(as.character(df[,1]))) == length(df[,1]))
       row.names(df) <- df[, 1]
   df <- df[, -1]
   if(is.matrix(x)) df <- as.matrix(df)
   
   ## regularity processing, set up return value
-  ix <- my.sort(my.unique(by[[1]]))
+  ix <- my.unique(by[[1]])
   rval <- zoo(df, ix[!is.na(ix)])
   
   if(regular) {

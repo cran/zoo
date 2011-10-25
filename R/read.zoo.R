@@ -43,6 +43,12 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   is.index.column <- seq_along(rval) %in% unname(unlist(index.column)) |
 	names(rval) %in% unname(unlist(index.column))
 
+  name.to.num <- function(x) if (is.character(x))
+		match(x, names(rval), nomatch = 0) else x
+  index.column <- if (is.list(index.column)) index.column <- 
+	lapply(index.column, name.to.num)
+  else name.to.num(index.column)
+
   ## convert factor columns in index to character
   is.fac <- sapply(rval, is.factor)
   is.fac.index <- is.fac & is.index.column
@@ -61,10 +67,10 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if(NCOL(rval) < 1) stop("data file must specify at least one column")
   
   ## extract index, retain rest of the data
-  ix <- if (index.column == 0 || length(index.column) == 0) {
+  ix <- if (identical(index.column, 0) || identical(index.column, list(0)) ||
+	identical(index.column, 0L) || identical(index.column, list(0L))) {
 	attributes(rval)$row.names
-  }
-  else if (is.list(index.column)) {
+  } else if (is.list(index.column)) {
 	sapply(index.column, function(j) rval[,j], simplify = FALSE)
   } else rval[,index.column]
 

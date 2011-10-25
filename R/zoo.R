@@ -155,8 +155,14 @@ str.zoo <- function(object, ...)
   
   if (all(class(i) == "matrix")) i <- as.vector(i)
   if (all(class(i) == "logical")) {
-    i <- which(rep(i, length.out = n2))
-    n.ok <- all(i <= n2)
+    lx <- length(x)
+    if (length(i) == lx) {
+		i <- which(i)
+		n.ok <- TRUE
+	} else {
+		i <- which(rep(i, length.out = length(x)))
+		n.ok <- all(i <= lx)
+	}
   } else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
     i <- which(coredata(merge(zoo(,time(x)), i)))
     n.ok <- all(i <= n2)

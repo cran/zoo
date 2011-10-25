@@ -79,6 +79,7 @@ as.vector.zoo <- function(x, mode = "any")
 as.matrix.zoo <- function(x, ...) 
 {
     y <- as.matrix(coredata(x), ...)
+    if (identical(coredata(x), numeric(0))) dim (y) <- c(0, 0)
     if (length(y) > 0) {
 	    colnames(y) <- if (length(colnames(x)) > 0) 
 		colnames(x)

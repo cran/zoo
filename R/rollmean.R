@@ -20,9 +20,11 @@ rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 
   if (length(dim(x)) == 2) {
 	  # merge is the only zoo specific part of this method
+	  
 	  out <- do.call("merge", c(lapply(1:NCOL(x), function(i) {
 		rollmean(x[, i, drop = TRUE], k, fill = fill, align = align, ...)
 	  }), all = FALSE))
+	  if (ncol(x) == 1) dim(out) <- c(length(out), 1)
 	  colnames(out) <- colnames(x)
 	  return(out)
   }
@@ -77,7 +79,8 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	  out <- do.call("merge", c(lapply(1:NCOL(x), function(i) {
 		rollmax(x[, i, drop = TRUE], k, fill = fill, align = align, ...)
 	  }), all = FALSE))
-	  colnames(out) <- colnames(x)
+	  if (ncol(x) == 1) dim(out) <- c(length(out), 1)
+	  colnames(out) <- if (ncol(x) == ncol(out)) colnames(data)
 	  return(out)
   }
 
@@ -139,6 +142,7 @@ rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	  out <- do.call("merge", c(lapply(1:NCOL(x), function(i) {
 		rollmedian(x[, i, drop = TRUE], k, fill = fill, align = align, ...)
 	  }), all = FALSE))
+	  if (ncol(x) == 1) dim(out) <- c(length(out), 1)
 	  colnames(out) <- colnames(x)
 	  return(out)
   }

@@ -29,7 +29,7 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     of the data. See details.}
   \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
     (if the series is regular)?}
-  \item{index.column}{numeric vector or list. The column(s) of the data frame 
+  \item{index.column}{numeric vector or list. The column names or numbers of the data frame 
 in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
 argument is used and \code{"NULL"} is among its componennts then 
 \code{index.column} refers to the column numbers after the columns 
