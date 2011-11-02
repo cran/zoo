@@ -52,7 +52,7 @@
 
 \SweaveOpts{engine=R,eps=FALSE}
 %\VignetteIndexEntry{zoo: An S3 Class and Methods for Indexed Totally Ordered Observations}
-%\VignetteDepends{zoo,tseries,fCalendar,fSeries,strucchange,DAAG}
+%\VignetteDepends{zoo,timeDate,tseries,strucchange,DAAG}
 %\VignetteKeywords{totally ordered observations, irregular time series, S3, R}
 %\VignettePackage{zoo}
 
@@ -61,8 +61,7 @@
 library("zoo")
 library("tseries")
 library("strucchange")
-library("fCalendar")
-library("fSeries")
+library("timeDate")
 online <- FALSE ## if set to FALSE the local copy of MSFT.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
@@ -192,7 +191,7 @@ All these methods are available, e.g., for standard numeric and character vector
 vectors of classes \code{"Date"}, \code{"POSIXct"} or \code{"times"}
 from package \pkg{chron} and \code{"timeDate"} in \pkg{timeDate}.
 Because not all required methods used to be available for \code{"timeDate"} in older
-versions of \pkg{fCalendar}, Section~\ref{sec:fCalendar} has a somewhat outdated example how
+versions of \pkg{fCalendar}, Section~\ref{sec:fCalendar} has a rather outdated example how
 to provide such methods so that \code{"zoo"} objects work with \code{"timeDate"} indexes.
 To achieve this  independence of the index class, new generic functions for
 ordering (\code{ORDER()}) and value matching (\code{MATCH()}) are introduced
@@ -767,7 +766,7 @@ The main purpose of the package \pkg{zoo} is to provide basic infrastructure for
 working with indexed totally ordered observations that can be either employed by
 users directly or can be a basic ingredient on top of which other packages can
 build. The latter is illustrated with a few brief examples involving the packages
-\pkg{strucchange}, \pkg{tseries} and \pkg{fCalendar} in this section. Finally, the 
+\pkg{strucchange}, \pkg{tseries} and \pkg{timeDate}/\pkg{fCalendar} in this section. Finally, the 
 classes \code{"yearmon"} and \code{"yearqtr"} (provided in \pkg{zoo})
 are used for illustrating how \pkg{zoo} can be extended by creating a new index class.
 
@@ -888,8 +887,8 @@ plot(diff(log(MSFT)))
 \end{figure}
 
 
-\subsection[fCalendar: Indexes of class "timeDate"]{\pkg{fCalendar}: Indexes of class \code{"timeDate"}}
-\label{sec:fCalendar}
+\subsection[timeDate/fCalendar: Indexes of class "timeDate"]{\pkg{timeDate}/\pkg{fCalendar}: Indexes of class \code{"timeDate"}}
+\label{sec:timeDate}
 
 \emph{The original version of this section was written when \pkg{fCalendar} (now: \pkg{timeDate})
 and \pkg{zoo} did not yet include enough methods to attach \code{"timeDate"} indexes to \code{"zoo"}
@@ -909,8 +908,8 @@ using the associated methods.
 
 The following example illustrates how \code{z2} can be transformed
 to use the \code{"timeDate"} class.
-<<fCalendar2>>=
-library("fCalendar")
+<<timeDate2>>=
+library("timeDate")
 z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
 z2td
 @
@@ -1026,7 +1025,7 @@ The results in this paper were obtained using \proglang{R}
 \Sexpr{paste(R.Version()[6:7], collapse = ".")} with the packages
 \pkg{zoo} \Sexpr{gsub("-", "--", packageDescription("zoo")$Version)},
 \pkg{strucchange} \Sexpr{gsub("-", "--", packageDescription("strucchange")$Version)},
-\pkg{fCalendar} \Sexpr{gsub("-", "--", packageDescription("fCalendar")$Version)},
+\pkg{timeDate} \Sexpr{gsub("-", "--", packageDescription("timeDate")$Version)},
 \pkg{tseries} \Sexpr{gsub("-", "--", packageDescription("tseries")$Version)} and
 \pkg{DAAG} \Sexpr{gsub("-", "--", packageDescription("DAAG")$Version)}.
 \proglang{R} itself and all packages used are available from

@@ -1,5 +1,5 @@
 
-R version 2.13.1 (2011-07-08)
+R version 2.13.2 (2011-09-30)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -31,22 +31,7 @@ The following object(s) are masked from 'package:base':
 Loading required package: quadprog
 > library("strucchange")
 Loading required package: sandwich
-> library("fCalendar")
-Loading required package: MASS
-Loading required package: fUtilities
-Loading required package: fEcofin
-
-#################################################################
-# The new version of 'fCalendar' has been renamed to 'timeDate' #
-#################################################################
-
-> library("fSeries")
-Loading required package: robustbase
-
-#################################################################
-# The new version of 'fSeries' has been renamed to 'timeSeries' #
-#################################################################
-
+> library("timeDate")
 > online <- FALSE ## if set to FALSE the local copy of MSFT.rda
 >                 ## is used instead of get.hist.quote()
 > options(prompt = "R> ")
@@ -565,25 +550,12 @@ R> ### chunk number 41: strucchange1
 R> ###################################################
 R> library("strucchange")
 R> library("DAAG")
+Loading required package: MASS
 Loading required package: rpart
 Loading required package: randomForest
 randomForest 4.6-2
 Type rfNews() to see new features/changes/bug fixes.
-
-Attaching package: 'randomForest'
-
-The following object(s) are masked from 'package:fUtilities':
-
-    outlier
-
 Loading required package: boot
-
-Attaching package: 'boot'
-
-The following object(s) are masked from 'package:robustbase':
-
-    salinity
-
 Loading required package: nlme
 Loading required package: survival
 Loading required package: splines
@@ -594,20 +566,12 @@ The following object(s) are masked from 'package:boot':
 
     aml
 
-The following object(s) are masked from 'package:robustbase':
-
-    heart
-
 
 Attaching package: 'DAAG'
 
 The following object(s) are masked from 'package:survival':
 
     lung
-
-The following object(s) are masked from 'package:robustbase':
-
-    milk
 
 The following object(s) are masked from 'package:MASS':
 
@@ -664,130 +628,10 @@ R> plot(diff(log(MSFT)))
 R> 
 R> 
 R> ###################################################
-R> ### chunk number 48: fCalendar2
+R> ### chunk number 48: timeDate2
 R> ###################################################
-R> library("fCalendar")
+R> library("timeDate")
 R> z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
-Loading required package: timeDate
-
-Attaching package: 'timeDate'
-
-The following object(s) are masked from 'package:fSeries':
-
-    isMonthly
-
-The following object(s) are masked from 'package:fCalendar':
-
-    .JULIAN, .day.of.week, .easter, .easterSunday, .formatFinCenter,
-    .genDaylightSavingTime, .last.of.nday, .midnightStandard,
-    .month.day.year, .nth.of.nday, .on.or.after, .on.or.before, .sdate,
-    .sday.of.week, .sjulian, .sleap.year, .whichFormat, Abidjan, Accra,
-    Adak, Addis_Ababa, Adelaide, Aden, Advent1st, Advent2nd, Advent3rd,
-    Advent4th, Algiers, AllSaints, AllSouls, Almaty, Amman, Amsterdam,
-    Anadyr, Anchorage, Andorra, Anguilla, Annunciation, Antananarivo,
-    Antigua, Apia, Aqtau, Aqtobe, Araguaina, Aruba, Ascension,
-    AshWednesday, Ashgabat, Asmara, AssumptionOfMary, Asuncion, Athens,
-    Atikokan, Auckland, Azores, Baghdad, Bahia, Bahrain, Baku, Bamako,
-    Bangkok, Bangui, Banjul, Barbados, Beirut, Belem, Belgrade, Belize,
-    Berlin, Bermuda, BirthOfVirginMary, Bishkek, Bissau, Blanc-Sablon,
-    Blantyre, Boa_Vista, Bogota, Boise, BoxingDay, Bratislava,
-    Brazzaville, Brisbane, Broken_Hill, Brunei, Brussels, Bucharest,
-    Budapest, BuenosAires, Buenos_Aires, Bujumbura, CACanadaDay,
-    CACivicProvincialHoliday, CAFamilyDay, CALabourDay,
-    CAThanksgivingDay, CAVictoriaDay, CHAscension, CHBerchtoldsDay,
-    CHConfederationDay, CHKnabenschiessen, CHSechselaeuten,
-    CaRemembranceDay, Cairo, Calcutta, Cambridge_Bay, Campo_Grande,
-    Canary, Cancun, Cape_Verde, Caracas, Casablanca, Casey, Catamarca,
-    Cayenne, Cayman, CelebrationOfHolyCross, Center, Ceuta, Chagos,
-    Chatham, Chicago, Chihuahua, Chisinau, Choibalsan, Chongqing,
-    ChristTheKing, Christmas, ChristmasDay, ChristmasEve, Cocos,
-    Colombo, Comoro, Conakry, Copenhagen, Cordoba, CorpusChristi,
-    Costa_Rica, Cuiaba, Curacao, Currie, DEAscension, DEChristmasEve,
-    DECorpusChristi, DEGermanUnity, DENewYearsEve, Dakar, Damascus,
-    Danmarkshavn, Dar_es_Salaam, Darwin, Davis, Dawson, Dawson_Creek,
-    Denver, Detroit, Dhaka, Dili, Djibouti, Dominica, Douala, Dubai,
-    Dublin, DumontDUrville, Dushanbe, Easter, EasterMonday,
-    EasterSunday, Eastern, Edmonton, Efate, Eirunepe, El_Aaiun,
-    El_Salvador, Enderbury, Epiphany, Eucla, FRAllSaints,
-    FRArmisticeDay, FRAscension, FRAssumptionVirginMary, FRBastilleDay,
-    FRFetDeLaVictoire1945, Fakaofo, Faroe, Fiji, Fortaleza, Frankfurt,
-    Freetown, Funafuti, GBBankHoliday, GBMayDay, GBMilleniumDay,
-    GBSummerBankHoliday, Gaborone, Galapagos, Gambier, Gaza, Gibraltar,
-    Glace_Bay, Godthab, GoodFriday, Goose_Bay, Grand_Turk, Grenada,
-    Guadalcanal, Guadeloupe, Guam, Guatemala, Guayaquil, Guernsey,
-    Guyana, Halifax, Harare, Harbin, Havana, Helsinki, Hermosillo,
-    Hobart, HongKong, Hong_Kong, Honolulu, Hovd, ITAllSaints,
-    ITAssumptionOfVirginMary, ITEpiphany, ITImmaculateConception,
-    ITLiberationDay, ITStAmrose, Indianapolis, Inuvik, Iqaluit,
-    Irkutsk, Isle_of_Man, Istanbul, JPAutumnalEquinox,
-    JPBankHolidayDec31, JPBankHolidayJan2, JPBankHolidayJan3,
-    JPBunkaNoHi, JPChildrensDay, JPComingOfAgeDay, JPConstitutionDay,
-    JPEmperorsBirthday, JPGantan, JPGreeneryDay, JPHealthandSportsDay,
-    JPKeirouNOhi, JPKenkokuKinenNoHi, JPKenpouKinenBi,
-    JPKinrouKanshaNoHi, JPKodomoNoHi, JPKokuminNoKyujitu, JPMarineDay,
-    JPMidoriNoHi, JPNatFoundationDay, JPNationHoliday,
-    JPNationalCultureDay, JPNewYearsDay, JPRespectForTheAgedDay,
-    JPSeijinNoHi, JPShuubunNoHi, JPTaiikuNoHi, JPTennouTanjyouBi,
-    JPThanksgivingDay, JPUmiNoHi, JPVernalEquinox, Jakarta, Jamaica,
-    Jayapura, Jersey, Jerusalem, Johannesburg, Johnston, Jujuy, Juneau,
-    Kabul, Kaliningrad, Kamchatka, Kampala, Karachi, Kashgar, Katmandu,
-    Kerguelen, Khartoum, Kiev, Kigali, Kinshasa, Kiritimati, Knox,
-    Kosrae, Krasnoyarsk, KualaLumpur, Kuala_Lumpur, Kuching, Kuwait,
-    Kwajalein, La_Paz, La_Rioja, LaborDay, Lagos, Libreville, Lima,
-    Lindeman, Lisbon, Ljubljana, Lome, London, Longyearbyen, Lord_Howe,
-    LosAngeles, Los_Angeles, Louisville, Luanda, Lubumbashi, Lusaka,
-    Luxembourg, Macau, Maceio, Madeira, Madrid, Magadan, Mahe, Majuro,
-    Makassar, Malabo, Maldives, Malta, Managua, Manaus, Manila, Maputo,
-    Marengo, Mariehamn, Marigot, Marquesas, Martinique, Maseru,
-    MassOfArchangels, Mauritius, Mawson, Mayotte, Mazatlan, Mbabane,
-    McMurdo, Melbourne, Mendoza, Menominee, Merida, MexicoCity,
-    Mexico_City, Midway, Minsk, Miquelon, Mogadishu, Monaco, Moncton,
-    Monrovia, Monterrey, Montevideo, Monticello, Montreal, Montserrat,
-    Moscow, Muscat, Nairobi, Nassau, Nauru, Ndjamena, NewYearsDay,
-    NewYork, New_Salem, New_York, Niamey, Nicosia, Nipigon, Niue, Nome,
-    Norfolk, Noronha, Nouakchott, Noumea, Novosibirsk, Omsk, Oral,
-    Oslo, Ouagadougou, Pacific, Pago_Pago, Palau, PalmSunday, Palmer,
-    Panama, Pangnirtung, Paramaribo, Paris, Pentecost, PentecostMonday,
-    Perth, Petersburg, Phnom_Penh, Phoenix, Pitcairn, Podgorica,
-    Ponape, Pontianak, Port-au-Prince, Port_Moresby, Port_of_Spain,
-    Porto-Novo, Porto_Velho, Prague, PresentationOfLord, Puerto_Rico,
-    Pyongyang, Qatar, Quinquagesima, Qyzylorda, Rainy_River, Rangoon,
-    Rankin_Inlet, Rarotonga, Recife, Regina, Resolute, Reunion,
-    Reykjavik, Riga, Rio_Branco, Rio_Gallegos, Riyadh, RogationSunday,
-    Rome, Rothera, Saigon, Saipan, Sakhalin, Samara, Samarkand,
-    San_Juan, San_Marino, Santiago, Santo_Domingo, Sao_Paulo, Sao_Tome,
-    Sarajevo, Scoresbysund, Seoul, Septuagesima, Shanghai, Shiprock,
-    Simferopol, Singapore, Skopje, Sofia, SolemnityOfMary,
-    South_Georgia, South_Pole, St_Barthelemy, St_Helena, St_Johns,
-    St_Kitts, St_Lucia, St_Thomas, St_Vincent, Stanley, Stockholm,
-    Swift_Current, Sydney, Syowa, Sys.timeDate, Tahiti, Taipei,
-    Tallinn, Tarawa, Tashkent, Tbilisi, Tegucigalpa, Tehran, Tell_City,
-    Thimphu, Thule, Thunder_Bay, Tijuana, Tirane, Tokyo, Tongatapu,
-    Toronto, Tortola, TransfigurationOfLord, TrinitySunday, Tripoli,
-    Truk, Tucuman, Tunis, USCPulaskisBirthday, USChristmasDay,
-    USColumbusDay, USDecorationMemorialDay, USElectionDay,
-    USGoodFriday, USInaugurationDay, USIndependenceDay, USLaborDay,
-    USLincolnsBirthday, USMLKingsBirthday, USMemorialDay,
-    USNewYearsDay, USPresidentsDay, USThanksgivingDay, USVeteransDay,
-    USWashingtonsBirthday, Ulaanbaatar, Urumqi, Ushuaia, Uzhgorod,
-    Vaduz, Vancouver, Vatican, Vevay, Vienna, Vientiane, Vilnius,
-    Vincennes, Vladivostok, Volgograd, Vostok, Wake, Wallis, Warsaw,
-    Whitehorse, Winamac, Windhoek, Winnipeg, Yakutat, Yakutsk,
-    Yekaterinburg, Yellowknife, Yerevan, Zagreb, Zaporozhye, Zurich,
-    as.timeDate, axis.timeDate, blockEnd, blockStart, dayOfWeek,
-    dayOfYear, difftimeDate, holiday, holidayNYSE, holidayTSX,
-    holidayZURICH, isBizday, isHoliday, isWeekday, isWeekend,
-    listFinCenter, listHolidays, midnightStandard, rulesFinCenter,
-    timeCalendar, timeDate, timeFirstDayInMonth, timeFirstDayInQuarter,
-    timeLastDayInMonth, timeLastDayInQuarter, timeLastNdayInMonth,
-    timeNdayOnOrAfter, timeNdayOnOrBefore, timeNthNdayInMonth,
-    timeSequence, whichFormat
-
-The following object(s) are masked from 'package:fUtilities':
-
-    .by2seconds, .fjulian, .isPOSIX, .julian, align, atoms, kurtosis,
-    skewness
-
 R> z2td
  2004-01-05  2004-01-14  2004-01-19  2004-01-25  2004-01-27  2004-02-07 
  0.94306673 -0.04149429  0.59448077 -0.52575918 -0.96739776  0.95605566 

@@ -4,8 +4,7 @@
 library("zoo")
 library("tseries")
 library("strucchange")
-library("fCalendar")
-library("fSeries")
+library("timeDate")
 online <- FALSE ## if set to FALSE the local copy of MSFT.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
@@ -347,9 +346,9 @@ plot(diff(log(MSFT)))
 
 
 ###################################################
-### chunk number 48: fCalendar2
+### chunk number 48: timeDate2
 ###################################################
-library("fCalendar")
+library("timeDate")
 z2td <- zoo(coredata(z2), timeDate(index(z2), FinCenter = "GMT"))
 z2td
 

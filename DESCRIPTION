@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.7-5
-Date: 2011-10-25
+Version: 1.7-6
+Date: 2011-11-02
 Title: S3 Infrastructure for Regular and Irregular Time Series (Z's
         ordered observations)
 Authors@R: c(person(given = "Achim", family = "Zeileis", role =
@@ -10,21 +10,23 @@ Authors@R: c(person(given = "Achim", family = "Zeileis", role =
         "A."), family = "Ryan", role = "aut", email =
         "jeff.a.ryan@gmail.com"), person(given = "Felix", family =
         "Andrews", role = "ctb", email = "felix@nfrac.org"))
-Author: Achim Zeileis [aut, cre], Gabor Grothendieck [aut], Jeffrey A.
-        Ryan [aut], Felix Andrews [ctb]
-Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
 Description: An S3 class with methods for totally ordered indexed
-        observations. It is particularly aimed at irregular time series
-        of numeric vectors/matrices and factors. zoo's key design goals
-        are independence of a particular index/date/time class and
-        consistency with ts and base R by providing methods to extend
-        standard generics.
+             observations. It is particularly aimed at irregular time series
+             of numeric vectors/matrices and factors. zoo's key design goals
+             are independence of a particular index/date/time class and
+             consistency with ts and base R by providing methods to extend
+             standard generics.
 Depends: R (>= 2.10.0), stats
-Suggests: coda, chron, DAAG, fCalendar, fSeries, fts, its, lattice,
-        mondate, strucchange, timeDate, timeSeries, tis, tseries, xts
+Suggests: coda, chron, DAAG, fts, its, lattice, mondate, strucchange,
+        timeDate, timeSeries, tis, tseries, xts
 Imports: stats, utils, graphics, grDevices, lattice (>= 0.18-1)
 License: GPL-2
 URL: http://zoo.R-Forge.R-project.org/
-Packaged: 2011-10-24 17:13:55 UTC; zeileis
+Packaged: 2011-11-02 18:29:46 UTC; zeileis
+Author: Achim Zeileis [aut, cre],
+  Gabor Grothendieck [aut],
+  Jeffrey A. Ryan [aut],
+  Felix Andrews [ctb]
+Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
 Repository: CRAN
-Date/Publication: 2011-10-25 06:15:19
+Date/Publication: 2011-11-02 18:40:09
