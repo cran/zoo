@@ -126,7 +126,7 @@ z
 z[-(3:4)]
 
 ## create a regular series with a "Date" index
-zooreg(1:5, start = Sys.Date())
+zooreg(1:5, start = as.Date("2000-01-01"))
 ## or with "yearmon" index
 zooreg(1:5, end = yearmon(2000))
 

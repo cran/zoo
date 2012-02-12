@@ -104,9 +104,9 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 			posns <- i + offsets
 			ix <- posns >= 1 & posns <= NROW(data)
 			if (partial < 0) {
-				if (all(ix)) FUN(coredata(data)[posns], ...)
+				if (all(ix)) FUN(data[posns], ...)
 			} else if (sum(ix) >= partial) {
-				FUN(coredata(data)[replace(posns, !ix, 0)], ...)
+				FUN(data[replace(posns, !ix, 0)], ...)
 			}
 		}
     } else {
@@ -118,15 +118,15 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 			posns <- i + offsets
 			ix <- posns >= 1 & posns <= NROW(data)
 			if (partial < 0) {
-				if (all(ix)) FUN(coredata(data)[posns,], ...)
+				if (all(ix)) FUN(data[posns,], ...)
 			} else if (sum(ix) >= partial) {
-				FUN(coredata(data)[replace(posns, !ix, 0),], ...)
+				FUN(data[replace(posns, !ix, 0),], ...)
 			}
 		}
 	}
 
 	dat <- mapply(f, seq_along(time(data)), width, 
-		MoreArgs = list(data = data, ...), SIMPLIFY = FALSE) 
+		MoreArgs = list(data = coredata(data), ...), SIMPLIFY = FALSE) 
 		
 	ix <- !sapply(dat, is.null) # integer indexes of non-nulls
 

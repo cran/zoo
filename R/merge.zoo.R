@@ -316,7 +316,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
             # if (length(a) == 0) 
             #   return(NULL)
             if (length(dim(a)) ==0) {
-                return("")
+                if (length(a) == 0) return(NULL) else return("")
             } else {
 				if (ncol(a) == 0) return(NULL)
                 rval <- colnames(a)

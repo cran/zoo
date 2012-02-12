@@ -553,7 +553,7 @@ R> library("DAAG")
 Loading required package: MASS
 Loading required package: rpart
 Loading required package: randomForest
-randomForest 4.6-2
+randomForest 4.6-6
 Type rfNews() to see new features/changes/bug fixes.
 Loading required package: boot
 Loading required package: nlme

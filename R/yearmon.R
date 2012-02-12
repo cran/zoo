@@ -169,9 +169,9 @@ axis.yearmon <- function (side, x, at, format, labels = TRUE, ..., N1 = 25, N2 =
     if (identical(labels, TRUE)) {
 	if (missing(format)) format <- c("%Y", "%b")
 	if (length(format) == 1) format <- c(format, "")
-	if (d <= N2) labels <- format.yearmon(z, format = format[2])
+	labels <- if (d <= N2) format.yearmon(z, format = format[2])
+    else rep(NA, length(z))
 	idx <- format.yearmon(z, format = "%m") == "01"
-    labels <- rep(NA, length(z))
 	labels[idx] <- format.yearmon(z[idx], format = format[1])
     } else if (identical(labels, FALSE)) 
         labels <- rep("", length(z))
