@@ -52,7 +52,7 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 	}
 
     if (is.vector(width) && !is.list(width) && length(width) == 1 &&
-		by.column && length(by) == 1 && by == 1 && 
+		by.column && length(by) == 1 && by == 1 && (missing(partial) | identical(partial, FALSE)) &&
 		length(list(...)) < 1 && length(sw <- deparse(substitute(FUN))) == 1) {
 		  if (sw == "mean" && all(!is.na(data))) {
 				return(rollmean(data, width, fill = fill, align = align))

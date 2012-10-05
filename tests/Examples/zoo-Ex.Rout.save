@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -1953,9 +1953,10 @@ NA NA  6  9 NA 15 18 21 24 27
 > 
 > ### Name: rollmean
 > ### Title: Rolling Means/Maximums/Medians
-> ### Aliases: rollmean rollmeanr rollmax rollmaxr rollmedian rollmedianr
-> ###   rollmean.zoo rollmedian.zoo rollmax.zoo rollmean.ts rollmedian.ts
-> ###   rollmax.ts rollmean.default rollmedian.default rollmax.default
+> ### Aliases: rollmean rollsum rollmeanr rollsumr rollmax rollmaxr
+> ###   rollmedian rollmedianr rollmean.zoo rollsum.zoo rollmedian.zoo
+> ###   rollmax.zoo rollmean.ts rollsum.ts rollmedian.ts rollmax.ts
+> ###   rollmean.default rollsum.default rollmedian.default rollmax.default
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2873,7 +2874,7 @@ NA  1  2  3 NA  6
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  4.064 0.112 4.274 0 0 
+Time elapsed:  4.512 0.128 4.827 0 0 
 > grDevices::dev.off()
 null device 
           1 

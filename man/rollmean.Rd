@@ -1,17 +1,22 @@
 \name{rollmean}
 \alias{rollmean}
+\alias{rollsum}
 \alias{rollmeanr}
+\alias{rollsumr}
 \alias{rollmax}
 \alias{rollmaxr}
 \alias{rollmedian}
 \alias{rollmedianr}
 \alias{rollmean.zoo}
+\alias{rollsum.zoo}
 \alias{rollmedian.zoo}
 \alias{rollmax.zoo}
 \alias{rollmean.ts}
+\alias{rollsum.ts}
 \alias{rollmedian.ts}
 \alias{rollmax.ts}
 \alias{rollmean.default}
+\alias{rollsum.default}
 \alias{rollmedian.default}
 \alias{rollmax.default}
 \title{Rolling Means/Maximums/Medians}
@@ -28,6 +33,9 @@ rollmaxr(..., align = "right")
 rollmedian(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
 	align = c("center", "left", "right"), ...)
 rollmedianr(..., align = "right")
+rollsum(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
+	align = c("center", "left", "right"), ...)
+rollsumr(..., align = "right")
 }
 \arguments{
   \item{x}{an object (representing a series of observations).}

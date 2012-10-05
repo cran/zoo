@@ -42,10 +42,10 @@ Rprintf("zoo_lag\n");
   int P=0;
   int PAD = INTEGER(coerceVector(_pad,INTSXP))[0];
 
-  if(k > length(x))
+  if(k > nr)
     error("abs(k) must be less than nrow(x)");
 
-  if(k < 0 && -1*k > length(x))
+  if(k < 0 && -1*k > nr)
     error("abs(k) must be less than nrow(x)");
 
   PROTECT(result = allocVector(TYPEOF(x), 

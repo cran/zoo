@@ -189,23 +189,27 @@ objects can be coerced to \code{"zoo"}, the reverse is available for
 Furthermore, \code{"zoo"} objects can be coerced to vectors, matrices and
 lists and data frames (dropping the index/time attribute). See \code{\link{as.zoo}}.
 
-Seven methods are available for \code{NA} handling in the data of 
+Several methods are available for \code{NA} handling in the data of 
 \code{"zoo"} objects: 
+\code{\link{na.aggregate}} which uses group means to fill in \code{NA}
+values,
 \code{\link{na.approx}} which uses linear interpolation to fill 
 in \code{NA} values. 
 \code{\link{na.contiguous}} which extracts the longest consecutive 
 stretch of non-missing values in a \code{"zoo"} object,
+\code{\link{na.fill}} which uses fixed specified values to replace \code{NA}
+values,
 \code{\link{na.locf}} which
 replaces \code{NA}s by the last previous non-\code{NA}, 
 \code{\link{na.omit}} which returns a \code{"zoo"}
 object with incomplete observations removed,
-\code{\link{na.aggregate}} which uses group means to fill in \code{NA}
-values,
 \code{\link{na.spline}} which uses spline interpolation to fill 
 in \code{NA} values and
+\code{\link{na.StructTS}} which uses a seasonal Kalman filter to fill in
+\code{NA} values,
 \code{\link{na.trim}} which trims runs of \code{NA}s off the beginning and
-end but not in the interior.  An 8th \code{NA} routine can be found in
-the \code{stinepack} package where \code{\link[stinepack]{na.stinterp}} which  
+end but not in the interior.  Yet another \code{NA} routine can be found in
+the \code{stinepack} package where \code{\link[stinepack]{na.stinterp}}
 performs Stineman interpolation.
 
 A typical task to be performed on ordered observations is to evaluate some

@@ -61,7 +61,7 @@ na.spline.default <- function(object, x = index(object), xout = x, ..., na.rm = 
             ygap <- .fill_short_gaps(y, seq_along(y), maxgap = maxgap)
             ## construct y values at 'x', keeping NAs from ygap
             ## (spline() does not allow NAs to be propagated)
-            ix <- spline(x, seq_along(y), ...)(xout)
+            ix <- splinefun(x, seq_along(y), ...)(xout)
             yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]),
                     NA, yf)
             yx

@@ -155,13 +155,12 @@ str.zoo <- function(object, ...)
   
   if (all(class(i) == "matrix")) i <- as.vector(i)
   if (all(class(i) == "logical")) {
-    lx <- length(x)
-    if (length(i) == lx) {
+    if (length(i) == n) {
 		i <- which(i)
 		n.ok <- TRUE
 	} else {
-		i <- which(rep(i, length.out = length(x)))
-		n.ok <- all(i <= lx)
+		i <- which(rep(i, length.out = n))
+		n.ok <- all(i <= n2)
 	}
   } else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
     i <- which(coredata(merge(zoo(,time(x)), i)))
@@ -181,7 +180,7 @@ str.zoo <- function(object, ...)
       i <- i[i.ok]
     }
     i <- which(MATCH(index(x), i, nomatch = 0L) > 0L)
-    n.ok <- all(i <= n)
+    n.ok <- all(i <= n2)
   }
   if(!n.ok | any(i < 1)) stop("Out-of-range assignment not possible.")
   rval <- NextMethod("[<-")

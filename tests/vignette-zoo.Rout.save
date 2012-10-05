@@ -1,6 +1,6 @@
 
-R version 2.13.2 (2011-09-30)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -551,12 +551,21 @@ R> ###################################################
 R> library("strucchange")
 R> library("DAAG")
 Loading required package: MASS
+Loading required package: lattice
+Loading required package: latticeExtra
+Loading required package: RColorBrewer
 Loading required package: rpart
 Loading required package: randomForest
 randomForest 4.6-6
 Type rfNews() to see new features/changes/bug fixes.
 Loading required package: boot
-Loading required package: nlme
+
+Attaching package: 'boot'
+
+The following object(s) are masked from 'package:lattice':
+
+    melanoma
+
 Loading required package: survival
 Loading required package: splines
 
@@ -686,3 +695,6 @@ R> as.irts(zr3)
 R> 
 R> 
 R> 
+> proc.time()
+   user  system elapsed 
+  2.760   0.136   3.010 

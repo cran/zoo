@@ -56,6 +56,9 @@ export(
   "rollmedian",
   "rollmedianr",
   "rollmedian.default",
+  "rollsum",
+  "rollsumr",
+  "rollsum.default",
 
 ## NA operations
   "na.approx",

@@ -39,7 +39,7 @@ void R_init_zoo(DllInfo *info)
                      NULL);
 
   R_useDynamicSymbols(info, TRUE);
-#define RegisterZoo(routine) R_RegisterCCallable("zoo","routine",(DL_FUNC) &routine)
+#define RegisterZoo(routine) R_RegisterCCallable("zoo",#routine,(DL_FUNC) &routine)
 
   /* used by external packages linking to internal xts code from C */
   R_RegisterCCallable("zoo","zoo_lag",(DL_FUNC) &zoo_lag);

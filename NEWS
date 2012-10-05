@@ -1,3 +1,10 @@
+Changes in Version 1.7-8
+
+  o Added rollsum.
+
+  o Bugfix in src/lag.c for the case of k > NROW.
+
+
 Changes in Version 1.7-7
 
   o Fixed bug where colnames were dropped when merging with zero width
