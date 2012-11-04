@@ -127,7 +127,12 @@ export(
    "as.Date.numeric",
    "as.Date.yearmon",
    "as.Date.yearqtr",
-   "as.Date.ts"
+   "as.Date.ts",
+   
+## ggplot2 interface (currently fully exported)
+  "facet_free",
+  "fortify.zoo",
+  "autoplot.zoo"
 )
 
 ## methods for class zoo

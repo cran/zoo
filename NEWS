@@ -1,3 +1,9 @@
+Changes in Version 1.7-9
+
+  o Added ggplot2 interface through autplot() and fortify() methods.  Also
+    support function facet_free().
+
+
 Changes in Version 1.7-8
 
   o Added rollsum.
