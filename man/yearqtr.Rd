@@ -29,6 +29,7 @@
 \alias{summary.yearqtr}
 \alias{unique.yearqtr}
 \alias{[.yearqtr}
+\alias{[[.yearqtr}
 \alias{MATCH.yearqtr}
 \alias{Ops.yearqtr}
 \alias{Summary.yearqtr}

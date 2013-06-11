@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.7-9
-Date: 2012-11-04
+Version: 1.7-10
+Date: 2013-06-11
 Title: S3 Infrastructure for Regular and Irregular Time Series (Z's
         ordered observations)
 Authors@R: c(person(given = "Achim", family = "Zeileis", role =
@@ -18,13 +18,14 @@ Description: An S3 class with methods for totally ordered indexed
         standard generics.
 Depends: R (>= 2.10.0), stats
 Suggests: coda, chron, DAAG, fts, its, lattice, ggplot2, mondate,
-        strucchange, timeDate, timeSeries, tis, tseries, xts
+        scales, strucchange, timeDate, timeSeries, tis, tseries, xts
 Imports: stats, utils, graphics, grDevices, lattice (>= 0.18-1)
 License: GPL-2
 URL: http://zoo.R-Forge.R-project.org/
-Packaged: 2012-11-04 09:14:19 UTC; zeileis
+Packaged: 2013-06-10 21:04:04 UTC; zeileis
 Author: Achim Zeileis [aut, cre], Gabor Grothendieck [aut], Jeffrey A.
         Ryan [aut], Felix Andrews [ctb]
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-11-04 16:28:51
+Date/Publication: 2013-06-14 22:39:25

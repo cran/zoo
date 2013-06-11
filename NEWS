@@ -1,3 +1,34 @@
+Changes in Version 1.7-10
+
+  o All methods that had previously been fully exported (merge.zoo,
+    MATCH.default, ..., and many more) in order to be accessible to
+    _all_ conceivable generics are now additionally registered as
+    S3method()s for the standard generics. Exception: as.Date.* are
+    still only fully exported.
+
+  o Added a new mean() method for "zoo" objects that simply does
+    mean(coredata(obj), ...).
+
+  o Added yearmon_trans, scale_x_yearmon and scale_y_yearmon and
+    yearqtr_trans, scale_x_yearqtr and scale_y_yearqtr to ggplot2 interface.
+
+  o Removed the use of the shape and linetype aesthetic by default
+    in autoplot() method.
+
+  o Bug fix in na.fill for univariate series based on 1-column matrices
+    (provided by Josh Ulrich).
+
+  o Added [[ methods for "yearmon" and "yearqtr".
+
+  o Constructs like time(obj)[ORDER(time(obj))] are now split up into
+    two steps in the package code. If zoo is only imported but not
+    loaded, R can otherwise have problems correctly dispatching to
+    the new generics ORDER and MATCH.
+    
+  o as.Date() now also works for yearqtr/yearmon that are all NA
+    (especially needed for format() and print() method).
+
+
 Changes in Version 1.7-9
 
   o Added ggplot2 interface through autplot() and fortify() methods.  Also

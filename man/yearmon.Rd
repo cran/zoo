@@ -31,6 +31,7 @@
 \alias{summary.yearmon}
 \alias{unique.yearmon}
 \alias{[.yearmon}
+\alias{[[.yearmon}
 \alias{MATCH.yearmon}
 \alias{Ops.yearmon}
 \alias{Sys.yearmon}

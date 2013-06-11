@@ -1,7 +1,10 @@
 aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NULL)
 {
   ## index processing
-  my.unique <- function(x) x[MATCH(x, x) == seq_len(length(x))]
+  my.unique <- function(x) {
+    ix <- MATCH(x, x) == seq_len(length(x))
+    x[ix]
+  }
   if(is.function(by)) by <- by(index(x))
   if(!is.list(by)) by <- list(by)
 

@@ -1,7 +1,6 @@
 
-R version 2.13.1 (2011-07-08)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,12 +22,11 @@ Type 'q()' to quit R.
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 > library("tseries")
-Loading required package: quadprog
 > online <- FALSE ## if set to FALSE the local copy of
 >                 ## is used instead of get.hist.quote()
 > options(prompt = "R> ")
@@ -437,3 +435,6 @@ R> head(data1w)
 R> 
 R> 
 R> 
+> proc.time()
+   user  system elapsed 
+  1.116   0.052   1.163 

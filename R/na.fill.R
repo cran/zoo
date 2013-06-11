@@ -10,7 +10,7 @@ na.fill <- function(object, fill, ...) UseMethod("na.fill")
 
 na.fill.zoo <- function(object, fill, ix, ...) {
 
-	if (length(dim(object)) == 2 && NCOL(object) > 0) {
+	if (length(dim(object)) == 2 && NCOL(object) > 1) {
 		ixmiss <- missing(ix)
 		L <- lapply(1:NCOL(object), 
 				function(i) {
@@ -71,7 +71,7 @@ na.fill.zoo <- function(object, fill, ix, ...) {
 			keep <- setdiff(keep, intersect(which(!ix), wrng))
 		}
 		if (length(fill[[3]]) == 0) keep <- unique(pmin(wx.max, keep)) 
-		object[keep]
+		object[keep, , drop = is.null(dim(object))]
 	}
 
 }

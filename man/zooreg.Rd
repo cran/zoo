@@ -152,7 +152,8 @@ deltat(z)
 cycle(z)
 cycle(z[-(3:4)])
 
-zz  <-  zoo(1:6, as.Date(c("1960-01-29", "1960-02-29", "1960-03-31", "1960-04-29", "1960-05-31", "1960-06-30")))
+zz  <-  zoo(1:6, as.Date(c("1960-01-29", "1960-02-29", "1960-03-31",
+  "1960-04-29", "1960-05-31", "1960-06-30")))
 # this converts zz to "zooreg" and then to "ts" expanding it to a daily
 # series which is 154 elements long, most with NAs.
 \dontrun{

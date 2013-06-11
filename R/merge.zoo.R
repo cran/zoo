@@ -5,7 +5,8 @@ rbind.zoo <- function(..., deparse.level = 1)
   indexes <- do.call("c", unname(lapply(args, index)))
 
   my.table <- function(x) {
-    x <- x[ORDER(x)]
+    ix <- ORDER(x)
+    x <- x[ix]
     table(MATCH(x,x))
   }
   if(max(my.table(indexes)) > 1L) stop("indexes overlap")
@@ -156,14 +157,17 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     # fn to get the unique elements in x, in sorted order, using only
     # [, match, length and order
     sort.unique <- function(x) {
-        x <- x[MATCH(x, x) == seq_len(length(x))]
-        x[ORDER(x)]
+        ix <- MATCH(x, x) == seq_len(length(x))
+	x <- x[ix]
+        ix <- ORDER(x)
+        x[ix]
     }
 
     # fn to get intersection of each element in list of lists
     intersect.list <- function(list) { 
         my.table <- function(x) {
-           x <- x[ORDER(x)]
+	   ix <- ORDER(x)
+           x <- x[ix]
            table(MATCH(x, x))
 	}
 	union <- do.call("c", unname(list))

@@ -116,6 +116,7 @@ str.zoo <- function(object, ...)
   n2 <- if(nargs() == 1) length(as.vector(rval)) else n
   if(missing(i)) i <- 1:n
 
+  if (all(class(i) == "matrix")) i <- as.vector(i)
   ## also support that i can be index:
   ## if i is not numeric/integer/logical, it is interpreted to be the index
   if (all(class(i) == "logical"))
@@ -309,7 +310,8 @@ names.zoo <- function(x) {
 }
 
 rev.zoo <- function(x) {
-	zoo(coredata(x), time(x)[rev(ORDER(time(x)))])
+  ix <- rev(ORDER(time(x)))
+  zoo(coredata(x), time(x)[ix])
 }
 
 ifelse.zoo <- function(test, yes, no) {
@@ -317,6 +319,8 @@ ifelse.zoo <- function(test, yes, no) {
 	merge(test, yes, no, retclass = NULL)
 	ifelse(test, yes, no)
 }
+
+mean.zoo <- function(x, ...)  mean(coredata(x), ...)
 
 median.zoo <- function(x, na.rm = FALSE)  median(coredata(x), na.rm = na.rm)
 

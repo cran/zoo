@@ -39,15 +39,16 @@ as.yearmon.ti <- function(x, ...) as.yearmon(as.Date(x), ...)
 
 ## coercion from yearmon
 # returned Date is the fraction of the way through the period given by frac
-as.Date.yearmon <- function(x, frac = 0, ...) {
-     x <- unclass(x)
-     year <- floor(x + .001)
-	 ix <- !is.na(year)
-     month <- floor(12 * (x - year) + 1 + .5 + .001)
-	 dd.start <- as.Date(rep(NA, length(year)))
-     dd.start[ix] <- as.Date(paste(year[ix], month[ix], 1, sep = "-")) 
-     dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
-     as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
+as.Date.yearmon <- function(x, frac = 0, ...) {     
+  x <- unclass(x)
+  if(all(is.na(x))) return(as.Date(x))
+  year <- floor(x + .001)
+  ix <- !is.na(year)
+  month <- floor(12 * (x - year) + 1 + .5 + .001)
+  dd.start <- as.Date(rep(NA, length(year)))
+  dd.start[ix] <- as.Date(paste(year[ix], month[ix], 1, sep = "-")) 
+  dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
+  as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
 }
 as.POSIXct.yearmon <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
 as.POSIXlt.yearmon <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
@@ -105,6 +106,15 @@ quarters.yearmon <- function(x, abbreviate) {
     cl <- oldClass(x)
     class(x) <- NULL
     val <- NextMethod("[")
+    class(val) <- cl
+    val
+}
+
+"[[.yearmon" <- function (x, ..., drop = TRUE) 
+{
+    cl <- oldClass(x)
+    class(x) <- NULL
+    val <- NextMethod("[[")
     class(val) <- cl
     val
 }

@@ -192,7 +192,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
 lines.zoo <- function(x, y = NULL, type = "l", ...)
 {
   if (is.null(y)) {
-     if(NCOL(y) == 1) lines(index(x), x, type = type, ...)
+     if(NCOL(x) == 1) lines(index(x), x, type = type, ...)
        else stop("Can't plot lines for multivariate zoo object")
   } else
      lines(coredata(cbind(x,y)), type = type, ...)

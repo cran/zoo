@@ -12,16 +12,17 @@ export(
   "as.zoo.default",
   "as.zooreg",
   "as.zooreg.default",
-  "cbind.zoo",
-  "rbind.zoo",
   "ifelse.zoo",
   "is.zoo",
-  "median.zoo",
   "merge.zoo",
   "read.zoo",
+  "write.zoo",
+
+  "cbind.zoo",
+  "rbind.zoo",
+  "median.zoo",
   "quantile.zoo",
   "rev.zoo",
-  "write.zoo",
   "xtfrm.zoo",
 
 ## plotting
@@ -83,7 +84,6 @@ export(
   "Sys.yearmon",
   "yearqtr",
   "as.yearqtr",
-  "as.yearqtr.yearqtr",
   "as.yearqtr.default",
   "format.yearqtr",
   "Sys.yearqtr",
@@ -123,16 +123,24 @@ export(
   "ORDER.default",
 
 ## other
-   "as.Date",
-   "as.Date.numeric",
-   "as.Date.yearmon",
-   "as.Date.yearqtr",
-   "as.Date.ts",
+  "as.Date",
+  "as.Date.numeric",
+  "as.Date.yearmon",
+  "as.Date.yearqtr",
+  "as.Date.ts",
    
 ## ggplot2 interface (currently fully exported)
   "facet_free",
   "fortify.zoo",
-  "autoplot.zoo"
+  "autoplot.zoo",
+
+  "yearmon_trans",
+  "scale_x_yearmon",
+  "scale_y_yearmon",
+
+  "yearqtr_trans",
+  "scale_x_yearqtr",
+  "scale_y_yearqtr"
 )
 
 ## methods for class zoo
@@ -149,6 +157,7 @@ export(
   S3method("as.vector", "zoo")
   S3method("barplot", "zoo")
   S3method("c", "zoo")
+  S3method("cbind", "zoo")
   S3method("coredata", "zoo")
   S3method("coredata<-", "zoo")
   S3method("cummax", "zoo")
@@ -170,6 +179,9 @@ export(
   S3method("llines", "zoo")
   S3method("lpoints", "zoo")
   S3method("ltext", "zoo")
+  S3method("mean", "zoo")
+  S3method("median", "zoo")
+  S3method("merge", "zoo")
   S3method("na.approx", "zoo")
   S3method("na.contiguous", "zoo")
   S3method("na.fill", "zoo")
@@ -180,7 +192,10 @@ export(
   S3method("plot", "zoo")
   S3method("points", "zoo")
   S3method("print", "zoo")
+  S3method("quantile", "zoo")
   S3method("range", "zoo")
+  S3method("rbind", "zoo")
+  S3method("rev", "zoo")
   S3method("rollapply", "zoo")
   S3method("rollmax", "zoo")
   S3method("rollmean", "zoo")
@@ -200,6 +215,7 @@ export(
   S3method("window<-", "zoo")
   S3method("with", "zoo")
   S3method("xblocks", "zoo")
+  S3method("xtfrm", "zoo")
   S3method("xyplot", "zoo")
 
 ## methods for class zooreg
@@ -223,6 +239,7 @@ export(
   S3method("na.approx", "ts")
   S3method("na.fill", "ts")
   S3method("na.StructTS", "ts")
+  S3method("na.trim", "ts")
   S3method("rollapply", "ts")
   S3method("rollmax", "ts")
   S3method("rollmean", "ts")
@@ -254,6 +271,7 @@ export(
   S3method("Ops", "yearmon")
   S3method("Summary", "yearmon")
   S3method("[", "yearmon")
+  S3method("[[", "yearmon")
   S3method("as.POSIXct", "yearmon")
   S3method("as.POSIXlt", "yearmon")
   S3method("as.character", "yearmon")
@@ -278,6 +296,7 @@ export(
   S3method("Ops", "yearqtr")
   S3method("Summary", "yearqtr")
   S3method("[", "yearqtr")
+  S3method("[[", "yearqtr")
   S3method("as.POSIXct", "yearqtr")
   S3method("as.POSIXlt", "yearqtr")
   S3method("as.character", "yearqtr")
@@ -300,18 +319,35 @@ export(
   S3method("ORDER", "timeDate")
   S3method("as.zoo", "timeSeries")
 
-## methods for misc classes
+## default methods and methods for misc classes
+  S3method("MATCH", "default")
+  S3method("MATCH", "times")
+  S3method("ORDER", "default")
+  S3method("ORDER", "chron")
+  S3method("ORDER", "dates")
+  S3method("ORDER", "times")
+  S3method("as.yearmon", "default")
+  S3method("as.yearqtr", "default")
+  S3method("coredata", "default")
   S3method("index", "default")
   S3method("index2char", "default")
   S3method("is.regular", "default")
   S3method("index2char", "numeric")
+  S3method("na.approx", "default")
+  S3method("na.fill", "default")
+  S3method("na.locf", "default")
+  S3method("na.spline", "default")
+  S3method("na.trim", "default")
+  S3method("na.aggregate", "default")
   S3method("na.contiguous", "data.frame")
   S3method("na.contiguous", "list")
   S3method("rollapply", "default")
-  S3method("MATCH", "times")
-  S3method("ORDER", "chron")
-  S3method("ORDER", "dates")
-  S3method("ORDER", "times")
+  S3method("rollmax", "default")
+  S3method("rollmean", "default")
+  S3method("rollmedian", "default")
+  S3method("rollmedian", "default")
+  S3method("rollsum", "default")
+  S3method("xblocks", "default")
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
   S3method("as.list", "ts")
@@ -337,6 +373,8 @@ export(
   S3method("as.yearqtr", "integer")
   S3method("as.yearqtr", "numeric")
   S3method("as.yearqtr", "factor")
+  S3method("as.yearqtr", "yearqtr")
+  S3method("as.zoo", "default")
   S3method("as.zoo", "data.frame")
   S3method("as.zoo", "factor")
   S3method("as.zoo", "fts")
@@ -348,6 +386,7 @@ export(
   S3method("as.zoo", "xts")
   S3method("as.zoo", "zoo")
   S3method("as.zoo", "zooreg")
+  S3method("as.zooreg", "default")
   S3method("as.zooreg", "tis")
   S3method("as.zooreg", "ts")
   S3method("as.zooreg", "xts")

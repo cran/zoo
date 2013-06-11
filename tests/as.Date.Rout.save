@@ -1,7 +1,6 @@
 
-R version 2.13.2 (2011-09-30)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -47,7 +46,7 @@ Type 'q()' to quit R.
 
 Attaching package: 'timeDate'
 
-The following object(s) are masked from 'package:tis':
+The following object is masked from 'package:tis':
 
     dayOfWeek, dayOfYear, isHoliday
 
@@ -59,7 +58,7 @@ The following object(s) are masked from 'package:tis':
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
@@ -96,13 +95,9 @@ The following object(s) are masked from 'package:base':
 
 Attaching package: 'mondate'
 
-The following object(s) are masked from 'package:tis':
+The following object is masked from 'package:tis':
 
     day, month, year, ymd
-
-The following object(s) are masked from 'package:base':
-
-    cbind, rbind
 
 > as.Date(10957)
 [1] "2000-01-01"
@@ -132,3 +127,6 @@ The following object(s) are masked from 'package:base':
 [1] "2000-01-01"
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  1.740   0.060   1.796 

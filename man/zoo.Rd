@@ -20,6 +20,7 @@
 \alias{cumprod.zoo}
 \alias{cummin.zoo}
 \alias{cummax.zoo}
+\alias{mean.zoo}
 \alias{median.zoo}
 \alias{na.contiguous}
 \alias{na.contiguous.data.frame}

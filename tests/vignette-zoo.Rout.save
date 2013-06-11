@@ -1,7 +1,6 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,12 +22,11 @@ Type 'q()' to quit R.
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
 > library("tseries")
-Loading required package: quadprog
 > library("strucchange")
 Loading required package: sandwich
 > library("timeDate")
@@ -556,13 +554,13 @@ Loading required package: latticeExtra
 Loading required package: RColorBrewer
 Loading required package: rpart
 Loading required package: randomForest
-randomForest 4.6-6
+randomForest 4.6-7
 Type rfNews() to see new features/changes/bug fixes.
 Loading required package: boot
 
 Attaching package: 'boot'
 
-The following object(s) are masked from 'package:lattice':
+The following object is masked from 'package:lattice':
 
     melanoma
 
@@ -571,18 +569,18 @@ Loading required package: splines
 
 Attaching package: 'survival'
 
-The following object(s) are masked from 'package:boot':
+The following object is masked from 'package:boot':
 
     aml
 
 
 Attaching package: 'DAAG'
 
-The following object(s) are masked from 'package:survival':
+The following object is masked from 'package:survival':
 
     lung
 
-The following object(s) are masked from 'package:MASS':
+The following object is masked from 'package:MASS':
 
     hills
 
@@ -697,4 +695,4 @@ R>
 R> 
 > proc.time()
    user  system elapsed 
-  2.760   0.136   3.010 
+  2.520   0.096   2.611 

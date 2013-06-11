@@ -39,14 +39,15 @@ as.yearqtr.ti <- function(x, ...) as.yearqtr(as.Date(x), ...)
 ## coercion from yearqtr
 # returned Date is the fraction of the way through the period given by frac
 as.Date.yearqtr <- function(x, frac = 0, ...) {
-	x <- unclass(x)
-	year <- floor(x + .001)
-    ix <- !is.na(year)
-	month <- floor(12 * (x - year) + 1 + .5 + .001)
-	dd.start <- as.Date(rep(NA, length(year)))
-    dd.start[ix] <- as.Date(paste(year[ix], month[ix], 1, sep = "-")) 
-	dd.end <- dd.start + 100 - as.numeric(format(dd.start + 100, "%d")) 
-	as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
+  x <- unclass(x)
+  if(all(is.na(x))) return(as.Date(x))
+  year <- floor(x + .001)
+  ix <- !is.na(year)
+  month <- floor(12 * (x - year) + 1 + .5 + .001)
+  dd.start <- as.Date(rep(NA, length(year)))
+  dd.start[ix] <- as.Date(paste(year[ix], month[ix], 1, sep = "-")) 
+  dd.end <- dd.start + 100 - as.numeric(format(dd.start + 100, "%d")) 
+  as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end), origin = "1970-01-01")
 }
 as.POSIXct.yearqtr <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
 as.POSIXlt.yearqtr <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
@@ -99,7 +100,7 @@ format.yearqtr <- function(x, format = "%Y Q%q", ...)
     # TODO: speed up the following
 	xx <- gsub.vec("%q", qtr, rep(format, length(qtr)))
 	xx <- gsub.vec("%Y", year, xx)
-	xx <- gsub.vec("%y", sprintf("%02d", year %% 100), xx)
+	xx <- gsub.vec("%y", sprintf("%02d", as.integer(year %% 100)), xx)
 	xx <- gsub.vec("%C", year %/% 100, xx)
 	names(xx) <- names(x)
 	xx
@@ -125,6 +126,15 @@ print.yearqtr <- function(x, ...) {
     cl <- oldClass(x)
     class(x) <- NULL
     val <- NextMethod("[")
+    class(val) <- cl
+    val
+}
+
+"[[.yearqtr" <- function (x, ..., drop = TRUE) 
+{
+    cl <- oldClass(x)
+    class(x) <- NULL
+    val <- NextMethod("[[")
     class(val) <- cl
     val
 }
