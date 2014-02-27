@@ -16,6 +16,7 @@
 \alias{as.Date.yearqtr}
 \alias{as.POSIXct.yearqtr}
 \alias{as.POSIXlt.yearqtr}
+\alias{as.list.yearqtr}
 \alias{as.numeric.yearqtr}
 \alias{as.character.yearqtr}
 \alias{as.data.frame.yearqtr}

@@ -1,42 +1,55 @@
 \name{rollmean}
+
 \alias{rollmean}
-\alias{rollsum}
-\alias{rollmeanr}
-\alias{rollsumr}
 \alias{rollmax}
-\alias{rollmaxr}
 \alias{rollmedian}
+\alias{rollsum}
+
+\alias{rollmeanr}
+\alias{rollmaxr}
 \alias{rollmedianr}
+\alias{rollsumr}
+
 \alias{rollmean.zoo}
-\alias{rollsum.zoo}
-\alias{rollmedian.zoo}
 \alias{rollmax.zoo}
+\alias{rollmedian.zoo}
+\alias{rollsum.zoo}
+
 \alias{rollmean.ts}
-\alias{rollsum.ts}
-\alias{rollmedian.ts}
 \alias{rollmax.ts}
+\alias{rollmedian.ts}
+\alias{rollsum.ts}
+
 \alias{rollmean.default}
-\alias{rollsum.default}
-\alias{rollmedian.default}
 \alias{rollmax.default}
-\title{Rolling Means/Maximums/Medians}
+\alias{rollmedian.default}
+\alias{rollsum.default}
+
+\title{Rolling Means/Maximums/Medians/Sums}
+
 \description{
-Generic functions for computing rolling means, maximums and medians of ordered observations.
+Generic functions for computing rolling means, maximums, medians, and sums of ordered observations.
 }
+
 \usage{
 rollmean(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...)
-rollmeanr(..., align = "right")
+  align = c("center", "left", "right"), ...)
+
 rollmax(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...)
-rollmaxr(..., align = "right")
+  align = c("center", "left", "right"), ...)
+
 rollmedian(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...)
-rollmedianr(..., align = "right")
+  align = c("center", "left", "right"), ...)
+
 rollsum(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...)
+  align = c("center", "left", "right"), ...)
+
+rollmeanr(..., align = "right")
+rollmaxr(..., align = "right")
+rollmedianr(..., align = "right")
 rollsumr(..., align = "right")
 }
+
 \arguments{
   \item{x}{an object (representing a series of observations).}
   \item{k}{integer width of the rolling window. Must be odd for \code{rollmedian}.}  
@@ -51,7 +64,7 @@ rollsumr(..., align = "right")
 }
 
 \details{
-These functions compute rolling means, maximums and medians respectively
+These functions compute rolling means, maximums, medians, and sums respectively
 and are thus similar to \code{\link{rollapply}} but are
 optimized for speed.
 
@@ -63,7 +76,7 @@ The default method of \code{rollmean} does not handle inputs that contain
 }
 
 \value{
-An object of the same class as \code{x} with the rolling mean/max/median.
+An object of the same class as \code{x} with the rolling mean/max/median/sum.
 }
 
 \seealso{\code{\link{rollapply}}, \code{\link{zoo}}, \code{\link{na.fill}}}
@@ -75,14 +88,15 @@ x <- zoo(rnorm(12), x.Date)
 rollmean(x, 3)
 rollmax(x, 3)
 rollmedian(x, 3)
+rollsum(x, 3)
 
 xm <- zoo(matrix(1:12, 4, 3), x.Date[1:4])
 rollmean(xm, 3)
 rollmax(xm, 3)
 rollmedian(xm, 3)
+rollsum(xm, 3)
 
 rollapply(xm, 3, mean) # uses rollmean
 rollapply(xm, 3, function(x) mean(x)) # does not use rollmean
-
 }
 \keyword{ts}

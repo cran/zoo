@@ -3,19 +3,24 @@ Ops.zoo <- function (e1, e2)
     e <- if (missing(e2)) {
         NextMethod(.Generic)
     }
-    else if (any(nchar(.Method) == 0)) {
+    else if (any(nchar(.Method) == 0L)) {
         NextMethod(.Generic)
     }
     else {
 	merge(e1, e2, all = FALSE, retclass = NULL)
         NextMethod(.Generic)
     }
-    out <- if (is.null(attr(e, "index"))) 
-	zoo(e, index(e1), attr(e1, "frequency"))
-    else
-	e
+    if (is.null(attr(e, "index"))) {
+        if(!missing(e2) && nchar(.Method)[1L] == 0L) {
+	  out <- zoo(e, index(e2), attr(e2, "frequency"))
+	} else {
+	  out <- zoo(e, index(e1), attr(e1, "frequency"))
+	}
+    } else {
+	out <- e
+    }
     # the next statement is a workaround for a bug in R
-	structure(out, class = class(out))
+    structure(out, class = class(out))
 }
 
 t.zoo <- function(x)

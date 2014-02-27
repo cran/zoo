@@ -30,25 +30,24 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
   \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
     (if the series is regular)?}
   \item{index.column}{numeric vector or list. The column names or numbers of the data frame 
-in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
-argument is used and \code{"NULL"} is among its componennts then 
-\code{index.column} refers to the column numbers after the columns 
-corresponding to \code{"NULL"} in \code{colClasses} have been removed.  
-If specified as a list 
-then one argument will be passed to argument \code{FUN} per component so that, 
-for example, \code{index.column = list(1, 2)} will cause 
-\code{FUN(x[,1], x[,2], ...)} to be called whereas 
-\code{index.column = list(1:2)} will cause 
-\code{FUN(x[,1:2], ...)} to be called where \code{x} is a data frame of 
-characters data.  Here \code{...} refers to \code{format}
-and/or \code{tz}, if they specified as arguments.  \code{index.column = 0} can
-be used to specify that the row names be used as the index.  In the case that
-no row names were input sequential numbering is used.
-If \code{index.column} is specified as an ordinary vector then if it has the
-same length as the number of arguments of \code{FUN} (or \code{FUN2} in the
-event that \code{FUN2} is specified and \code{FUN} is not) 
-then \code{index.column} is converted to a
-list.  Also it is always converted to a list if it has length 1.}
+    in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
+    argument is used and \code{"NULL"} is among its componennts then 
+    \code{index.column} refers to the column numbers after the columns 
+    corresponding to \code{"NULL"} in \code{colClasses} have been removed.  
+    If specified as a list then one argument will be passed to argument \code{FUN} per component so that, 
+    for example, \code{index.column = list(1, 2)} will cause 
+    \code{FUN(x[,1], x[,2], ...)} to be called whereas 
+    \code{index.column = list(1:2)} will cause 
+    \code{FUN(x[,1:2], ...)} to be called where \code{x} is a data frame of 
+    characters data.  Here \code{...} refers to \code{format}
+    and/or \code{tz}, if they specified as arguments.  \code{index.column = 0} can
+    be used to specify that the row names be used as the index.  In the case that
+    no row names were input sequential numbering is used.
+    If \code{index.column} is specified as an ordinary vector then if it has the
+    same length as the number of arguments of \code{FUN} (or \code{FUN2} in the
+    event that \code{FUN2} is specified and \code{FUN} is not) 
+    then \code{index.column} is converted to a
+    list.  Also it is always converted to a list if it has length 1.}
   \item{drop}{logical. If the data frame contains just a single data column, should
     the second dimension be dropped?}
   \item{x}{a \code{"zoo"} object.}
@@ -62,14 +61,13 @@ list.  Also it is always converted to a list if it has length 1.}
     \code{FUN} and before \code{aggregate}. If \code{FUN} is not specified
     but \code{FUN2} is specified then only \code{FUN2} is applied.}
   \item{split}{NULL or column number or name or vector of numbers or 
-   names. If not NULL then the data is assumed to be in long format and is 
-   split according to the indicated columns.  See the \R 
-   \code{\link[stats]{reshape}} command for description of long data.
-   If \code{split=Inf} then the first of each run are made into a separate
-   series, the second of each run and so on.  If \code{split= -Inf} then
-   the last of each run is made into a separate series, the second last
-   and so on.
-}
+    names. If not NULL then the data is assumed to be in long format and is 
+    split according to the indicated columns.  See the \R 
+    \code{\link[stats]{reshape}} command for description of long data.
+    If \code{split = Inf} then the first of each run among the times are made into
+    a separate series, the second of each run and so on.  If \code{split= -Inf} then
+    the last of each run is made into a separate series, the second last
+    and so on.}
   \item{aggregate}{logical or function. If set to \code{TRUE}, then \code{\link{aggregate.zoo}}
     is applied to the zoo object created to compute the \code{\link{mean}} of all values with
     the same time index. Alternatively, \code{aggregate} can be set to any other
@@ -80,7 +78,9 @@ list.  Also it is always converted to a list if it has length 1.}
     See \code{\link{aggregate.zoo}}.}
   \item{\dots}{further arguments passed to \code{\link{read.table}} or
     \code{\link{write.table}}, respectively.}
-  \item{text}{See argument of same name in \code{\link{read.table}}.}
+  \item{text}{character. If \code{file} is not supplied and this is, then
+    data are read from the value of \code{text} via a text connection.
+    See below for an example.}
 }
 
 \details{
@@ -109,6 +109,8 @@ underlying regularity, it is coerced to a \code{"zooreg"} series.
 \code{write.zoo} is a convenience function for writing \code{"zoo"} series
 to text files. It first coerces its argument to a \code{"data.frame"}, adds
 a column with the index and then calls \code{\link{write.table}}.
+
+See also \code{vignette("zoo-read", package = "zoo")} for detailed examples.
 }
 
 \value{
@@ -142,6 +144,8 @@ as shown in the examples below.
 
 \examples{
 \dontrun{
+## See also vignette("zoo-read", package = "zoo") for more examples
+
 ## turn *numeric* first column into yearmon index
 ## where number is year + fraction of year represented by month
 z <- read.zoo("foo.csv", sep = ",", FUN = as.yearmon)
@@ -194,15 +198,14 @@ CVX 20070201 9 40 51 73.25 100 0
 CVX 20070201 9 40 52 73.25 100 0
 CVX 20070201 9 40 53 73.25 300 0"
 
-z <- read.zoo(textConnection(Lines), 
-	colClasses = c("NULL", "NULL", "numeric", "numeric", "numeric", "numeric",
-		"numeric", "NULL"), 
-	col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", 
-		"Volume", "junk"),
-	index = 1:3,  # do not count columns that are "NULL" in colClasses
-	FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
-	FUN2 = function(tt) trunc(tt, "00:00:05"),
-	aggregate = mean)
+z <- read.zoo(text = Lines, 
+  colClasses = c("NULL", "NULL", "numeric", "numeric", "numeric",
+    "numeric", "numeric", "NULL"),
+  col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", "Volume", "junk"),
+  index = 1:3,  # do not count columns that are "NULL" in colClasses
+  FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
+  FUN2 = function(tt) trunc(tt, "00:00:05"),
+  aggregate = mean)
 
 ## omit the read.table() phase and directly supply a data.frame
 dat <- data.frame(date = paste("2000-01-", 10:15, sep = ""), a = rnorm(6), b = 1:6)
@@ -215,13 +218,10 @@ read.zoo(BOD, FUN = as.Date)
 
 read.zoo(BOD[c(1:6, 1), ], aggregate = mean)
 
-\dontrun{
 # read in all csv files in the current directory and merge them
 read.zoo(Sys.glob("*.csv"), header = TRUE, sep = ",")
-}
 
 }
 }
 
 \keyword{ts}
-

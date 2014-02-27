@@ -326,8 +326,28 @@ median.zoo <- function(x, na.rm = FALSE)  median(coredata(x), na.rm = na.rm)
 
 quantile.zoo <- function(x, ...) quantile(coredata(x), ...)
 
-transform.zoo <- function(`_data`, ...) {
+transform.zoo <- function(`_data`, ...)
+{
+  ## zoo series elements
   if(is.null(dim(coredata(`_data`)))) warning("transform() is only useful for matrix-based zoo series")
-  zoo(transform.data.frame(data.frame(coredata(`_data`)), ...),
-    index(`_data`), attr(`_data`, "frequency"))
+  ix <- index(`_data`)
+  freq <- attr(`_data`, "frequency")
+  `_data` <- as.data.frame(`_data`)
+
+  ## get transformations
+  e <- eval(substitute(list(...)), `_data`, parent.frame())
+  trafo <- names(e)
+  inx <- match(trafo, names(`_data`))
+  matched <- !is.na(inx)
+
+  ## evaluate transformations
+  if(any(matched)) {
+    `_data`[inx[matched]] <- e[matched]
+    `_data` <- data.frame(`_data`)
+  }
+  if (!all(matched)) 
+    `_data` <- do.call("data.frame", c(list(`_data`), e[!matched]))
+
+  ## return zoo
+  zoo(`_data`, ix, freq)
 }

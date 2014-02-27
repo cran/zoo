@@ -18,6 +18,7 @@
 \alias{as.Date.yearmon}
 \alias{as.POSIXct.yearmon}
 \alias{as.POSIXlt.yearmon}
+\alias{as.list.yearmon}
 \alias{as.numeric.yearmon}
 \alias{as.character.yearmon}
 \alias{as.data.frame.yearmon}

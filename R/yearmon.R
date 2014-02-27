@@ -52,6 +52,7 @@ as.Date.yearmon <- function(x, frac = 0, ...) {
 }
 as.POSIXct.yearmon <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
 as.POSIXlt.yearmon <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
+as.list.yearmon <- function(x, ...) lapply(seq_along(x), function(i) x[i])
 as.numeric.yearmon <- function(x, ...) unclass(x)
 as.character.yearmon <- function(x, ...) format.yearmon(x, ...)
 as.data.frame.yearmon <- function(x, row.names = NULL, optional = FALSE, ...) 

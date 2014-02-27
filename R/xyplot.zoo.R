@@ -20,7 +20,6 @@ panel.plot.custom <- function(...) {
   args <- list(...)
   function(...) {
     dots <- list(...)
-    # do.call("panel.plot.default", lattice:::updateList(dots, args))
     do.call("panel.plot.default", modifyList(dots, args))
   }
 }
@@ -29,7 +28,7 @@ xyplot.its <-
 xyplot.ts <-
 xyplot.zoo <- function(x, data, ...)
 {
-    obj <- lattice:::xyplot.ts(as.zoo(x), ...)
+    obj <- lattice::xyplot.ts(as.zoo(x), ...)
     obj$call <- match.call()
     obj
 }
@@ -37,7 +36,7 @@ xyplot.zoo <- function(x, data, ...)
 xyplot.tis <- function(x, data, ...)
 {
     x <- aggregate(as.zoo(x), POSIXct, identity)
-    obj <- lattice:::xyplot.ts(x, ...)
+    obj <- lattice::xyplot.ts(x, ...)
     obj$call <- match.call()
     obj
 }

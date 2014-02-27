@@ -1,3 +1,21 @@
+Changes in Version 1.7-11
+
+  o Extended the license from "GPL-2" to "GPL-2 | GPL-3".
+
+  o Avoid duplications in Suggests/Imports/Depends in the package's
+    DESCRIPTION. Use only :: instead of ::: to access certain functions
+    from other namespaces.
+
+  o Added as.list() methods for yearmon/yearqtr.
+  
+  o Added workaround in Ops.zoo if first argument is not a zoo series
+    (prompted by Josh Ulrich).
+
+  o The transform() method for zoo series now does what method for
+    data.frame does (instead of just calling it) in order to get
+    non-standard evaluation.
+
+
 Changes in Version 1.7-10
 
   o All methods that had previously been fully exported (merge.zoo,

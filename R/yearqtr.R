@@ -51,6 +51,7 @@ as.Date.yearqtr <- function(x, frac = 0, ...) {
 }
 as.POSIXct.yearqtr <- function(x, tz = "", ...) as.POSIXct(as.Date(x), tz = tz, ...)
 as.POSIXlt.yearqtr <- function(x, tz = "", ...) as.POSIXlt(as.Date(x), tz = tz, ...)
+as.list.yearqtr <- function(x, ...) lapply(seq_along(x), function(i) x[i])
 as.numeric.yearqtr <- function(x, ...) unclass(x)
 as.character.yearqtr <- function(x, ...) format.yearqtr(x, ...)
 as.data.frame.yearqtr <- function(x, row.names = NULL, optional = FALSE, ...) 

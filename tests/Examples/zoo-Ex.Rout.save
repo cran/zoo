@@ -1,5 +1,5 @@
 
-R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 
 Attaching package: 'zoo'
 
-The following object is masked from 'package:base':
+The following objects are masked from 'package:base':
 
     as.Date, as.Date.numeric
 
@@ -1612,6 +1612,8 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > ### ** Examples
 > 
 > ## Not run: 
+> ##D ## See also vignette("zoo-read", package = "zoo") for more examples
+> ##D 
 > ##D ## turn *numeric* first column into yearmon index
 > ##D ## where number is year + fraction of year represented by month
 > ##D z <- read.zoo("foo.csv", sep = ",", FUN = as.yearmon)
@@ -1664,15 +1666,14 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > ##D CVX 20070201 9 40 52 73.25 100 0
 > ##D CVX 20070201 9 40 53 73.25 300 0"
 > ##D 
-> ##D z <- read.zoo(textConnection(Lines), 
-> ##D 	colClasses = c("NULL", "NULL", "numeric", "numeric", "numeric", "numeric",
-> ##D 		"numeric", "NULL"), 
-> ##D 	col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", 
-> ##D 		"Volume", "junk"),
-> ##D 	index = 1:3,  # do not count columns that are "NULL" in colClasses
-> ##D 	FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
-> ##D 	FUN2 = function(tt) trunc(tt, "00:00:05"),
-> ##D 	aggregate = mean)
+> ##D z <- read.zoo(text = Lines, 
+> ##D   colClasses = c("NULL", "NULL", "numeric", "numeric", "numeric",
+> ##D     "numeric", "numeric", "NULL"),
+> ##D   col.names = c("Symbol", "Date", "Hour", "Minute", "Second", "Price", "Volume", "junk"),
+> ##D   index = 1:3,  # do not count columns that are "NULL" in colClasses
+> ##D   FUN = function(h, m, s) times(paste(h, m, s, sep = ":")),
+> ##D   FUN2 = function(tt) trunc(tt, "00:00:05"),
+> ##D   aggregate = mean)
 > ##D 
 > ##D ## omit the read.table() phase and directly supply a data.frame
 > ##D dat <- data.frame(date = paste("2000-01-", 10:15, sep = ""), a = rnorm(6), b = 1:6)
@@ -1685,10 +1686,8 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > ##D 
 > ##D read.zoo(BOD[c(1:6, 1), ], aggregate = mean)
 > ##D 
-> ##D \dontrun{
 > ##D # read in all csv files in the current directory and merge them
 > ##D read.zoo(Sys.glob("*.csv"), header = TRUE, sep = ",")
-> ##D }
 > ##D 
 > ## End(Not run)
 > 
@@ -2020,11 +2019,11 @@ NA NA  6  9 NA 15 18 21 24 27
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: rollmean
-> ### Title: Rolling Means/Maximums/Medians
-> ### Aliases: rollmean rollsum rollmeanr rollsumr rollmax rollmaxr
-> ###   rollmedian rollmedianr rollmean.zoo rollsum.zoo rollmedian.zoo
-> ###   rollmax.zoo rollmean.ts rollsum.ts rollmedian.ts rollmax.ts
-> ###   rollmean.default rollsum.default rollmedian.default rollmax.default
+> ### Title: Rolling Means/Maximums/Medians/Sums
+> ### Aliases: rollmean rollmax rollmedian rollsum rollmeanr rollmaxr
+> ###   rollmedianr rollsumr rollmean.zoo rollmax.zoo rollmedian.zoo
+> ###   rollsum.zoo rollmean.ts rollmax.ts rollmedian.ts rollsum.ts
+> ###   rollmean.default rollmax.default rollmedian.default rollsum.default
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2047,6 +2046,9 @@ NA NA  6  9 NA 15 18 21 24 27
  0.4874291  0.5757814  0.5757814  0.5757814  0.3898432  0.3898432 -0.6212406 
 2004-03-14 
 -0.6212406 
+> rollsum(x, 3)
+[1]  0.4052854  1.8015351  1.0087177  1.7821741  1.5962360 -0.3130755 -2.4460972
+[8] -1.7110095
 > 
 > xm <- zoo(matrix(1:12, 4, 3), x.Date[1:4])
 > rollmean(xm, 3)
@@ -2061,6 +2063,10 @@ NA NA  6  9 NA 15 18 21 24 27
                  
 2004-01-11 2 6 10
 2004-01-15 3 7 11
+> rollsum(xm, 3)
+     x.1 x.2 x.3
+[1,]   6  18  30
+[2,]   9  21  33
 > 
 > rollapply(xm, 3, mean) # uses rollmean
                  
@@ -2070,7 +2076,6 @@ NA NA  6  9 NA 15 18 21 24 27
                  
 2004-01-11 2 6 10
 2004-01-15 3 7 11
-> 
 > 
 > 
 > 
@@ -2419,11 +2424,11 @@ detaching 'package:grid', 'package:lattice'
 > ###   as.yearmon.timeDate as.yearmon.jul as.yearmon.POSIXt
 > ###   as.yearmon.character as.yearmon.date as.yearmon.factor as.Date
 > ###   as.Date.numeric as.Date.ts as.Date.yearmon as.POSIXct.yearmon
-> ###   as.POSIXlt.yearmon as.numeric.yearmon as.character.yearmon
-> ###   as.data.frame.yearmon c.yearmon cycle.yearmon format.yearmon
-> ###   is.yearmon mean.yearmon print.yearmon range.yearmon summary.yearmon
-> ###   unique.yearmon [.yearmon [[.yearmon MATCH.yearmon Ops.yearmon
-> ###   Sys.yearmon -.yearmon xtfrm.yearmon
+> ###   as.POSIXlt.yearmon as.list.yearmon as.numeric.yearmon
+> ###   as.character.yearmon as.data.frame.yearmon c.yearmon cycle.yearmon
+> ###   format.yearmon is.yearmon mean.yearmon print.yearmon range.yearmon
+> ###   summary.yearmon unique.yearmon [.yearmon [[.yearmon MATCH.yearmon
+> ###   Ops.yearmon Sys.yearmon -.yearmon xtfrm.yearmon
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2560,7 +2565,7 @@ Feb 2000  NA   6
 > ###   as.yearqtr.integer as.yearqtr.date as.yearqtr.dates as.yearqtr.Date
 > ###   as.yearqtr.timeDate as.yearqtr.jul as.yearqtr.POSIXt
 > ###   as.yearqtr.character as.yearqtr.factor as.yearqtr.yearqtr
-> ###   as.Date.yearqtr as.POSIXct.yearqtr as.POSIXlt.yearqtr
+> ###   as.Date.yearqtr as.POSIXct.yearqtr as.POSIXlt.yearqtr as.list.yearqtr
 > ###   as.numeric.yearqtr as.character.yearqtr as.data.frame.yearqtr
 > ###   c.yearqtr cycle.yearqtr format.yearqtr is.numeric.yearqtr
 > ###   mean.yearqtr print.yearqtr range.yearqtr summary.yearqtr
@@ -2943,8 +2948,9 @@ NA  1  2  3 NA  6
 > 
 > ### * <FOOTER>
 > ###
+> options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  6.42 0.172 6.609 0 0 
+Time elapsed:  6.628 0.104 6.771 0 0 
 > grDevices::dev.off()
 null device 
           1 

@@ -31,7 +31,8 @@ na.spline(object, \dots)
 \arguments{
   \item{object}{object in which \code{NA}s are to be replaced}
   \item{x, xout}{Variables to be used for interpolation as in \code{\link{approx}}.}
-  \item{na.rm}{logical. Should leading \code{NA}s be removed?}
+  \item{na.rm}{logical. If the result of the (spline) interpolation
+    still results in \code{NA}s, should these be removed?}
   \item{maxgap}{maximum number of consecutive \code{NA}s to
     fill. Any longer gaps will be left unchanged. Note that all methods listed
     above can accept \code{maxgap} as it is ultimately passed to the 
