@@ -80,7 +80,7 @@ c.yearqtr <- function(...) {
     as.yearqtr(do.call("c", lapply(list(...), as.numeric)))
 }
 
-cycle.yearqtr <- function(x, ...) as.numeric(quarters(x))
+cycle.yearqtr <- function(x, ...) round(4 * (as.numeric(x) %% 1)) + 1
 
 format.yearqtr <- function(x, format = "%Y Q%q", ...) 
 {
@@ -108,12 +108,12 @@ format.yearqtr <- function(x, format = "%Y Q%q", ...)
 }
 
 
-months.yearqtr <- function(x, abbreviate) {
-    months(as.Date(x), abbreviate)
+months.yearqtr <- function(x, abbreviate = FALSE) {
+    months(as.Date(x), abbreviate = abbreviate)
 }
 
-quarters.yearqtr <- function(x, abbreviate) {
-    quarters(as.Date(x), abbreviate)
+quarters.yearqtr <- function(x, abbreviate = FALSE) {
+    quarters(as.Date(x), abbreviate = abbreviate)
 }
 
 

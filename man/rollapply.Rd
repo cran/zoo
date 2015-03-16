@@ -20,9 +20,10 @@ rollapplyr(\dots, align = "right")
 \arguments{
   \item{data}{the data to be used (representing a series of observations).}
   \item{width}{numeric vector or list. In the simplest case this is an integer
-    specifying the window width which is aligned to the original sample according
-    to the \code{align} argument. Alternatively, \code{width} can be a list
-    regarded as offsets compared to the current time, see below for details.}
+    specifying the window width (in numbers of observations) which is aligned
+    to the original sample according to the \code{align} argument. Alternatively,
+    \code{width} can be a list regarded as offsets compared to the current
+    time, see below for details.}
   \item{FUN}{the function to be applied.}
   \item{\dots}{optional arguments to \code{FUN}.}
   \item{by}{calculate FUN at every \code{by}-th time point rather than 
@@ -98,6 +99,7 @@ rollapply(z2, 3, mean)   # uses rollmean which is optimized for mean
 rollmean(z2, 3)          # same
 rollapply(z2, 3, (mean)) # does not use rollmean
 
+
 ## rolling regression:
 ## set up multivariate zoo series with
 ## number of UK driver deaths and lags 1 and 12
@@ -116,6 +118,21 @@ rr <- rollapply(seat, width = 36,
 ## showing the shifts after the oil crisis in Oct 1973
 ## and after the seatbelt legislation change in Jan 1983
 plot(rr)
+
+
+## rolling mean by time window (e.g., 3 days) rather than
+## by number of observations (e.g., when these are unequally spaced):
+#
+## - test data
+tt <- as.Date("2000-01-01") + c(1, 2, 5, 6, 7, 8, 10)
+z <- zoo(seq_along(tt), tt)
+## - fill it out to a daily series, zm, using NAs
+## using a zero width zoo series g on a grid
+g <- zoo(, seq(start(z), end(z), "day"))
+zm <- merge(z, g)
+## - 3-day rolling mean
+rollapply(zm, 3, mean, na.rm = TRUE, fill = NA)
+
 
 ## different values of rule argument
 z <- zoo(c(NA, NA, 2, 3, 4, 5, NA))

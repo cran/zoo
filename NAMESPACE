@@ -167,10 +167,12 @@ export(
   S3method("cycle", "zoo")
   S3method("deltat", "zoo")
   S3method("diff", "zoo")
+  S3method("dim<-", "zoo")
   S3method("end", "zoo")
   S3method("frequency", "zoo")
   S3method("frequency<-", "zoo")
   S3method("head", "zoo")
+  S3method("ifelse", "zoo")
   S3method("index", "zoo")
   S3method("index<-", "zoo")
   S3method("is.regular", "zoo")
@@ -200,6 +202,7 @@ export(
   S3method("rollmax", "zoo")
   S3method("rollmean", "zoo")
   S3method("rollmedian", "zoo")
+  S3method("rollsum", "zoo")
   S3method("scale", "zoo")
   S3method("split", "zoo")
   S3method("subset", "zoo")
@@ -232,6 +235,7 @@ export(
   S3method("time<-", "zooreg")
 
 ## methods for class ts
+  S3method("as.Date", "ts")
   S3method("coredata", "ts")
   S3method("coredata<-", "ts")
   S3method("index", "ts")
@@ -244,6 +248,7 @@ export(
   S3method("rollmax", "ts")
   S3method("rollmean", "ts")
   S3method("rollmedian", "ts")
+  S3method("rollsum", "ts")
   S3method("xblocks", "ts")
 
 ## methods for class irts
@@ -266,6 +271,7 @@ export(
 
 ## methods for class yearmon
   S3method("-", "yearmon")
+  S3method("as.Date", "yearmon")
   S3method("Axis", "yearmon")
   S3method("MATCH", "yearmon")
   S3method("Ops", "yearmon")
@@ -284,6 +290,8 @@ export(
   S3method("format", "yearmon")
   S3method("is.numeric", "yearmon")
   S3method("mean", "yearmon")
+  S3method("months", "yearmon")
+  S3method("quarters", "yearmon")
   S3method("print", "yearmon")
   S3method("range", "yearmon")
   S3method("summary", "yearmon")
@@ -292,6 +300,7 @@ export(
 
 ## methods for class yearqtr 
   S3method("-", "yearqtr")
+  S3method("as.Date", "yearqtr")
   S3method("Axis", "yearqtr")
   S3method("MATCH", "yearqtr")
   S3method("Ops", "yearqtr")
@@ -310,6 +319,8 @@ export(
   S3method("format", "yearqtr")
   S3method("is.numeric", "yearqtr")
   S3method("mean", "yearqtr")
+  S3method("months", "yearqtr")
+  S3method("quarters", "yearqtr")
   S3method("print", "yearqtr")
   S3method("range", "yearqtr")
   S3method("summary", "yearqtr")
@@ -347,11 +358,11 @@ export(
   S3method("rollmax", "default")
   S3method("rollmean", "default")
   S3method("rollmedian", "default")
-  S3method("rollmedian", "default")
   S3method("rollsum", "default")
   S3method("xblocks", "default")
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
+  S3method("as.Date", "numeric")
   S3method("as.list", "ts")
   S3method("as.yearmon", "date")
   S3method("as.yearmon", "Date")

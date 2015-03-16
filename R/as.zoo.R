@@ -25,7 +25,6 @@ as.zoo.data.frame <- function(x, ...)
 
 as.zoo.fts <- function(x, ...) 
 {
-	stopifnot(require("fts"))
 	zoo(as.matrix(x), attr(x, "dates"))
 }
 
@@ -44,34 +43,22 @@ as.zoo.its <- function(x, ...)
 # as.mcmc.default can handle other direction
 as.zoo.mcmc <- function(x, ...)
 {
-	stopifnot(require("coda"))
 	as.zoo(as.ts(x, ...))
 }
 
 as.zoo.timeSeries <- function(x, ...) {
-  stopifnot(require("timeSeries"))
   zoo(as.matrix(x), timeSeries::time(x), ...)  
 }
 
 as.zoo.xts <- function(x, ...) {
-  stopifnot(require("xts"))
   zoo(coredata(x), order.by = index(x), ...)
 }
 
 as.zooreg.xts <- function(x, frequency = NULL, ...) {
-  stopifnot(require("xts"))
   as.zooreg(as.zoo(x, ...), frequency = frequency)
 }
 
 as.zoo.zoo <- function(x, ...) x
-
-## This should be in its now.
-## as.its.zoo <- function(x) {
-## 	stopifnot(require("its"))
-## 	index <- index(x)
-## 	stopifnot(inherits(index, "POSIXct"))
-## 	its(coredata(x), index)
-## }
 
 as.vector.zoo <- function(x, mode = "any")
 	as.vector(as.matrix(x), mode = mode)
@@ -84,7 +71,7 @@ as.matrix.zoo <- function(x, ...)
 	    colnames(y) <- if (length(colnames(x)) > 0) 
 		colnames(x)
 	    else {
-		lab <- deparse(substitute(x))
+		lab <- deparse(substitute(x), width.cutoff = 100L, nlines = 1L)
 		if (NCOL(x) == 1) 
 		    lab
 		else paste(lab, 1:NCOL(x), sep = ".")
@@ -104,7 +91,7 @@ as.data.frame.zoo <- function(x, row.names = NULL, optional = FALSE, ...)
 		colnames(y) <- if (length(colnames(x)) > 0) 
 			colnames(x)
 		else {
-			lab <- deparse(substitute(x))
+			lab <- deparse(substitute(x), width.cutoff = 100L, nlines = 1L)
 			if (NCOL(x) == 1) lab
 	                  else paste(lab, 1:NCOL(x), sep = ".")
 		}
@@ -154,9 +141,13 @@ as.ts.zooreg <- function(x, ...)
 {
   freq <- frequency(x)
   deltat <- 1/freq
-  # round. <- function(x) deltat * round(x/deltat)
-  round. <- function(x) deltat * floor(x/deltat+0.5)
-  tt <- round.(as.numeric(time(x)))
+  tt <- as.numeric(time(x))
+  round. <- if(isTRUE(all.equal(c(deltat, tt), round(c(deltat, tt))))) {
+    function(x) floor(x + 0.5)
+  } else {
+    function(x) deltat * floor(x/deltat + 0.5)
+  }
+  tt <- round.(tt)
   tt2 <- round.(seq(head(tt,1), tail(tt,1), deltat))
   xx <- merge(zoo(coredata(x), tt), zoo(, tt2))
   ts(coredata(xx), start = tt[1], frequency = freq)

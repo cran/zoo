@@ -30,9 +30,9 @@ have a frequency. It is assumed the cycle length is 1.}
 
 \examples{
 
-z <- zooreg(rep(10 * seq(4), each = 4) + rep(c(3, 1, 2, 4), times = 4), 
+z <- zooreg(rep(10 * seq(8), each = 4) + rep(c(3, 1, 2, 4), times = 8), 
 	start = as.yearqtr(2000), freq = 4)
-z[10] <- NA
+z[25] <- NA
 
 zout <- na.StructTS(z)
 

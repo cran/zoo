@@ -30,9 +30,6 @@ fortify.zoo <- function(model, data, melt = FALSE, ...)
 
 autoplot.zoo <- function(object, geom = "line", facets, ...)
 {
-  ## need ggplot2 package
-  stopifnot(require("ggplot2"))
-
   ## convert to data.frame (and assure correct label
   ## processing by fortify.zoo)
   lab <- deparse(substitute(object))
@@ -57,43 +54,42 @@ autoplot.zoo <- function(object, geom = "line", facets, ...)
   
   ## call qplot
   gg <- if(single | (!is.null(facets) & auto)) {
-    qplot(Index, Value, data = df, geom = geom, facets = facets, ...) + ylab(if(single) levels(df$Series) else "") + xlab("Index")
+    ggplot2::qplot(Index, Value, data = df, geom = geom, facets = facets, ...) + ggplot2::ylab(if(single) levels(df$Series) else "") + ggplot2::xlab("Index")
   } else {
-    qplot(Index, Value, data = df, group = Series, geom = geom, facets = facets, colour = Series, ...) + ylab("") + xlab("Index")
+    ggplot2::qplot(Index, Value, data = df, group = Series, geom = geom, facets = facets, colour = Series, ...) + ggplot2::ylab("") + ggplot2::xlab("Index")
   }
   return(gg)
 }
 
 facet_free <- function (facets = Series ~ ., margins = FALSE, scales = "free_y", ...) {
-    stopifnot(require("ggplot2"))
-	facet_grid(facets, margins = margins, scales = scales, ...)
+  ggplot2::facet_grid(facets, margins = margins, scales = scales, ...)
 }
 
 yearmon_trans <- function(format = "%b %Y", n = 5) {
-  breaks. <- function(x) as.yearmon(pretty_breaks(n)(x))
+  breaks. <- function(x) as.yearmon(scales::pretty_breaks(n)(x))
   format. <- function(x) format(x, format = format)
   scales::trans_new("yearmon", transform = as.numeric, inverse = as.yearmon,
     breaks = breaks., format = format.)
 }
 
 scale_x_yearmon <- function(..., format = "%b %Y", n = 5) {
-	scale_x_continuous(..., trans = yearmon_trans(format, n))
+  ggplot2::scale_x_continuous(..., trans = yearmon_trans(format, n))
 }
 scale_y_yearmon <- function(..., format = "%b %Y", n = 5) {
-	scale_y_continuous(..., trans = yearmon_trans(format, n))
+  ggplot2::scale_y_continuous(..., trans = yearmon_trans(format, n))
 }
 
 yearqtr_trans <- function(format = "%Y-%q", n = 5) {
-  breaks. <- function(x) as.yearqtr(pretty_breaks(n)(x))
+  breaks. <- function(x) as.yearqtr(scales::pretty_breaks(n)(x))
   format. <- function(x) zoo::format.yearqtr(x, format = format)
   scales::trans_new("yearqtr", transform = as.numeric, inverse = as.yearqtr,
     breaks = breaks., format = format.)
 }
 
 scale_x_yearqtr <- function(..., format = "%Y-%q", n = 5) {
-	scale_x_continuous(..., trans = yearqtr_trans(format, n))
+  ggplot2::scale_x_continuous(..., trans = yearqtr_trans(format, n))
 }
 scale_y_yearqtr <- function(..., format = "%Y-%q", n = 5) {
-	scale_y_continuous(..., trans = yearqtr_trans(format, n))
+  ggplot2::scale_y_continuous(..., trans = yearqtr_trans(format, n))
 }
 

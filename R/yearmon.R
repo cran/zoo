@@ -79,7 +79,7 @@ as.data.frame.yearmon <- function(x, row.names = NULL, optional = FALSE, ...)
 c.yearmon <- function(...)
     as.yearmon(do.call("c", lapply(list(...), as.numeric)))
 
-cycle.yearmon <- function(x, ...) as.numeric(months(x))
+cycle.yearmon <- function(x, ...) round(12 * (as.numeric(x) %% 1)) + 1
 
 format.yearmon <- function(x, format = "%b %Y", ...) 
 {
@@ -94,12 +94,12 @@ print.yearmon <- function(x, ...) {
     invisible(x) 
 }
 
-months.yearmon <- function(x, abbreviate) {
-    months(as.Date(x), abbreviate)
+months.yearmon <- function(x, abbreviate = FALSE) {
+    months(as.Date(x), abbreviate = abbreviate)
 }
 
-quarters.yearmon <- function(x, abbreviate) {
-    quarters(as.Date(x), abbreviate)
+quarters.yearmon <- function(x, abbreviate = FALSE) {
+    quarters(as.Date(x), abbreviate = abbreviate)
 }
 
 "[.yearmon" <- function (x, ..., drop = TRUE) 

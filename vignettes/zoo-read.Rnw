@@ -575,7 +575,7 @@ zq
 
 \newpage
 
-\section{Further comments}
+\section*{Further comments}
 
 Multiple files can be read and subsequently merged.
 

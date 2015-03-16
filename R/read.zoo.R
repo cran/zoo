@@ -20,6 +20,20 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   ## read data
   rval <- if (is.data.frame(file)) file else read.table(file, ...)
 
+  ## if time index appears to be already processed, use FUN = identity
+  if (is.data.frame(file) && 
+      length(index.column) == 1 && 
+      !is.character(rval[[index.column]]) &&
+      !is.factor(rval[[index.column]]) &&
+      missing(tz) &&
+      missing(format) &&
+      missing(FUN)) FUN <- identity
+
+  ## if time index is POSIXlt it is coerced to POSIXct
+  if (is.data.frame(file) && 
+      length(index.column) == 1 && 
+      inherits(rval[[index.column]], "POSIXlt")) rval[[index.column]] <- as.POSIXct(rval[[index.column]])
+
   # returns TRUE if a formal argument x has no default
   no.default <- function(x) typeof(x) %in% c("symbol", "language")
 
@@ -79,7 +93,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   else split
 
   rval2 <- if (is.null(split.)) {
-	 rval[ , ! is.index.column, drop = drop]
+    rval[ , ! is.index.column, drop = FALSE]
   } else {
 
      split.values <- if (is.character(split) || is.finite(split)) rval[, split]
@@ -94,18 +108,26 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 	 if (0 %in% split.) {
 		stop(paste("split:", split, "not found in colnames:", colnames(rval)))
 	 }
-	 rval[,-c(if (is.finite(split.)) split. else 0, which(is.index.column)), drop = drop]
+	 rval[,-c(if (is.finite(split.)) split. else 0, which(is.index.column)), drop = FALSE]
   }
 
   if(is.factor(ix)) ix <- as.character(ix)
   rval3 <- if(is.data.frame(rval2)) as.matrix(rval2) else  if(is.list(rval2)) t(rval2) else rval2
+  
+  if(NCOL(rval3) == 1 && drop) rval3 <- drop(rval3)
+
     
   ## index transformation functions
 
   toDate <- if(missing(format) || is.null(format)) {
      function(x, ...) as.Date(format(x, scientific = FALSE))
   } else {
-     function(x, format) as.Date(format(x, scientific = FALSE), format = format)
+     function(x, format) {
+       if(any(sapply(c("%H", "%M", "%S"), function(y) grepl(y, format, fixed = TRUE)))) {
+         warning("the 'format' appears to be for a date/time, please specify 'tz' if you want to create a POSIXct time index")
+       }
+       as.Date(format(x, scientific = FALSE), format = format)
+     }
   }
 
   toPOSIXct <- if (missing(format) || is.null(format)) {
@@ -115,7 +137,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   }
 
   toDefault <- function(x, ...) {
-    rval. <- try(toPOSIXct(x, ...), silent = TRUE)
+    rval. <- try(toPOSIXct(x, tz = ""), silent = TRUE)
     if(inherits(rval., "try-error"))
       rval. <- try(toDate(x), silent = TRUE)
     else {
@@ -223,14 +245,6 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 	} else rval5
 
 	rval8 <- do.call(merge, rval6)
-
-	if (FALSE) {
-		rval8 <- if (!is.null(agg.fun)) {
-			f.ag <- function(z) aggregate(z, time(z), agg.fun)
-			rval7 <- lapply(seq_along(rval6), f.ag)
-			do.call(merge, rval7)
-		} else do.call(merge, rval6)
-	}
 
   }
 	

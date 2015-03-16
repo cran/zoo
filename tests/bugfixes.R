@@ -25,3 +25,7 @@ identical(rollapply(z, 3, mean, partial = TRUE),
 z <- zoo(sin(0:20))
 identical(z, rollmedian(z, 1))
 identical(coredata(rollmedian(z, 1)), as.vector(runmed(coredata(z), 1)))
+
+## na.fill with just NAs (directly and implicitly through rollapply)
+na.fill(c(NA, NA), fill = NA)
+rollapply(1:2, 3, sum, fill = NA)

@@ -9,14 +9,14 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 
     ## check data and choose default
     if (missing(data) || is.null(data)) data <- NA
-    if(!(is.vector(data) || is.factor(data) || is.matrix(data) || is.data.frame(data)))
+    if(!(is.vector(data) || is.factor(data) || is.atomic(data) || is.matrix(data) || is.data.frame(data)))
       stop(paste(dQuote("data"), ": attempt to define invalid zoo object"))
     if(is.matrix(data) || is.data.frame(data)) data <- as.matrix(data)
 
     ## if no index (i.e., order.by) is specified: behave as ts()
     ## else: behave as zoo()
     if (is.null(order.by)) {
-	if(!any(c(is.vector(data), is.factor(data), is.matrix(data), is.data.frame(data))))
+	if(!any(c(is.vector(data), is.factor(data), is.atomic(data), is.matrix(data), is.data.frame(data))))
   	    stop(paste(dQuote("data"), ": attempt to define invalid zoo object"))
 	ndata <- NROW(data)        
 

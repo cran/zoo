@@ -20,7 +20,7 @@
 */
 
 
-#include "zoo.h"
+#include <zoo.h>
 #include <R_ext/Rdynload.h>
 
 static const

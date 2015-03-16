@@ -34,6 +34,8 @@
 \alias{quantile.zoo}
 \alias{rev.zoo}
 \alias{transform.zoo}
+\alias{ifelse.zoo}
+\alias{dim<-.zoo}
 
 \alias{index2char}
 \alias{index2char.default}
@@ -41,8 +43,6 @@
 
 \alias{head.ts}
 \alias{tail.ts}
-
-\alias{ifelse.zoo}
 
 \title{Z's Ordered Observations}
 \description{

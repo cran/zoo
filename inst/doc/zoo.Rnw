@@ -191,7 +191,7 @@ All these methods are available, e.g., for standard numeric and character vector
 vectors of classes \code{"Date"}, \code{"POSIXct"} or \code{"times"}
 from package \pkg{chron} and \code{"timeDate"} in \pkg{timeDate}.
 Because not all required methods used to be available for \code{"timeDate"} in older
-versions of \pkg{fCalendar}, Section~\ref{sec:fCalendar} has a rather outdated example how
+versions of \pkg{fCalendar}, Section~\ref{sec:timeDate} has a rather outdated example how
 to provide such methods so that \code{"zoo"} objects work with \code{"timeDate"} indexes.
 To achieve this  independence of the index class, new generic functions for
 ordering (\code{ORDER()}) and value matching (\code{MATCH()}) are introduced
@@ -220,7 +220,8 @@ z1 <- zoo(z1.data, z1.index)
 @
 and one with a sine wave
 <<zoo-vectors2>>=
-z2.index <- as.POSIXct(paste(2004, rep(1:2, 5), sample(1:28, 10), sep = "-"))
+z2.index <- as.POSIXct(paste(2004, rep(1:2, 5), sample(1:28, 10),
+  sep = "-"))
 z2.data <- sin(2*1:10/pi)
 z2 <- zoo(z2.data, z2.index)
 @
@@ -436,7 +437,8 @@ plot(Z, plot.type = "single", col = 2:4)
 <<plot1>>
 @
 <<plot3,fig=TRUE,height=5,width=6,echo=FALSE>>=
-plot(Z, type = "b", lty = 1:3, pch = list(Aa = 1:5, Bb = 2, Cc = 4), col = list(Bb = 2, 4))
+plot(Z, type = "b", lty = 1:3, pch = list(Aa = 1:5, Bb = 2, Cc = 4),
+  col = list(Bb = 2, 4))
 @
 \caption{\label{fig:plot13} Examples of multiple panel plots}
 \end{center}
@@ -540,10 +542,12 @@ dataset is an annual \code{"ts"} class series.  To disaggregate it into a
 quarterly series, convert it to a \code{"zoo}
 class series, insert intermediate quarterly points containing \code{NA} values
 and then fill the \code{NA} values using \code{na.approx}, \code{na.locf}
-or \code{na.spline}:
+or \code{na.spline}. (More details on \code{NA} handling in general can be found
+in Section~\ref{sec:NA}.)
 
 <<disaggregate>>=
-Nile.na <- merge(as.zoo(Nile), zoo(, seq(start(Nile)[1], end(Nile)[1], 1/4)))
+Nile.na <- merge(as.zoo(Nile),
+  zoo(, seq(start(Nile)[1], end(Nile)[1], 1/4)))
 head(as.zoo(Nile))
 head(na.approx(Nile.na))
 head(na.locf(Nile.na))
@@ -684,16 +688,16 @@ as.data.frame(Z)
 \subsection[NA handling]{\code{NA} handling}
 \label{sec:NA}
 
-Four methods for dealing with \code{NA}s (missing observations) 
-in the observations are applicable to \code{"zoo"} objects:
-\code{na.omit}, \code{na.contiguous}, \code{na.approx} and \code{na.locf}.
+A wide range of methods for dealing with \code{NA}s (missing observations) 
+in the observations are applicable to \code{"zoo"} objects including
+\code{na.omit}, \code{na.contiguous}, \code{na.approx}, \code{na.spline}, and \code{na.locf} among others.
 \code{na.omit}---or its default method to be more precise---returns a \code{"zoo"}
 object with incomplete observations removed. \code{na.contiguous}
 extracts the longest consecutive stretch of non-missing values.
 Furthermore, new generic functions
-\code{na.approx} and \code{na.locf} and corresponding default methods are introduced in \pkg{zoo}.
-The former replaces \code{NA}s by linear interpolation (using the
-function \code{approx}) and the name of the latter
+\code{na.approx}, \code{na.spline}, and \code{na.locf} and corresponding default methods are introduced in \pkg{zoo}.
+The former two replace \code{NA}s by interpolation (using the
+function \code{approx} and \code{spline}, respectively) and the name of the latter
 stands for \underline{l}ast \underline{o}bservation \underline{c}arried
 \underline{f}orward. It replaces missing observations by the most recent
 non-\code{NA} prior to it. Leading \code{NA}s, which cannot be replaced
@@ -706,13 +710,18 @@ na.omit(z1)
 na.contiguous(z1)
 na.approx(z1)
 na.approx(z1, 1:NROW(z1))
+na.spline(z1)
 na.locf(z1)
 @
 
-As the above example illustrates, \code{na.approx} uses by default
+As the above example illustrates, \code{na.approx} (and also \code{na.spline}) use by default
 the underlying time scale for interpolation. This can be changed, e.g.,
 to an equidistant spacing, by setting the second argument of
-\code{na.approx}.
+\code{na.approx}. Furthermore, a different output time index can be supplied as well.
+
+In addition to the methods discussed above, there are also other methods
+for dealing with missing values in \pkg{zoo} such as \code{na.aggregate},
+\code{na.fill}, \code{na.trim}, and \code{na.StructTS}.
 
 \subsection{Rolling functions}
 \label{sec:rolling}

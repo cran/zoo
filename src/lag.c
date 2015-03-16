@@ -23,7 +23,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <Rdefines.h>
-#include "zoo.h"
+#include <zoo.h>
 
 SEXP zoo_lag (SEXP x, SEXP _k, SEXP _pad)
 {
@@ -50,7 +50,12 @@ Rprintf("zoo_lag\n");
 
   PROTECT(result = allocVector(TYPEOF(x), 
           length(x) - (PAD ? 0 : abs(k)*nc))); P++;
-  int nrr = (int)(length(result)/nc);
+
+  int nrr;
+  if(length(result) > 0)
+    nrr = (int)(length(result)/nc);
+  else  /* handle zero-length objects */
+    nrr = nr - (PAD ? 0 : abs(k));
 
   if(k_positive) {
   switch(TYPEOF(x)) {

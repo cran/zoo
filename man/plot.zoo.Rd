@@ -214,6 +214,29 @@ text(usr[2] + .1 * diff(usr[1:2]), mean(usr[3:4]), colnames(z)[2],
   srt = -90, xpd = TRUE, col = "blue")
 par(opar)
 
+
+## another plot with left and right axes
+## modified from https://stat.ethz.ch/pipermail/r-help/2014-May/375293.html
+d1 <- c(38.2, 18.1, 83.2, 42.7, 22.8, 48.1, 81.8, 129.6, 52.0, 110.3)
+d2 <- c(2.2, 0.8, 0.7, 1.6, 0.9, 0.9, 1.1, 2.8, 5.1, 2.1)
+z1 <- zooreg(d1, start = as.POSIXct("2013-01-01 00:00:01"), frequency = 0.0000006)
+z2 <- zooreg(d2, start = as.POSIXct("2013-01-01 00:00:20"), frequency = 0.0000006)
+zt <- zooreg(rnorm(1050), start = as.POSIXct("2013-01-01 00:00:01"), frequency = 0.00007)
+z <- merge(zt, z1, z2, all = TRUE)
+z <- na.spline(z[,2:3], na.rm = FALSE)
+## function to round up to a number divisible by n (2011 by Owen Jones)
+roundup <- function(x, n) ceiling(ceiling(x)/n) * n
+## plot how to match secondary y-axis ticks to primary ones
+plot(z$z1, ylim = c(0, signif(max(na.omit(z$z1)), 2)), xlab = "")
+## use multiplication for even tick numbers and fake sekondary y-axis
+max.yl <- roundup(max(na.omit(z$z2)), par("yaxp")[3])
+multipl.yl <- max(na.omit(z$z2)) / max.yl
+multipl.z2 <- signif(max(na.omit(z$z1) * 1.05), 2)/max.yl
+lines(z$z2 * multipl.z2, lty = 2)
+at4 <- axTicks(4)
+axis(4, at = at4, seq(0, max.yl, length.out = par("yaxp")[3] + 1))
+
+
 # automatically placed point labels
 \dontrun{
 library("maptools")
@@ -281,6 +304,14 @@ tke.test1 <- list(Parameters = list(
 z <- zoo(rnorm(25))
 tkexamp(plot(z), tke.test1, plotloc = "top")
 }
+
+# setting ylim on a multi-panel plot - 2nd panel y axis range is 1-50
+data("anscombe", package = "datasets")
+ans6 <- zoo(anscombe[, 1:6])
+screens <- c(1, 1, 2, 2, 3, 3)
+ylim <- unname(tapply(as.list(ans6), screens, range))
+ylim[[2]] <- 1:50 # or ylim[[2]] <- c(1, 50)
+plot(ans6, screens = screens, ylim = ylim) 
 
 }
 \keyword{ts}

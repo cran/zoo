@@ -217,9 +217,11 @@ str.zoo <- function(object, ...)
   if(NCOL(object) > 0L & is.null(colnames(object))) stop("only possible for zoo series with column names")
   wi <- match(x, colnames(object))
   if(is.na(wi)) {
-    object <- cbind(object, value)
-    if(is.null(dim(object))) dim(object) <- c(length(object), 1)
-    colnames(object)[NCOL(object)] <- x  
+    if(!is.null(value)) {
+      object <- cbind(object, value)
+      if(is.null(dim(object))) dim(object) <- c(length(object), 1)
+      colnames(object)[NCOL(object)] <- x  
+    }
   } else {
     if(is.null(value)) {
       object <- object[, -wi, drop = FALSE]
@@ -350,4 +352,15 @@ transform.zoo <- function(`_data`, ...)
 
   ## return zoo
   zoo(`_data`, ix, freq)
+}
+
+`dim<-.zoo` <- function(x, value) {
+  d <- dim(x)
+  l <- length(x)
+  ok <- isTRUE(all.equal(d, value)) ||                                  ## no change
+    (is.null(d) && l == 0L && all(value == c(length(index(x)), 0L))) || ## zero-length vector -> 0-column matrix
+    (is.null(d) && l > 0L && all(value == c(l, 1L))) ||                 ## positive-length vector -> 1-column matrix
+    (!is.null(d) && d[2L] <= 1L && is.null(value))                      ## 0- or 1-column matrix -> vector
+  if(!ok) warning("setting this dimension may lead to an invalid zoo object")
+  NextMethod()
 }

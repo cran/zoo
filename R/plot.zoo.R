@@ -98,6 +98,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     main.outer <- TRUE
     if(is.null(ylab)) ylab <- colnames(x)[!duplicated(screens)]
     if(is.null(ylab)) ylab <- paste("Series", which(!duplicated(screens)))
+    if(is.call(ylab)) ylab <- as.expression(ylab)
     ylab <- rep(ylab, length.out = ngraph)
     lty <- rep(lty, length.out = nser)
     lwd <- rep(lwd, length.out = nser)
@@ -153,11 +154,18 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
       do.call("axis", c(list(side = y.side, xpd = NA), dots))
       mtext(ylab[j], y.side, line = 3)
 
-      for(i in which(screens == levels(screens)[j]))
+      for(i in which(screens == levels(screens)[j])) {
+        ## for potential usage in panel function
+        series.number <- i
+        series.within.screen <- ave(seq_along(screens), screens, FUN = seq_along)[series.number]
+       
+        ## draw individual lines/points with panel function
         panel(x.index, x[, i], col = col[[i]], pch = pch[[i]], lty = lty[i], lwd = lwd[i], type = type[[i]], ...)
+      }
     }
   } else {
     if(is.null(ylab)) ylab <- deparse(substitute(x))
+    if(is.call(ylab)) ylab <- as.expression(ylab)
     if(is.null(main)) main <- ""
     main.outer <- FALSE
     if(is.null(ylim)) ylim <- range(x, na.rm = TRUE)
@@ -206,12 +214,12 @@ plot.tis <- function(x, ...) eval.parent(substitute(plot(as.zoo(x), ...)))
 
 plot.ti <- function (x, y, xlab = "", ...) 
 {
-	x <- POSIXct(x)
+	x <- tis::POSIXct(x)
 	NextMethod()
 }
 
 points.ti <- lines.ti <- function(x, ...) {
-	x <- POSIXct(x)
+	x <- tis::POSIXct(x)
 	NextMethod()
 }
 
