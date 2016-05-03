@@ -83,16 +83,16 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 	align <- match.arg(align)
 
 	if (!is.list(width)) width <- lapply(width, function(w) {
-			if (align == "right") seq(to = 0, length = w)
-			else if (align == "center") seq(to = floor(w/2), length = w)
-			else seq(from = 0, length = w)
+			if (align == "right") seq(to = 0, length.out = w)
+			else if (align == "center") seq(to = floor(w/2), length.out = w)
+			else seq(from = 0, length.out = w)
 	})
 	# recycle width (using by if length(width) == 1)
 	width <- if (length(width) == 1) {
 		w <- rep(list(NULL), NROW(data))
 		start.at <- if (partial < 0) max(-min(width[[1]]), 0) + 1 else 1
 		replace(w, seq(start.at, NROW(data), by = by), width)
-	} else rep(width, length = NROW(data))
+	} else rep(width, length.out = NROW(data))
 
 	f <- if (is.null(dim(data))) {
 		# undimensioned

@@ -33,10 +33,10 @@ na.fill.zoo <- function(object, fill, ix, ...) {
 		wx.min <- head(wix, 1) 
 		wx.max <- tail(wix, 1)
 		# similar to wrng <- wx.min:wx.max
-		wrng <- seq(wx.min, length = wx.max - wx.min + 1)
+		wrng <- seq(wx.min, length.out = wx.max - wx.min + 1)
 
 		# recycle to length 3
-		fill <- rep(as.list(fill), length = 3)
+		fill <- rep(as.list(fill), length.out = 3)
 		# we will be coercing fill values to the class of coredata(data).
 		# This allows fill=c("extend", NA) to work even though NA is coerced to
 		#  a character NA.
@@ -60,14 +60,14 @@ na.fill.zoo <- function(object, fill, ix, ...) {
 		}
 		# fill points on right
 		if (length(fill[[3]]) > 0) 
-			object[seq(wx.max + 1, length = n - wx.max)] <- 
+			object[seq(wx.max + 1, length.out = n - wx.max)] <- 
 				if (is.character(fill[[3]]) && fill[[3]] == "extend")
 						object[[wx.max]] else fill[[3]]
 
 		keep <- seq_len(n)
 		if (length(fill[[1]]) == 0) keep <- unique(pmax(wx.min, keep))
 		if (length(fill[[2]]) == 0) {
-			wrng <- seq(wx.min, length = wx.max - wx.min + 1)
+			wrng <- seq(wx.min, length.out = wx.max - wx.min + 1)
 			keep <- setdiff(keep, intersect(which(!ix), wrng))
 		}
 		if (length(fill[[3]]) == 0) keep <- unique(pmin(wx.max, keep)) 

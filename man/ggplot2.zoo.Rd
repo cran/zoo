@@ -123,11 +123,17 @@ autoplot(as.zoo(EuStockMarkets), facets = NULL)
 
 autoplot(z) + 
 	aes(colour = NULL, linetype = NULL) +
-	facet_grid(series ~ ., scales = "free_y")
+	facet_grid(Series ~ ., scales = "free_y")
 
 autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
 
 z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
 autoplot(z.yq) + scale_x_yearqtr()
+
+## mimic matplot
+data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
+autoplot(zoo(data), facet = NULL) + geom_point()
+## with different line types
+autoplot(zoo(data), facet = NULL) + geom_point() + aes(linetype = Series)
 }
 }

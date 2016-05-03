@@ -55,6 +55,16 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
 
     na.approx.vec <- function(x, y, xout = x, ...) {
         na <- is.na(y)
+	if(sum(!na) < 2L) {
+	    ## approx() cannot be applied here, hence simply:
+	    yf <- rep.int(NA, length(xout))
+	    if(any(!na)) {
+	        if(x[!na] %in% xout) {
+		    yf[xout == x[!na]] <- y[!na]
+		}
+	    }
+	    return(yf)
+	}
         yf <- approx(x[!na], y[!na], xout, ...)$y
         if (maxgap < length(y)) {
             ## construct a series like y but with only gaps > maxgap
@@ -63,8 +73,7 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
             ## construct y values at 'xout', keeping NAs from ygap
             ## (using indexing, as approx() does not allow NAs to be propagated)
             ix <- approx(x, seq_along(y), xout, ...)$y
-            yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]),
-                         NA, yf)
+            yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]), NA, yf)
             yx
         } else {
             yf

@@ -47,7 +47,7 @@ xblocks.default <-
         if (is.character(col))
             col[col == ""] <- NA
         ok <- !is.na(blockCol)
-        blockCol[ok] <- rep(col, length = sum(ok)) ## rep to avoid warnings
+        blockCol[ok] <- rep(col, length.out = sum(ok)) ## rep to avoid warnings
     }
     ## work out block geometry
     idxBounds <- cumsum(c(1, yrle$lengths))

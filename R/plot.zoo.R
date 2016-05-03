@@ -100,6 +100,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
     if(is.null(ylab)) ylab <- paste("Series", which(!duplicated(screens)))
     if(is.call(ylab)) ylab <- as.expression(ylab)
     ylab <- rep(ylab, length.out = ngraph)
+    if(!is.list(ylab)) ylab <- as.list(ylab)
     lty <- rep(lty, length.out = nser)
     lwd <- rep(lwd, length.out = nser)
     col <- make.par.list(cn, col, NROW(x), nser, 1)
@@ -152,7 +153,7 @@ plot.zoo <- function(x, y = NULL, screens, plot.type, panel = lines,
 			if ("bty" %in% names(args) && args$bty == "n") {} else box()
       }
       do.call("axis", c(list(side = y.side, xpd = NA), dots))
-      mtext(ylab[j], y.side, line = 3)
+      mtext(ylab[[j]], y.side, line = 3)
 
       for(i in which(screens == levels(screens)[j])) {
         ## for potential usage in panel function

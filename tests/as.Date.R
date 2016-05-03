@@ -1,3 +1,6 @@
+## set Z's timezone for reproducibility
+Sys.setenv(TZ = "Europe/Vienna")
+
 ## base results
 as.Date(10957, origin = "1970-01-01")
 as.Date("2000-01-01")

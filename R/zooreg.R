@@ -46,7 +46,7 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 
         ## check whether lengths of data and index match
 	# wrong lengths sometimes: order.by <- seq(start, end, by = deltat)
-	order.by <- start + seq(0, length = ndata) * deltat
+	order.by <- start + seq(0, length.out = ndata) * deltat
 	if(identical(all.equal(start*frequency, round(start*frequency)), TRUE)) {
 	  order.by <- floor(frequency*order.by + .0001)/frequency
         }

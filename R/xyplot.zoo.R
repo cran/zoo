@@ -1,11 +1,11 @@
 panel.plot.default <- function(x, y, subscripts, groups, panel = panel.xyplot,
   col = 1, type = "p", pch = 20, lty = 1, lwd = 1, ...)
 {
-  col <- rep(as.list(col), length = nlevels(groups))
-  type <- rep(as.list(type), length = nlevels(groups))
-  pch <- rep(as.list(pch), length = nlevels(groups))
-  lty <- rep(as.list(lty), length = nlevels(groups))
-  lwd <- rep(as.list(lwd), length = nlevels(groups))
+  col <- rep(as.list(col), length.out = nlevels(groups))
+  type <- rep(as.list(type), length.out = nlevels(groups))
+  pch <- rep(as.list(pch), length.out = nlevels(groups))
+  lty <- rep(as.list(lty), length.out = nlevels(groups))
+  lwd <- rep(as.list(lwd), length.out = nlevels(groups))
 
   for(g in 1:nlevels(groups)) {
     idx <- g == unclass(groups[subscripts])

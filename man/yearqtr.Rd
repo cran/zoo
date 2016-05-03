@@ -46,6 +46,7 @@
 \usage{
 yearqtr(x)
 as.yearqtr(x, \dots)
+\method{as.yearqtr}{character}(x, format, \dots)
 \method{format}{yearqtr}(x, format = "\%Y Q\%q", \dots)
 }
 
@@ -56,11 +57,12 @@ as.yearqtr(x, \dots)
   object of class \code{"yearqtr"} or if called as \code{format.yearqtr}
   then an object with an \code{as.yearqtr} method that can be coerced 
   to \code{"yearqtr"}.}
-  \item{format}{character string specifying format.
-  \code{"\%C"}, \code{"\%Y"}, \code{"\%y"} and \code{"\%q"}, if present,
+  \item{format}{character string specifying format. For coercing to \code{"yearqtr"}
+  from character: \code{"\%Y"} and \code{"\%q"} have to be specified. For formatting an existing
+  \code{"yearqtr"}: \code{"\%C"}, \code{"\%Y"}, \code{"\%y"} and \code{"\%q"}, if present,
   are replaced with the century, year, last two digits of the year, 
   and quarter (i.e. a number between 1 and 4), respectively.}
-  \item{\dots}{other arguments.  Currently not used.}
+  \item{\dots}{arguments passed ot other methods.}
 }
 
 \details{

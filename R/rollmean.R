@@ -153,7 +153,7 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   a <- 0
   xc <- coredata(x)
   for (i in k:n) {
-  rval[i] <- if (is.na(a) || is.na(rval[i=1]) || a==rval[i-1]) 
+  rval[i] <- if (is.na(a) || is.na(rval[i-1]) || a==rval[i-1]) 
       max(xc[(i-k+1):i]) # calculate max of window
   else 
       max(rval[i-1], xc[i]); # max of window = rval[i-1] 

@@ -1,6 +1,6 @@
 
-R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R Under development (unstable) (2016-04-28 r70561) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -515,15 +515,23 @@ Frequency = 3
 + 
 + autoplot(z) + 
 + 	aes(colour = NULL, linetype = NULL) +
-+ 	facet_grid(series ~ ., scales = "free_y")
++ 	facet_grid(Series ~ ., scales = "free_y")
 + 
 + autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
 + 
 + z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
 + autoplot(z.yq) + scale_x_yearqtr()
++ 
++ ## mimic matplot
++ data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
++ autoplot(zoo(data), facet = NULL) + geom_point()
++ ## with different line types
++ autoplot(zoo(data), facet = NULL) + geom_point() + aes(linetype = Series)
 + }
 Loading required package: ggplot2
 Loading required package: scales
+Warning: Removed 3 rows containing missing values (geom_path).
+Warning: Removed 3 rows containing missing values (geom_point).
 > 
 > 
 > 
@@ -1054,7 +1062,7 @@ Data:
 numeric(0)
 
 Index:
-character(0)
+[1] "Date of length 0"
 > na.approx(z, xout = d0 + 7, na.rm = FALSE)
 2000-01-08 
         NA 
@@ -3038,7 +3046,7 @@ NA  1  2  3 NA  6
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  5.4 0.12 5.542 0 0 
+Time elapsed:  3.64 0.064 3.704 0 0 
 > grDevices::dev.off()
 null device 
           1 

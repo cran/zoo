@@ -1,18 +1,36 @@
+Changes in Version 1.7-13
+
+  o The window() method erroneously dropped the dimension in case of
+    1-column zoo series. Fixed now.
+
+  o Bug fix in NA handling of rollmax() pointed out by Cory Fletcher.
+    
+  o A few as.yearmon/as.yearqtr methods were not registered in
+    the NAMESPACE but are now.
+    
+  o If there are less then two non-NAs in na.approx() then approx()
+    cannot be applied. Instead of throwing an error (as up to version
+    1.7-12) simply no NAs are replaced now.
+
+  o Bug fix for lag(z, k = k, na.pad = TRUE) which ignored na.pad = TRUE
+    if 'k' was a vector of lags.
+
+
 Changes in Version 1.7-12
 
-  o read.zoo with a data.frame argument now defaults to FUN = identity
+  o read.zoo() with a data.frame argument now defaults to FUN = identity
     if the index.column is not character or factor.  See ?read.zoo for
     additional details.
 
+  o read.zoo() heuristic improved so that POSIXct rather than Date is
+    detected in cases like: read.zoo(text = "2010-01-01 12:05:03 88.1",
+    index = 1:2).
+    
   o Added a dim<- method that checks whether the new dimension value
     appears to be ok and then calls the default.
 
   o The index<- and time<- methods now enforce that the new time index
     is actually correctly ordered (suggested by Joshua Ulrich).
-    
-  o read.zoo() heuristic improved so that POSIXct rather than Date is
-    detected in cases like: read.zoo(text = "2010-01-01 12:05:03 88.1",
-    index = 1:2).
     
   o The fortify() method now has a col.names argument that allows to set
     (some of) the column names of the resulting data.frame.

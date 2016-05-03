@@ -210,7 +210,7 @@ in \code{NA} values and
 \code{NA} values,
 \code{\link{na.trim}} which trims runs of \code{NA}s off the beginning and
 end but not in the interior.  Yet another \code{NA} routine can be found in
-the \code{stinepack} package where \code{\link[stinepack]{na.stinterp}}
+the \code{stinepack} package where \code{na.stinterp}
 performs Stineman interpolation.
 
 A typical task to be performed on ordered observations is to evaluate some

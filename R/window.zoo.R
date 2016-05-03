@@ -15,10 +15,10 @@ window.zoo <- function(x, index. = index(x), start = NULL, end = NULL, ...)
   if(is.null(start)) {
     if(is.null(end)) {
       wi <- which(MATCH(all.indexes, index., nomatch = 0) > 0)
-      return(x[wi,,])
+      return(x[wi, , drop = FALSE])
     } else {
       wi <- which(in.index & all.indexes <= end)
-      return(x[wi,,])
+      return(x[wi, , drop = FALSE])
     }
   } else {
     if(is.null(end)) {
@@ -26,7 +26,7 @@ window.zoo <- function(x, index. = index(x), start = NULL, end = NULL, ...)
     } else {
       wi <- which(in.index & all.indexes >= start & all.indexes <= end)
     }
-    return(x[wi,,])
+    return(x[wi, , drop = FALSE])
   }
 }
 
@@ -59,7 +59,7 @@ lag.zoo <- function(x, k = 1, na.pad = FALSE, ...)
 {
    if (length(k) > 1) {
 	if (is.null(names(k))) names(k) <- paste("lag", k, sep = "")
-	return(do.call("merge.zoo", lapply(k, lag.zoo, x = x, ...)))
+	return(do.call("merge.zoo", lapply(k, lag.zoo, x = x, na.pad = na.pad, ...)))
    }
    nr <- NROW(x)
    if (k != round(k)) {
@@ -69,11 +69,11 @@ lag.zoo <- function(x, k = 1, na.pad = FALSE, ...)
    if (k == 0) return(x)
    if (abs(k) > nr) k <- nr
    if (k > 0)  {
-	   xx <- x[-seq(1, length = k),, drop = FALSE]
-	   attr(xx, "index") <- index(x)[-seq(to = nr,length = k)]
+	   xx <- x[-seq(1, length.out = k),, drop = FALSE]
+	   attr(xx, "index") <- index(x)[-seq(to = nr, length.out = k)]
    } else {
-	   xx <- x[-seq(to = nr, length = -k),, drop = FALSE]
-	   attr(xx, "index") <- index(x)[-seq(1, length = -k)]
+	   xx <- x[-seq(to = nr, length.out = -k),, drop = FALSE]
+	   attr(xx, "index") <- index(x)[-seq(1, length.out = -k)]
    }
    if (na.pad) merge(zoo(,time(x)), xx, all = c(TRUE, FALSE)) else xx
 }
