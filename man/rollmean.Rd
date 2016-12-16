@@ -71,7 +71,7 @@ optimized for speed.
 Currently, there are methods for \code{"zoo"} and \code{"ts"} series and
 default methods. The default method of \code{rollmedian}
 is an interface to \code{\link{runmed}}.
-The default method of \code{rollmean} does not handle inputs that contain
+The default methods of \code{rollmean} and \code{rollsum} do not handle inputs that contain
 \code{NA}s. In such cases, use \code{\link{rollapply}} instead.
 }
 

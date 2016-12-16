@@ -81,7 +81,7 @@ emerged which are aimed particularly at finance applications.
 These include the \proglang{S4} classes \code{"timeSeries"}
 in package \pkg{timeSeries} (previously \pkg{fSeries}) from the
 \pkg{Rmetrics} suite \citep{zoo:Rmetrics:2008},
-\code{"its"} in package \pkg{its} \citep{zoo:its:2004}
+\code{"its"} in package \pkg{its} \citep[][archived on CRAN]{zoo:its:2004}
 and the \proglang{S3} class \code{"irts"} in package \pkg{tseries} \citep{zoo:tseries:2007}.
 With these packages available, why would anybody want yet another 
 package providing infrastructure for irregular time series?

@@ -65,6 +65,15 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
 	    }
 	    return(yf)
 	}
+	if(all(!na) && (length(xout) > maxgap) && !all(xout %in% x)) {
+	    ## for maxgap to work correctly 'y' has to contain
+	    ## actual NAs and be expanded to the full x-index
+	    xf <- sort(unique(c(x, xout)))
+	    yf <- rep.int(NA, length(xf))
+	    yf[MATCH(x, xf)] <- y
+	    x <- xf
+	    y <- yf
+	}
         yf <- approx(x[!na], y[!na], xout, ...)$y
         if (maxgap < length(y)) {
             ## construct a series like y but with only gaps > maxgap

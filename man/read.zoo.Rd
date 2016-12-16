@@ -1,5 +1,10 @@
 \name{read.zoo}
 \alias{read.zoo}
+\alias{read.table.zoo}
+\alias{read.csv.zoo}
+\alias{read.csv2.zoo}
+\alias{read.delim.zoo}
+\alias{read.delim2.zoo}
 \alias{write.zoo}
 
 \title{Reading and Writing zoo Series}
@@ -7,12 +12,29 @@
 \code{read.zoo} and \code{write.zoo} are convenience functions for reading
 and writing \code{"zoo"} series from/to text files. They are convenience
 interfaces to \code{read.table} and \code{write.table}, respectively.
+To employ \code{read.csv}, \code{read.csv2}, \code{read.delim},
+\code{read.delim2} instead of \code{read.table} additional functions
+\code{read.csv.zoo} etc. are provided.
 }
 \usage{
 read.zoo(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL,
   split = NULL, aggregate = FALSE, \dots, text)
+  
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
+
+read.csv.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, \dots)
+read.csv2.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, \dots)
+read.delim.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, \dots)
+read.delim2.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, \dots)
 }
 \arguments{
   \item{file}{character string or strings giving the name of the file(s) 
@@ -36,10 +58,10 @@ write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NUL
     corresponding to \code{"NULL"} in \code{colClasses} have been removed.  
     If specified as a list then one argument will be passed to argument \code{FUN} per component so that, 
     for example, \code{index.column = list(1, 2)} will cause 
-    \code{FUN(x[,1], x[,2], ...)} to be called whereas 
+    \code{FUN(x[,1], x[,2], \dots)} to be called whereas 
     \code{index.column = list(1:2)} will cause 
-    \code{FUN(x[,1:2], ...)} to be called where \code{x} is a data frame of 
-    characters data.  Here \code{...} refers to \code{format}
+    \code{FUN(x[,1:2], \dots)} to be called where \code{x} is a data frame of 
+    characters data.  Here \code{\dots} refers to \code{format}
     and/or \code{tz}, if they specified as arguments.  \code{index.column = 0} can
     be used to specify that the row names be used as the index.  In the case that
     no row names were input sequential numbering is used.
@@ -90,7 +112,7 @@ immediately. \code{read.zoo} reads the data file via \code{read.table(file, \dot
 The column \code{index.column} (by default the first) of the resulting data is
 interpreted to be the index/time, the remaining columns the corresponding data.
 (If the file only has only column then that is assumed to be the data column and
-\code{1, 2, ...} are used for the index.)  To assign the appropriate class
+\code{1, 2, \dots} are used for the index.)  To assign the appropriate class
 to the index, \code{FUN} can be specified and is applied to the first column.
 
 To process the index, \code{read.zoo} calls \code{FUN} with the index as the
@@ -116,6 +138,9 @@ reliable results than the heuristic.
 
 If \code{regular} is set to \code{TRUE} and the resulting series has an 
 underlying regularity, it is coerced to a \code{"zooreg"} series.
+
+To employ other functions than \code{read.table} to read the initial data,
+further convenience interfaces \code{read.csv.zoo} etc. are provided.
 
 \code{write.zoo} is a convenience function for writing \code{"zoo"} series
 to text files. It first coerces its argument to a \code{"data.frame"}, adds

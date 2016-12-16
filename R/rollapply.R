@@ -45,7 +45,7 @@ rollapply.ts <- function(data, ...) {
 
 rollapply.zoo <- function(data, width, FUN, ..., by = 1, 
 	by.column = TRUE, fill = if (na.pad) NA, na.pad = FALSE,
-	partial = FALSE, align = c("center", "left", "right")) {
+	partial = FALSE, align = c("center", "left", "right"), coredata = TRUE) {
 
 	if (!missing(na.pad)) {
 		warning("na.pad argument is deprecated")
@@ -69,7 +69,7 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 			lapply(1:NCOL(data), function(j)
 				rollapply(data[, j, drop = TRUE], width = width, FUN = FUN, ...,
 					by = by, by.column = by.column, fill = fill,
-					partial = partial, align = align)
+					partial = partial, align = align, coredata = coredata)
 			)
 		)
 		if (NCOL(data) == 1) dim(z) <- c(length(z), 1)
@@ -125,8 +125,9 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 		}
 	}
 
+        dat <- if(coredata) coredata(data) else data
 	dat <- mapply(f, seq_along(time(data)), width, 
-		MoreArgs = list(data = coredata(data), ...), SIMPLIFY = FALSE) 
+		MoreArgs = list(data = dat, ...), SIMPLIFY = FALSE) 
 		
 	ix <- !sapply(dat, is.null) # integer indexes of non-nulls
 

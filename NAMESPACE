@@ -16,6 +16,11 @@ export(
   "is.zoo",
   "merge.zoo",
   "read.zoo",
+  "read.table.zoo",
+  "read.csv.zoo",
+  "read.csv2.zoo",
+  "read.delim.zoo",
+  "read.delim2.zoo",
   "write.zoo",
 
   "cbind.zoo",

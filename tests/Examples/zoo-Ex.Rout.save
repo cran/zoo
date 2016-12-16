@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2016-04-28 r70561) -- "Unsuffered Consequences"
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -1062,7 +1062,7 @@ Data:
 numeric(0)
 
 Index:
-[1] "Date of length 0"
+character(0)
 > na.approx(z, xout = d0 + 7, na.rm = FALSE)
 2000-01-08 
         NA 
@@ -1643,7 +1643,8 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > 
 > ### Name: read.zoo
 > ### Title: Reading and Writing zoo Series
-> ### Aliases: read.zoo write.zoo
+> ### Aliases: read.zoo read.table.zoo read.csv.zoo read.csv2.zoo
+> ###   read.delim.zoo read.delim2.zoo write.zoo
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2516,15 +2517,16 @@ detaching 'package:grid', 'package:lattice'
 > ### Name: yearmon
 > ### Title: An Index Class for Monthly Data
 > ### Aliases: yearmon as.yearmon as.yearmon.default as.yearmon.numeric
-> ###   as.yearmon.integer as.yearmon.dates as.yearmon.Date
+> ###   as.yearmon.integer as.yearmon.date as.yearmon.dates as.yearmon.Date
 > ###   as.yearmon.timeDate as.yearmon.jul as.yearmon.POSIXt
 > ###   as.yearmon.character as.yearmon.date as.yearmon.factor as.Date
 > ###   as.Date.numeric as.Date.ts as.Date.yearmon as.POSIXct.yearmon
 > ###   as.POSIXlt.yearmon as.list.yearmon as.numeric.yearmon
 > ###   as.character.yearmon as.data.frame.yearmon c.yearmon cycle.yearmon
-> ###   format.yearmon is.yearmon mean.yearmon print.yearmon range.yearmon
-> ###   summary.yearmon unique.yearmon [.yearmon [[.yearmon MATCH.yearmon
-> ###   Ops.yearmon Sys.yearmon -.yearmon xtfrm.yearmon
+> ###   format.yearmon is.numeric.yearmon mean.yearmon print.yearmon
+> ###   range.yearmon summary.yearmon unique.yearmon [.yearmon [[.yearmon
+> ###   MATCH.yearmon Ops.yearmon Summary.yearmon Sys.yearmon -.yearmon
+> ###   xtfrm.yearmon
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -3046,7 +3048,7 @@ NA  1  2  3 NA  6
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.64 0.064 3.704 0 0 
+Time elapsed:  2.048 0.008 2.06 0 0 
 > grDevices::dev.off()
 null device 
           1 

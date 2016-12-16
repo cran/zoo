@@ -1,4 +1,4 @@
-aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NULL)
+aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NULL, coredata = TRUE)
 {
   ## index processing
   my.unique <- function(x) {
@@ -19,7 +19,17 @@ aggregate.zoo <- function(x, by, FUN = sum, ..., regular = NULL, frequency = NUL
 
   ## aggregate data
   by_integer <- list(MATCH(by[[1]], by[[1]]))
-  df <- aggregate(coredata(x), by_integer, match.fun(FUN), ...)
+  if(coredata) {
+    df <- coredata(x)
+  } else {
+    df <- as.data.frame(x)
+    if(ncol(df) > 1L) {
+      for(i in 1L:ncol(df)) df[[i]] <- x[, i]
+    } else {
+      df[[1L]] <- x
+    }
+  }
+  df <- aggregate(df, by_integer, match.fun(FUN), ...)
   if(length(unique(as.character(df[,1]))) == length(df[,1]))
       row.names(df) <- df[, 1]
   df <- df[, -1]

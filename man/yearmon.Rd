@@ -4,6 +4,7 @@
 \alias{as.yearmon.default} 
 \alias{as.yearmon.numeric}
 \alias{as.yearmon.integer}
+\alias{as.yearmon.date}
 \alias{as.yearmon.dates}
 \alias{as.yearmon.Date}
 \alias{as.yearmon.timeDate}
@@ -25,7 +26,7 @@
 \alias{c.yearmon}
 \alias{cycle.yearmon}
 \alias{format.yearmon}
-\alias{is.yearmon}
+\alias{is.numeric.yearmon}
 \alias{mean.yearmon}
 \alias{print.yearmon}
 \alias{range.yearmon}
@@ -35,6 +36,7 @@
 \alias{[[.yearmon}
 \alias{MATCH.yearmon}
 \alias{Ops.yearmon}
+\alias{Summary.yearmon}
 \alias{Sys.yearmon}
 \alias{-.yearmon}
 \alias{xtfrm.yearmon}

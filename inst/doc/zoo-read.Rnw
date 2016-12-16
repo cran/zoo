@@ -29,6 +29,12 @@ Achim Zeileis\\Universit\"at Innsbruck}
   an overview is provided of the wide variety of cases that can be handled with
   \fct{read.zoo}. All examples assume that \pkg{zoo} is already loaded and (if necessary)
   that the \pkg{chron} package has been loaded as well.
+  
+  Note that functions \fct{read.csv.zoo}, \fct{read.csv2.zoo}, \fct{read.delim.zoo},
+  and \fct{read.delim2.zoo} are available that call the respective \fct{read.*} function
+  instead of \fct{read.table} and subsequently \fct{read.zoo}. However, these convenience
+  interfaces are not employed in this vignette in order to demonstrate setting all arguments
+  `by hand'.
 }
 
 \Address{
@@ -55,6 +61,8 @@ library("zoo")
 library("chron")
 Sys.setenv(TZ = "GMT")
 @
+
+\newpage
 
 \section*{Example 1}
 

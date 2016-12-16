@@ -251,6 +251,61 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   return(rval8)
 }
 
+read.table.zoo <- function(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, ...)
+{
+  file <- read.table(file, ...)
+  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
+    index.column = index.column, drop = drop, FUN2 = FUN2, 
+    split = split, aggregate = aggregate)
+  
+}
+
+read.csv.zoo <- function(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, ...)
+{
+  file <- read.csv(file, ...)
+  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
+    index.column = index.column, drop = drop, FUN2 = FUN2, 
+    split = split, aggregate = aggregate)
+  
+}
+
+read.csv2.zoo <- function(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, ...)
+{
+  file <- read.csv2(file, ...)
+  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
+    index.column = index.column, drop = drop, FUN2 = FUN2, 
+    split = split, aggregate = aggregate)
+  
+}
+
+read.delim.zoo <- function(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, ...)
+{
+  file <- read.delim(file, ...)
+  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
+    index.column = index.column, drop = drop, FUN2 = FUN2, 
+    split = split, aggregate = aggregate)
+  
+}
+
+read.delim2.zoo <- function(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, ...)
+{
+  file <- read.delim2(file, ...)
+  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
+    index.column = index.column, drop = drop, FUN2 = FUN2, 
+    split = split, aggregate = aggregate)
+  
+}
+
 write.zoo <- function(x, file = "", index.name = "Index",
   row.names = FALSE, col.names = NULL, ...)
 {

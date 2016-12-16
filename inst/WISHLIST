@@ -1,6 +1,10 @@
 FEATURES
 ********
 
+  o within.zoo
+  
+  o rollapply.default that does not work via zoo+"unzoo".
+
   o rbind.zoo() currently ignores the column names (if any),
     should behave like rbind.data.frame() in this case.
 

@@ -1,3 +1,27 @@
+Changes in Version 1.7-14
+
+  o Several convenience interfaces to read.zoo() have been added:
+    read.table.zoo(), read.csv.zoo(), read.csv2.zoo(), read.delim.zoo(),
+    read.delim2.zoo(). All of these first call the corresponding read.*()
+    function to read the data from a text file (with the respective default
+    settings) and subsequently call read.zoo() to turn the data into
+    a zoo series.
+
+  o na.approx.default() did not properly process the "maxgap" argument
+    if y did not contain any NAs but NAs were only created implicitly
+    by xout being different from x (pointed out by Stefan Metzger).
+    A suitable fix has been added that merges x and xout first.
+
+  o aggregate.zoo() and rollapply.zoo() gained the argument coredata=TRUE
+    which can control whether only the coredata is passed to each subset
+    (previous behavior) or the full zoo series.
+
+  o The "its" package has been archived on CRAN and hence removed from
+    the list of zoo's suggested packages. However, various methods for
+    objects of class "its" continue to be available in zoo in case someone
+    still uses the legacy code.
+
+
 Changes in Version 1.7-13
 
   o The window() method erroneously dropped the dimension in case of

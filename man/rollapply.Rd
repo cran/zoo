@@ -13,7 +13,7 @@ rollapply(data, \dots)
 \method{rollapply}{ts}(data, \dots)
 \method{rollapply}{zoo}(data, width, FUN, \dots, by = 1, by.column = TRUE, 
     fill = if (na.pad) NA, na.pad = FALSE, partial = FALSE, 
-    align = c("center", "left", "right"))
+    align = c("center", "left", "right"), coredata = TRUE)
 \method{rollapply}{default}(data, \dots)
 rollapplyr(\dots, align = "right")
 }
@@ -43,6 +43,9 @@ rollapplyr(\dots, align = "right")
     should be left- or right-aligned or centered (default) compared
     to the rolling window of observations. This argument is only used if
     \code{width} represents widths.}
+  \item{coredata}{logical. Should only the \code{coredata(data)}
+    be passed to every \code{width} window? If set to \code{FALSE} the
+    full zoo series is used.}
 }
 \details{
   If \code{width} is a plain numeric vector its elements are regarded as widths
