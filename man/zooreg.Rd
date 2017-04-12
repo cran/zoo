@@ -28,7 +28,8 @@ and is the analogue to \code{\link{ts}}.
 
 \usage{
 zooreg(data, start = 1, end = numeric(), frequency = 1, 
-  deltat = 1, ts.eps = getOption("ts.eps"), order.by = NULL)
+  deltat = 1, ts.eps = getOption("ts.eps"), order.by = NULL,
+  calendar = getOption("zoo.calendar", TRUE))
 }
 
 \arguments{
@@ -48,6 +49,8 @@ zooreg(data, start = 1, end = numeric(), frequency = 1,
     are ordered. If this is specified the arguments \code{start} and
     \code{end} are ignored and \code{zoo(data, order.by, frequency)} is
     called. See \code{\link{zoo}} for more information.}
+  \item{calendar}{logical. Should \code{\link{yearqtr}} or \code{\link{yearmon}}
+    be used for a numeric time index with frequency 4 or 12, respectively?}
 }
 
 \details{

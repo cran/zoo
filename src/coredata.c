@@ -71,7 +71,8 @@ SEXP zoo_coredata (SEXP x, SEXP copyAttr)
   }
   if( asLogical(copyAttr)) {
     copyMostAttrib(x,result);
-    setAttrib(result, install("class"), getAttrib(x, install("oclass")));
+    SEXP oclass = PROTECT(getAttrib(x, install("oclass"))); P++;
+    setAttrib(result, install("class"), oclass);
   }
   setAttrib(result, install("index"),     R_NilValue);
   setAttrib(result, install("oclass"),    R_NilValue);

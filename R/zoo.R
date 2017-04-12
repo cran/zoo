@@ -1,4 +1,5 @@
-zoo <- function (x = NULL, order.by = index(x), frequency = NULL) 
+zoo <- function (x = NULL, order.by = index(x), frequency = NULL,
+  calendar = getOption("zoo.calendar", TRUE)) 
 {
     ## process index "order.by"    
     if(length(unique(MATCH(order.by, order.by))) < length(order.by))
@@ -38,6 +39,9 @@ zoo <- function (x = NULL, order.by = index(x), frequency = NULL)
         orig.order.by <- order.by
         order.by <- floor(frequency * order.by + .0001)/frequency
         if(!isTRUE(all.equal(order.by, orig.order.by))) order.by <- orig.order.by
+	if(calendar && frequency %in% c(4, 12)) {
+	  order.by <- if(frequency == 4) as.yearqtr(order.by) else as.yearmon(order.by)	
+	}
       }
     }
 
@@ -324,7 +328,11 @@ ifelse.zoo <- function(test, yes, no) {
 
 mean.zoo <- function(x, ...)  mean(coredata(x), ...)
 
-median.zoo <- function(x, na.rm = FALSE)  median(coredata(x), na.rm = na.rm)
+median.zoo <- if(getRversion() <= "3.3.3") {
+  function(x, na.rm = FALSE) median(coredata(x), na.rm = na.rm)
+} else {
+  function(x, na.rm = FALSE, ...) median(coredata(x), na.rm = na.rm, ...)
+}
 
 quantile.zoo <- function(x, ...) quantile(coredata(x), ...)
 

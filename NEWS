@@ -1,3 +1,24 @@
+Changes in Version 1.8-0
+
+  o zoo() and zooreg() gained a calendar = getOption("zoo.calendar", TRUE)
+    argument so that, by default, yearqtr and yearmon are used as the time
+    index for regular zoo series with frequency 4 and 12, respectively. With
+    calendar = FALSE the behavior from previous versions with plain
+    unclassed time indexes can be obtained. Set options(zoo.calendar = FALSE)
+    to always retain the old behavior.
+
+  o na.locf() is made faster by using a diff()-based solution rather than
+    cumsum() (suggested by Ruben Arslan). Also, the workhorse function
+    na.locf0() underlying the default na.locf() method is now exported
+    in the user interface as it is faster (but also supports less options).
+
+  o Better support of vector-valued 'split' arguments in read.zoo().
+
+  o Special-cased rollmax(..., k = 1) to return the input coredata().
+  
+  o as.character() for "yearqtr" objects did not process NA elements correctly.
+
+
 Changes in Version 1.7-14
 
   o Several convenience interfaces to read.zoo() have been added:

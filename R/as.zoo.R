@@ -134,7 +134,7 @@ as.zooreg.ts <- as.zoo.ts <- function(x, frequency = NULL, ...)
 {
   xtsp <- tsp(x)
   if(is.null(frequency)) frequency <- xtsp[3]
-  zooreg(coredata(x), start = xtsp[1], end = xtsp[2], frequency = frequency)
+  zooreg(coredata(x), start = xtsp[1], end = xtsp[2], frequency = frequency, ...)
 } 
 
 as.ts.zooreg <- function(x, ...)

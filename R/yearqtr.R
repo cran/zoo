@@ -84,27 +84,32 @@ cycle.yearqtr <- function(x, ...) round(4 * (as.numeric(x) %% 1)) + 1
 
 format.yearqtr <- function(x, format = "%Y Q%q", ...) 
 {
-    if (length(x) == 0) return(character(0))
-	# like gsub but replacement and x may be vectors the same length
-	gsub.vec <- function(pattern, replacement, x, ...) {
-		y <- x
-		for(i in seq_along(x)) {
-			y[i] <- gsub(pattern, replacement[i], x[i], ...)
-		}
-		y
-	}
-	x <- as.yearqtr(x)
-	x <- unclass(x)
-	year <- floor(x + .001)
-	qtr <- floor(4*(x - year) + 1 + .5 + .001)
-    if (format == "%Y Q%q") return(paste(year, " Q", qtr, sep = ""))
+  if (length(x) == 0) return(character(0))
+  # like gsub but replacement and x may be vectors the same length
+  gsub.vec <- function(pattern, replacement, x, ...) {
+    y <- x
+    for(i in seq_along(x)) {
+      y[i] <- gsub(pattern, replacement[i], x[i], ...)
+    }
+    y
+  }
+  x <- as.yearqtr(x)
+  x <- unclass(x)
+  year <- floor(x + .001)
+  qtr <- floor(4*(x - year) + 1 + .5 + .001)
+  xx <- if (format == "%Y Q%q") {
+    paste(year, " Q", qtr, sep = "")
+  } else {
     # TODO: speed up the following
-	xx <- gsub.vec("%q", qtr, rep(format, length(qtr)))
-	xx <- gsub.vec("%Y", year, xx)
-	xx <- gsub.vec("%y", sprintf("%02d", as.integer(year %% 100)), xx)
-	xx <- gsub.vec("%C", year %/% 100, xx)
-	names(xx) <- names(x)
-	xx
+    xx <- gsub.vec("%q", qtr, rep.int(format, length(qtr)))
+    xx <- gsub.vec("%Y", year, xx)
+    xx <- gsub.vec("%y", sprintf("%02d", as.integer(year %% 100)), xx)
+    xx <- gsub.vec("%C", year %/% 100, xx)
+    xx
+  }
+  names(xx) <- names(x)
+  xx[is.na(x)] <- NA_character_
+  return(xx)
 }
 
 

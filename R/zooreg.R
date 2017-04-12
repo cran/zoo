@@ -1,5 +1,6 @@
 zooreg <- function(data, start = 1, end = numeric(), frequency = 1, 
-  deltat = 1, ts.eps = getOption("ts.eps"), order.by = NULL)
+  deltat = 1, ts.eps = getOption("ts.eps"), order.by = NULL,
+  calendar = getOption("zoo.calendar", TRUE))
 {
     ## choose frequency/deltat
     if (missing(frequency)) frequency <- 1/deltat
@@ -21,7 +22,7 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 	ndata <- NROW(data)        
 
         ## convenience function
-        numORint <- function(x) identical(class(x), "numeric") | identical(class(x), "integer")
+        numORint <- function(x) identical(class(x), "numeric") || identical(class(x), "integer")
 
         ## choose start/end
         if (length(start) > 1) start <- start[1] + (start[2] - 1)/frequency
@@ -65,6 +66,11 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 	  else if(is.matrix(data) || is.data.frame(data)) data <- data[rep(1:ndata, length.out = nobs), , drop = FALSE]
         }
  
+	## support of calendar index (yearqtr/yearmon) for quarterly/monthly data
+	if(calendar && frequency %in% c(4, 12) && numORint(order.by)) {
+	  order.by <- if(frequency == 4) as.yearqtr(order.by) else as.yearmon(order.by)
+	}
+	
         attr(data, "oclass") <- attr(data, "class")
         attr(data, "index") <- order.by
         attr(data, "frequency") <- frequency

@@ -300,10 +300,10 @@ Rprintf("zoo_lag\n");
       SEXP timeDate = PROTECT(NEW_OBJECT(MAKE_CLASS("timeDate"))); P++;
       copyMostAttrib(index,newindex);
       SET_SLOT(timeDate,install("Data"),newindex);
-      SET_SLOT(timeDate,install("format"),
-               GET_SLOT(tmp, install("format")));
-      SET_SLOT(timeDate,install("FinCenter"),
-               GET_SLOT(tmp, install("FinCenter")));
+      SEXP format = PROTECT(GET_SLOT(tmp, install("format"))); P++;
+      SET_SLOT(timeDate,install("format"), format);
+      SEXP finCenter = PROTECT(GET_SLOT(tmp, install("FinCenter"))); P++;
+      SET_SLOT(timeDate,install("FinCenter"), finCenter);
       setAttrib(result, install("index"), timeDate);
     } else {
       copyMostAttrib(index, newindex);

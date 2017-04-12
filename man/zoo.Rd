@@ -51,7 +51,8 @@ totally ordered observations which includes irregular
 time series.
 }
 \usage{
-zoo(x = NULL, order.by = index(x), frequency = NULL)
+zoo(x = NULL, order.by = index(x), frequency = NULL,
+  calendar = getOption("zoo.calendar", TRUE))
 \method{print}{zoo}(x, style = , quote = FALSE, \dots) 
 }
 \arguments{
@@ -64,6 +65,9 @@ zoo(x = NULL, order.by = index(x), frequency = NULL)
     comply. If so, a regular \code{"zoo"} series is returned, i.e.,
     an object of class \code{c("zooreg", "zoo")}. See below and
     \code{\link{zooreg}} for more details.}
+  \item{calendar}{logical. If \code{frequency} is specified and is 4 or 12:
+    Should \code{\link{yearqtr}} or \code{\link{yearmon}} be used for a numeric
+    index \code{order.by}?}
   \item{style}{a string specifying the printing style which can be
     \code{"horizontal"} (the default for vectors), \code{"vertical"}
     (the default for matrices) or \code{"plain"} (which first prints

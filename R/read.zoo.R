@@ -96,7 +96,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
     rval[ , ! is.index.column, drop = FALSE]
   } else {
 
-     split.values <- if (is.character(split) || is.finite(split)) rval[, split]
+     split.values <- if (is.character(split) || all(is.finite(split))) rval[, split]
 	 else {
 		# Inf: first value in each run is first series, etc.
 	    # -Inf: last value in each run is first series, etc.
@@ -108,7 +108,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 	 if (0 %in% split.) {
 		stop(paste("split:", split, "not found in colnames:", colnames(rval)))
 	 }
-	 rval[,-c(if (is.finite(split.)) split. else 0, which(is.index.column)), drop = FALSE]
+	 rval[,-c(if (all(is.finite(split.))) split. else 0, which(is.index.column)), drop = FALSE]
   }
 
   if(is.factor(ix)) ix <- as.character(ix)

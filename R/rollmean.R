@@ -152,14 +152,18 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   rval <- rep(0, n) 
   a <- 0
   xc <- coredata(x)
-  for (i in k:n) {
-  rval[i] <- if (is.na(a) || is.na(rval[i-1]) || a==rval[i-1]) 
-      max(xc[(i-k+1):i]) # calculate max of window
-  else 
-      max(rval[i-1], xc[i]); # max of window = rval[i-1] 
-  a <- xc[i-k+1] # point that will be removed from window
+  if(k == 1) {
+    rval <- xc
+  } else {
+    for (i in k:n) {
+      rval[i] <- if (is.na(a) || is.na(rval[i-1]) || a==rval[i-1]) 
+        max(xc[(i-k+1):i]) # calculate max of window
+      else 
+        max(rval[i-1], xc[i]); # max of window = rval[i-1] 
+      a <- xc[i-k+1] # point that will be removed from window
+    }
+    rval <- rval[-seq(k-1)]
   }
-  rval <- rval[-seq(k-1)]
 
   x[ix] <- rval
   na.fill(x, fill = fill, ix)

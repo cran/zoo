@@ -1,3 +1,28 @@
+na.locf0 <- function(object, fromLast = FALSE, maxgap = Inf, coredata = NULL) {
+  if(is.null(coredata)) coredata <- inherits(object, "ts") || inherits(object, "zoo") || inherits(object, "its") || inherits(object, "irts")
+  if(coredata) {
+    x <- object
+    object <- if (fromLast) rev(coredata(object)) else coredata(object)
+  } else {
+    if(fromLast) object <- rev(object)
+  }
+  ok <- which(!is.na(object))
+  if(is.na(object[1L])) ok <- c(1L, ok)
+  gaps <- diff(c(ok, length(object) + 1L))
+  object <- if(any(gaps > maxgap)) {
+    .fill_short_gaps(object, rep(object[ok], gaps), maxgap = maxgap)
+  } else {
+    rep(object[ok], gaps)
+  }
+  if (fromLast) object <- rev(object)
+  if(coredata) {
+    x[] <- object
+    return(x)
+  } else {
+    return(object)
+  }
+}
+
 na.locf <- function(object, na.rm = TRUE, ...)
 	UseMethod("na.locf")
 
@@ -13,32 +38,15 @@ na.locf.default <- function(object, na.rm = TRUE, fromLast, rev, maxgap = Inf, r
 			maxgap = maxgap, method = "constant", rule = rule, ...))
 	}
 
-	na.locf.0 <- function(x) {
-	      L <- !is.na(x)
-	      idx <- if (fromLast)
-	         rev(c(NA,rev(which(L)))[cumsum(rev(L))+1])
-              else
-	         c(NA,which(L))[cumsum(L)+1]
-	      # na.index(x,i) returns x[i] except if i[j] is NA then
-	      # x[i[j]] is NA too
-	      na.index <- function(x, i) {
-		L <- !is.na(i)
-		x[!L] <- NA
-		x[L] <- coredata(x)[i[L]]
-	  	x
-	      }
-	      xf <- na.index(x, idx)
-              .fill_short_gaps(x, xf, maxgap = maxgap)
-	}
    	if (!missing(rev)) {
 	   warning("na.locf.default: rev= deprecated. Use fromLast= instead.")
 	   if (missing(fromLast)) fromLast <- rev
 	} else if (missing(fromLast)) fromLast <- FALSE
 	rev <- base::rev
 	object[] <- if (length(dim(object)) == 0)
-		na.locf.0(object)
+		na.locf0(object, fromLast = fromLast, maxgap = maxgap)
 	else
-		apply(object, length(dim(object)), na.locf.0)
+		apply(object, length(dim(object)), na.locf0, fromLast = fromLast, maxgap = maxgap)
 	if (na.rm) na.trim(object, is.na = "all") else object
 }
 

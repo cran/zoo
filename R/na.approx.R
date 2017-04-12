@@ -125,5 +125,6 @@ na.approx.ts <- function(object, ...) {
     naruns <- rle(is.na(x))
     naruns$values[naruns$lengths > maxgap] <- FALSE
     naok <- inverse.rle(naruns)
-    ifelse(naok, fill, x)
+    x[naok] <- fill[naok]
+    return(x)
 }

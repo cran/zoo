@@ -1,5 +1,6 @@
 \name{na.locf}
 \alias{na.locf}
+\alias{na.locf0}
 \alias{na.locf.data.frame}
 \alias{na.locf.list}
 \alias{na.locf.default}
@@ -12,31 +13,31 @@ non-\code{NA} prior to it.
 na.locf(object, na.rm = TRUE, \dots)
 \method{na.locf}{default}(object, na.rm = TRUE, fromLast, rev,
         maxgap = Inf, rule = 2, \dots)
+
+na.locf0(object, fromLast = FALSE, maxgap = Inf, coredata = NULL)
 }
 \arguments{
   \item{object}{an object.}
   \item{na.rm}{logical. Should leading \code{NA}s be removed?}
   \item{fromLast}{logical. Causes observations to be carried backward rather
-    than forward.  Default is \code{FALSE}.
-    With a value of \code{TRUE} this corresponds to NOCB 
-    (next observation carried backward).
-	It is not supported if \code{x} or \code{xout} is specified.
-  }
+    than forward.  Default is \code{FALSE}. With a value of \code{TRUE}
+    this corresponds to NOCB (next observation carried backward).
+    It is not supported if \code{x} or \code{xout} is specified.}
   \item{rev}{Use \code{fromLast} instead.  This argument will
     be eliminated in the future in favor of \code{fromLast}.}
-  \item{maxgap}{Runs of more than \code{maxgap} 
-\code{NA}s
-are retained,
-other \code{NA}s are removed and the last occurrence in the resulting series
-prior to each time point in \code{xout} is used as that time point's
-output value.
-(If \code{xout} is not specified this
-reduces to retaining runs of more than \code{maxgap} \code{NA}s 
-while filling other \code{NA}s
-with the last occurrence of a non-\code{NA}.)
-}
+  \item{maxgap}{Runs of more than \code{maxgap} \code{NA}s are retained,
+    other \code{NA}s are removed and the last occurrence in the resulting series
+    prior to each time point in \code{xout} is used as that time point's output value.
+    (If \code{xout} is not specified this reduces to retaining runs of more than
+    \code{maxgap} \code{NA}s while filling other \code{NA}s with the last
+    occurrence of a non-\code{NA}.)}
   \item{rule}{See \code{\link{approx}}.}
   \item{\dots}{further arguments passed to methods.}
+  \item{coredata}{logical. Should LOCF be applied to the core data
+    of a (time series) object and then assigned to the original object
+    again? By default, this strategy is applied to time series classes
+    (e.g., \code{ts}, \code{zoo}, \code{xts}, etc.) where it preserves
+    the time index.}
 }
 
 \value{
@@ -51,6 +52,10 @@ Note that if a multi-column zoo object has a column entirely composed of
 \code{NA} then with \code{na.rm = TRUE}, the default,
 the above implies that the resulting object will have
 zero rows. Use \code{na.rm = FALSE} to preserve the \code{NA} values instead.
+
+The function \code{na.locf0} is the workhorse function underlying the default
+\code{na.locf} method. It has more limited capabilities but is faster for the
+special cases it covers. Implicitly, it uses \code{na.rm=FALSE}.
 }
 
 \seealso{\code{\link{zoo}}}

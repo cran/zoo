@@ -73,6 +73,7 @@ export(
   "na.fill.default",
   "na.locf",
   "na.locf.default",
+  "na.locf0",
   "na.spline",
   "na.spline.default",
   "na.StructTS",
