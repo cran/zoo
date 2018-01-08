@@ -74,7 +74,10 @@ as.yearqtr(x, \dots)
 
   \code{as.yearqtr.character} uses a default format of \code{"\%Y Q\%q"}, 
   \code{"\%Y q\%q"} or \code{"\%Y-\%q"} according to whichever matches.
-  \code{\%q} accepts the numbers 1-4 (possibly with leading zeros).
+  \code{\%q} accepts the numbers 1-4 (possibly with leading zeros). Due to
+  this \code{\%q} does not match to single digits only and consequently
+  formats such as \code{as.yearqtr("Q12000", "Q\%q\%Y")} are ambiguous and
+  do not work (i.e., result in \code{NA}).
   
   There are coercion methods available for various classes including:
   default coercion to \code{"yearqtr"} (which coerces to \code{"numeric"} first)

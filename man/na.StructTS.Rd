@@ -14,19 +14,18 @@ na.StructTS(object, \dots)
   \item{object}{an object.}
   \item{\dots}{other arguments passed to methods.}
   \item{na.rm}{logical.  Whether to remove end portions or fill them with NA.}
-  \item{maxgap}{Runs of more than \code{maxgap} 
-\code{NA}s
-are retained,
-other \code{NA}s are removed and the last occurrence in the resulting series
-prior to each time point in \code{xout} is used as that time point's
-output value.
-}
+  \item{maxgap}{Runs of more than \code{maxgap} \code{NA}s are retained,
+    other \code{NA}s are removed and the last occurrence in the resulting series
+    prior to each time point in \code{xout} is used as that time point's
+    output value.}
 }
 
-\details{Interpolate with seasonal Kalman filter.  The input object should
-have a frequency. It is assumed the cycle length is 1.}
+\details{
+Interpolate with seasonal Kalman filter, using \code{\link[stats]{StructTS}},
+followed by \code{\link[stats]{tsSmooth}}.  The input object should
+be a regular time series and have a frequency. It is assumed the cycle length is 1.}
 
-\seealso{\code{\link{na.approx}}}
+\seealso{\code{\link[stats]{StructTS}}, \code{\link[stats]{tsSmooth}}, \code{\link{na.approx}}}
 
 \examples{
 

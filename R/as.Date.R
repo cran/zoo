@@ -9,3 +9,5 @@ as.Date.numeric <- function (x, origin, ...) {
   if (identical(origin, "0000-00-00")) origin <- as.Date("0000-01-01", ...) - 1
   as.Date(origin, ...) + x
 }
+
+.as_Date_default <- function(x, ...) base::as.Date(x, ...)

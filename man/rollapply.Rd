@@ -258,6 +258,18 @@ rollapply(y, list(-d * seq(0, k-1)), c)
 # 3
 rollapply(y, d*k-1, function(x) x[d * seq(k-1, 0) + 1])
 
+
+## mimic convolve() using rollapplyr()
+A <- 1:4
+B <- 5:8
+## convolve(..., type = "open")
+cross <- function(x) x %*% tail(B, length(x))
+rollapplyr(c(A, 0*B[-1]), length(B), cross, partial = TRUE)
+convolve(A, B, type = "open")
+
+# convolve(..., type = "filter")
+rollapplyr(A, length(B), cross)
+convolve(A, B, type = "filter")
 }
 \keyword{iteration}
 \keyword{array}

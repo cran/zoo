@@ -1,27 +1,47 @@
-fortify.zoo <- function(model, data, melt = FALSE, ...)
+fortify.zoo <- function(model, data, names = c("Index", "Series", "Value"),
+		melt = FALSE, sep = NULL, ...)
 {
+  if (!is.null(sep) && !melt) stop("Cannot specify sep if melt = FALSE")
   ## dimensions
   n <- NROW(model)
   k <- NCOL(model)
-
+  
   ## series labels
   lab <- colnames(model)
   if(is.null(lab)) lab <- rep.int(deparse(substitute(model)), k)
   lab <- make.unique(lab)
   
+  ## return data names
+  nm <- c("Index", "Series", "Value")
+  if(!is.null(names(names))) names <- names[nm]
+  if(is.list(names)) {
+    names(names) <- nm
+    for(i in 1L:3L) if(is.null(names[[i]]) || is.na(names[[i]])) names[[i]] <- nm[i]
+    nm <- unlist(names)
+  } else {
+    names <- rep_len(names, 3L)
+    nm[!is.na(names)] <- names[!is.na(names)]
+  }
+  
   ## either long format (melt = TRUE) or wide format (melt = FALSE)
   if(melt) {
     df <- if(k == 1L) {
-      data.frame(index(model), factor(rep.int(1, n), labels = lab), coredata(model))
+      data.frame(index(model), factor(rep.int(1, n), labels = lab), coredata(model), ...)
     } else {
       data.frame(index(model)[rep.int(1:n, k)],
         factor(rep(1:k, each = n), levels = 1:k, labels = lab),
-	as.vector(coredata(model)))
+	as.vector(coredata(model)), ...)
     }
-    names(df) <- c("Index", "Series", "Value")
+    if (!is.null(sep)) {
+      df <- data.frame(df[1L], 
+        do.call("rbind", strsplit(as.character(df[[2L]]), ".", fixed = TRUE)),
+	df[3L])
+    }
+    nl <- length(nm)
+    names(df) <- c(nm[1L], make.unique(rep_len(nm[-c(1L, nl)], ncol(df) - 2L)), nm[nl])
   } else {
-    df <- cbind(data.frame(index(model)), coredata(model))
-    names(df) <- c("Index", lab)  
+    df <- cbind(data.frame(index(model), ...), coredata(model))
+    names(df) <- c(nm[1L], lab)  
   }
   
   return(df)
@@ -92,4 +112,5 @@ scale_x_yearqtr <- function(..., format = "%Y-%q", n = 5) {
 scale_y_yearqtr <- function(..., format = "%Y-%q", n = 5) {
   ggplot2::scale_y_continuous(..., trans = yearqtr_trans(format, n))
 }
+
 

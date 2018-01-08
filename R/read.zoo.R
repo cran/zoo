@@ -1,6 +1,6 @@
 read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ..., text)
+  split = NULL, aggregate = FALSE, ..., text, read = read.table)
 {
 
   if (missing(file) && !missing(text)) {
@@ -18,7 +18,11 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   }
 
   ## read data
-  rval <- if (is.data.frame(file)) file else read.table(file, ...)
+  rval <- if (is.data.frame(file)) {
+    if(inherits(file, "tbl")) as.data.frame(file) else file
+  } else {
+    read(file, ...)
+  }
 
   ## if time index appears to be already processed, use FUN = identity
   if (is.data.frame(file) && 
@@ -262,48 +266,20 @@ read.table.zoo <- function(file, format = "", tz = "", FUN = NULL,
   
 }
 
-read.csv.zoo <- function(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ...)
-{
-  file <- read.csv(file, ...)
-  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
-    index.column = index.column, drop = drop, FUN2 = FUN2, 
-    split = split, aggregate = aggregate)
-  
+read.csv.zoo <- function(..., read = read.csv) {
+  read.zoo(..., read = read)
 }
 
-read.csv2.zoo <- function(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ...)
-{
-  file <- read.csv2(file, ...)
-  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
-    index.column = index.column, drop = drop, FUN2 = FUN2, 
-    split = split, aggregate = aggregate)
-  
+read.csv2.zoo <- function(..., read = read.csv2) {
+  read.zoo(..., read = read)
 }
 
-read.delim.zoo <- function(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ...)
-{
-  file <- read.delim(file, ...)
-  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
-    index.column = index.column, drop = drop, FUN2 = FUN2, 
-    split = split, aggregate = aggregate)
-  
+read.delim.zoo <- function(..., read = read.delim) {
+  read.zoo(..., read = read)
 }
 
-read.delim2.zoo <- function(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, ...)
-{
-  file <- read.delim2(file, ...)
-  read.zoo(file, format = format, tz = tz, FUN = FUN, regular = regular,
-    index.column = index.column, drop = drop, FUN2 = FUN2, 
-    split = split, aggregate = aggregate)
-  
+read.delim2.zoo <- function(..., read = read.delim2) {
+  read.zoo(..., read = read)
 }
 
 write.zoo <- function(x, file = "", index.name = "Index",
@@ -316,3 +292,4 @@ write.zoo <- function(x, file = "", index.name = "Index",
   dx <- dx[, c(ncol(dx), 1:(ncol(dx)-1))]
   write.table(dx, file = file, row.names = row.names, col.names = col.names, ...)
 }
+

@@ -91,6 +91,7 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 	width <- if (length(width) == 1) {
 		w <- rep(list(NULL), NROW(data))
 		start.at <- if (partial < 0) max(-min(width[[1]]), 0) + 1 else 1
+		start.at <- min(NROW(data), start.at)
 		replace(w, seq(start.at, NROW(data), by = by), width)
 	} else rep(width, length.out = NROW(data))
 

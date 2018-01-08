@@ -21,16 +21,18 @@
 
 \usage{
   \method{autoplot}{zoo}(object, geom = "line", facets, \dots)
-  \method{fortify}{zoo}(model, data, melt = FALSE, \dots)
-  facet_free(facets = Series ~ ., margins = FALSE, scales = "free_y", ...)
+  \method{fortify}{zoo}(model, data, 
+	names = c("Index", "Series", "Value"),
+	melt = FALSE, sep = NULL, \dots)
+  facet_free(facets = Series ~ ., margins = FALSE, scales = "free_y", \dots)
 
   yearmon_trans(format = "\%b \%Y", n = 5)
-  scale_x_yearmon(..., format = "\%b \%Y", n = 5)
-  scale_y_yearmon(..., format = "\%b \%Y", n = 5)
+  scale_x_yearmon(\dots, format = "\%b \%Y", n = 5)
+  scale_y_yearmon(\dots, format = "\%b \%Y", n = 5)
 
   yearqtr_trans(format = "\%Y-\%q", n = 5)
-  scale_x_yearqtr(..., format = "\%Y-\%q", n = 5)
-  scale_y_yearqtr(..., format = "\%Y-\%q", n = 5)
+  scale_x_yearqtr(\dots, format = "\%Y-\%q", n = 5)
+  scale_y_yearqtr(\dots, format = "\%Y-\%q", n = 5)
   
 }
 
@@ -42,11 +44,18 @@
     default in the \code{autoplot} method is to use \code{facets = NULL} for univariate
     series and \code{facets = Series ~ .} for multivariate series.}
   \item{\dots}{further arguments passed to \code{\link[ggplot2]{qplot}}
-    for \code{autoplot} (and not used for \code{fortify}).}
+    for \code{autoplot} (and not used for \code{fortify}). For the \code{scale_*_*}
+    functions the arguments are passed on to \code{scale_*_continuous}.}
   \item{model}{an object of class \code{"zoo"} to be converted to
     a \code{"data.frame"}.}
   \item{data}{not used (required by generic \code{\link[ggplot2]{fortify}}
     method).}
+  \item{names}{(list of) character vector(s). New names given to index/time column,
+    series indicator (if melted), and value column (if melted). If only
+    a subset of characters should be changed, either NAs can be used
+    or a named vector.}
+  \item{sep}{If specified then the Series column is split into multiple 
+	  columns using sep as the split character.}
   \item{melt}{Should the resulting data frame be in long format (\code{melt = TRUE})
     or wide format (\code{melt = FALSE}).}
   \item{margins}{As in \code{\link[ggplot2]{facet_grid}}.}
@@ -135,5 +144,20 @@ data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
 autoplot(zoo(data), facet = NULL) + geom_point()
 ## with different line types
 autoplot(zoo(data), facet = NULL) + geom_point() + aes(linetype = Series)
+
+## illustrate just fortify() method
+z <- zoo(data)
+fortify(z)
+fortify(z, melt = TRUE)
+fortify(z, melt = TRUE, names = c("Time", NA, "Data"))
+fortify(z, melt = TRUE, names = c(Index = "Time"))
+
+## with/without splitting
+z <- zoo(cbind(a.A = 1:2, a.B = 2:3, b.A = 3:4, c.B = 4:5))
+fortify(z)
+fortify(z, melt = TRUE, sep = ".",
+  names = list(Series = c("Lower", "Upper")))
+
 }
 }
+

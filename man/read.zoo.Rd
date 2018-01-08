@@ -19,22 +19,14 @@ To employ \code{read.csv}, \code{read.csv2}, \code{read.delim},
 \usage{
 read.zoo(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL,
-  split = NULL, aggregate = FALSE, \dots, text)
+  split = NULL, aggregate = FALSE, \dots, text, read = read.table)
   
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
 
-read.csv.zoo(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, \dots)
-read.csv2.zoo(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, \dots)
-read.delim.zoo(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, \dots)
-read.delim2.zoo(file, format = "", tz = "", FUN = NULL,
-  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
-  split = NULL, aggregate = FALSE, \dots)
+read.csv.zoo(\dots, read = read.csv)
+read.csv2.zoo(\dots, read = read.csv2)
+read.delim.zoo(\dots, read = read.delim)
+read.delim2.zoo(\dots, read = read.delim2)
 }
 \arguments{
   \item{file}{character string or strings giving the name of the file(s) 
@@ -98,11 +90,13 @@ read.delim2.zoo(file, format = "", tz = "", FUN = NULL,
     is given if there are any duplicated time indexes.  Note that most
     \code{zoo} functions do not accept objects with duplicate time indexes. 
     See \code{\link{aggregate.zoo}}.}
-  \item{\dots}{further arguments passed to \code{\link{read.table}} or
-    \code{\link{write.table}}, respectively.}
+  \item{\dots}{further arguments passed to \code{\link{read.table}},
+    \code{\link{write.table}}, or \code{\link{read.zoo}}, respectively.}
   \item{text}{character. If \code{file} is not supplied and this is, then
     data are read from the value of \code{text} via a text connection.
     See below for an example.}
+  \item{read}{function. The function for reading \code{file} (unless it is
+    a \code{data.frame} already).}
 }
 
 \details{

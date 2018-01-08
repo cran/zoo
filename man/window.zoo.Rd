@@ -60,8 +60,15 @@ window(z, start = c(2001, 4))
 ## replace data at times of d0 which are in dn
 d1 <- d0 <- zoo(1:10) + 100
 dn <- - head(d0, 4)
-
 window(d1, time(dn)) <- coredata(dn)
 
+## if the underlying time index is a float, note that the index may
+## print in the same way but actually be different (e.g., differing
+## by 0.1 second in this example)
+zp <- zoo(1:4, as.POSIXct("2000-01-01 00:00:00") + c(-3600, 0, 0.1, 3600))
+## and then the >= start and <= end may not select all intended
+## observations and adding/subtracting some "fuzz" may be needed
+window(zp, end = "2000-01-01 00:00:00")
+window(zp, end = as.POSIXct("2000-01-01 00:00:00") + 0.5)
 }
 \keyword{ts}

@@ -41,7 +41,9 @@ objects (and \code{\link{zoo}} objects themselves).
 Methods for coercing objects of class \code{"zoo"} to other classes
 currently include: \code{\link{as.ts}}, \code{\link{as.matrix}}, \code{\link{as.vector}},
 \code{\link{as.data.frame}}, \code{\link{as.list}} (the latter also being available
-for \code{"ts"} objects). 
+for \code{"ts"} objects). Furthermore, \code{\link{fortify.zoo}} can transform \code{"zoo"}
+series to \code{"data.frame"} including the time index and optionally melting a wide series
+into a long data frame.
 
 In the conversion between \code{zoo} and \code{ts}, the \code{\link{zooreg}} class is
 always used.
@@ -51,8 +53,8 @@ always used.
 \code{as.zoo} returns a \code{\link{zoo}} object.
 }
 
-\seealso{\code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}},
-  \code{\link[tseries]{irts}}, 
+\seealso{\code{\link{zoo}}, \code{\link{fortify.zoo}},
+  \code{\link{zooreg}}, \code{\link{ts}}, \code{\link[tseries]{irts}}, 
   \code{\link[tis]{tis}}, \code{\link[fts]{fts}}, \code{\link[coda]{mcmc}},
   \code{\link[xts]{xts}}.
 }  

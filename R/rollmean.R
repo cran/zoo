@@ -30,7 +30,7 @@ rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   }
 
   n <- length(x)
-  stopifnot(k <= n)
+  if(k > n) return(rollapply(x, k, FUN = (mean), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -86,7 +86,7 @@ rollsum.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   }
 
   n <- length(x)
-  stopifnot(k <= n)
+  if(k > n) return(rollapply(x, k, FUN = (sum), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -141,7 +141,7 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   }
 
   n <- length(x)
-  stopifnot(k <= n)
+  if(k > n) return(rollapply(x, k, FUN = (max), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -208,7 +208,7 @@ rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   }
 
   n <- length(x)
-  stopifnot(k <= n)
+  if(k > n) return(rollapply(x, k, FUN = (median), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },

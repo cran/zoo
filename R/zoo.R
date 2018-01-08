@@ -202,6 +202,20 @@ str.zoo <- function(object, ...)
   return(rval)
 }
 
+.DollarNames.zoo <- function(x, pattern = "") {
+  dn <- dimnames(x)
+  if(is.null(dn)) {
+    character(0)
+  } else {
+    cn <- dn[[2]]
+    if(is.null(cn)) {
+      character(0)
+    } else {
+      grep(pattern, cn, value = TRUE)
+    }
+  }
+}
+
 "$.zoo" <- function(object, x) {
   if(length(dim(object)) != 2) stop("not possible for univariate zoo series")
   if(is.null(colnames(object))) stop("only possible for zoo series with column names")
