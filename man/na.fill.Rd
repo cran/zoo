@@ -1,5 +1,6 @@
 \name{na.fill}
 \alias{na.fill}
+\alias{na.fill0}
 \alias{na.fill.ts}
 \alias{na.fill.zoo}
 \alias{na.fill.default}
@@ -12,6 +13,8 @@ na.fill(object, fill, \dots)
 \method{na.fill}{ts}(object, fill, ix, \dots)
 \method{na.fill}{zoo}(object, fill, ix, \dots)
 \method{na.fill}{default}(object, fill, ix, \dots)
+
+na.fill0(object, fill, ix = !is.na(object))
 }
 \arguments{
   \item{object}{an object.}
@@ -28,7 +31,14 @@ na.fill(object, fill, \dots)
   \item{\dots}{further arguments passed to methods.}
 }
 
-\details{Fill \code{NA} or indicated values.}
+\details{
+  \code{na.fill} is a generic function for filling \code{NA} or indicated values.
+  It currently has methods for the time series classes \code{"zoo"} and \code{"ts"}
+  and a default method based on the \code{"zoo"} method.
+
+  Furthermore, \code{na.fill0} works with plain vectors and \code{"Date"} objects.
+  It also works with \code{"zoo"} objects provided that no \code{fill} component is \code{NULL}.
+}
 
 \seealso{\code{\link{na.approx}}}
 

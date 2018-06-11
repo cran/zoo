@@ -1,3 +1,28 @@
+Changes in Version 1.8-2
+
+  o Properly register autoplot() and fortify() methods for "zoo" objects
+    provided that "ggplot2" is loaded.
+
+  o If rollapply(), rollmean(), etc. are applied to zero-length objects,
+    these objects are returned unmodified.
+
+  o The rollmean(x, k, ...) method now calls rollapply(x, k, (mean), ...) in
+    case x contains any NAs (as the fast cumsum-based solution in rollmean is
+    not applicable in this case). Analogously for rollsum() and rollmedian().
+    (Reported by Jan Gorecki.)
+
+  o Added new na.fill0() function for simpler filling of NAs in sufficiently
+    plain vectors, Date objects, etc.
+
+  o Applying na.fill() to all-NA vectors/columns now consistently treats
+    all NAs as leading NAs. Also filling character vectors/columns has been
+    improved.
+
+  o In write.zoo() the time index column is now coerced to as.character()
+    prior to calling write.table() so that quote=TRUE is applied when writing
+    time indexes with spaces (e.g., "Jan 2000" for "yearmon").
+
+
 Changes in Version 1.8-1
 
   o New .DollarNames method (contributed by Josh Ulrich) to enable tab

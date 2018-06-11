@@ -14,9 +14,14 @@ rollmean <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
 	align = c("center", "left", "right"), ...) {
 
+  if (length(x) < 1L) return(x)
+
   if (!missing(na.pad)) warning("na.pad is deprecated. Use fill.")
 
   align <- match.arg(align)
+
+  n <- length(index(x))
+  if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (mean), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
 	  # merge is the only zoo specific part of this method
@@ -28,9 +33,6 @@ rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	  colnames(out) <- colnames(x)
 	  return(out)
   }
-
-  n <- length(x)
-  if(k > n) return(rollapply(x, k, FUN = (mean), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -49,12 +51,17 @@ rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollmean.default <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{		
+		if (length(x) < 1L) return(x)
+
 		coredata(rollmean(zoo(x), k, fill = fill, align = align, ...))
 }
 
 rollmean.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
 		as.ts(rollmean(as.zoo(x), k, fill = fill, align = align, ...))
 }
 
@@ -68,11 +75,16 @@ rollsum <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollsum.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+  if (length(x) < 1L) return(x)
 
   if (!missing(na.pad)) warning("na.pad is deprecated. Use fill.")
 
   align <- match.arg(align)
+
+  n <- length(index(x))
+  if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (sum), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
 	  # merge is the only zoo specific part of this method
@@ -84,9 +96,6 @@ rollsum.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	  colnames(out) <- colnames(x)
 	  return(out)
   }
-
-  n <- length(x)
-  if(k > n) return(rollapply(x, k, FUN = (sum), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -105,12 +114,17 @@ rollsum.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollsum.default <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
+		
 		coredata(rollsum(zoo(x), k, fill = fill, align = align, ...))
 }
 
 rollsum.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
 		as.ts(rollsum(as.zoo(x), k, fill = fill, align = align, ...))
 }
 
@@ -124,7 +138,9 @@ rollmax <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+  if (length(x) < 1L) return(x)
 
   if (!missing(na.pad)) warning("na.pad is deprecated. Use fill.")
 
@@ -171,12 +187,18 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollmax.default <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
+		
 		coredata(rollmax(zoo(x), k, fill = fill, align = align, ...))
 }
 
 rollmax.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
+		
 		as.ts(rollmax(as.zoo(x), k, fill = fill, align = align, ...))
 }
 
@@ -191,11 +213,16 @@ rollmedian <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+  if (length(x) < 1L) return(x)
 
   if (!missing(na.pad)) warning("na.pad is deprecated. Use fill.")
 
   align <- match.arg(align)
+
+  n <- length(index(x))
+  if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (median), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
 	  # merge is the only zoo specific part of this method
@@ -206,9 +233,6 @@ rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 	  colnames(out) <- colnames(x)
 	  return(out)
   }
-
-  n <- length(x)
-  if(k > n) return(rollapply(x, k, FUN = (median), fill = fill, align = align, ...))
 
   ix <- switch(align,
       "left" = { 1:(n-k+1) },
@@ -226,12 +250,18 @@ rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 }
 
 rollmedian.default <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
+		
 		coredata(rollmedian(zoo(x), k, fill = fill, align = align, ...))
 }
 
 rollmedian.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
-	align = c("center", "left", "right"), ...) {
+	align = c("center", "left", "right"), ...)
+{
+		if (length(x) < 1L) return(x)
+		
 		as.ts(rollmedian(as.zoo(x), k, fill = fill, align = align, ...))
 }
 

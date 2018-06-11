@@ -24,7 +24,7 @@ zoo <- function (x = NULL, order.by = index(x), frequency = NULL,
 
     if(!is.null(frequency)) {
       delta <- suppressWarnings(try(diff(as.numeric(order.by)), silent = TRUE))
-      freqOK <- if(class(delta) == "try-error" || any(is.na(delta))) FALSE
+      freqOK <- if(inherits(delta, "try-error") || anyNA(delta)) FALSE
         else if(length(delta) < 1) TRUE
         else identical(all.equal(delta*frequency, round(delta*frequency)), TRUE)
       if(!freqOK) {

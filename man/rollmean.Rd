@@ -73,6 +73,8 @@ default methods. The default method of \code{rollmedian}
 is an interface to \code{\link{runmed}}.
 The default methods of \code{rollmean} and \code{rollsum} do not handle inputs that contain
 \code{NA}s. In such cases, use \code{\link{rollapply}} instead.
+
+If \code{x} is of length 0, \code{x} is returned unmodified.
 }
 
 \value{
@@ -85,17 +87,20 @@ An object of the same class as \code{x} with the rolling mean/max/median/sum.
 x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
 x <- zoo(rnorm(12), x.Date)
 
+## rolling operations for univariate series
 rollmean(x, 3)
 rollmax(x, 3)
 rollmedian(x, 3)
 rollsum(x, 3)
 
+## rolling operations for multivariate series
 xm <- zoo(matrix(1:12, 4, 3), x.Date[1:4])
 rollmean(xm, 3)
 rollmax(xm, 3)
 rollmedian(xm, 3)
 rollsum(xm, 3)
 
+## rollapply vs. dedicated rollmean
 rollapply(xm, 3, mean) # uses rollmean
 rollapply(xm, 3, function(x) mean(x)) # does not use rollmean
 }

@@ -36,16 +36,20 @@ rollapplyr <- function(..., align = "right") {
 rollapply <- function(data, ...) UseMethod("rollapply")
 
 rollapply.default <- function(data, ...) {
+        if (length(data) < 1L) return(data)
 	coredata(rollapply(zoo(data), ...))
 }
 
 rollapply.ts <- function(data, ...) {
+        if (length(data) < 1L) return(data)
 	as.ts(rollapply(as.zoo(data), ...))
 }
 
 rollapply.zoo <- function(data, width, FUN, ..., by = 1, 
 	by.column = TRUE, fill = if (na.pad) NA, na.pad = FALSE,
 	partial = FALSE, align = c("center", "left", "right"), coredata = TRUE) {
+
+        if (length(data) < 1L) return(data)
 
 	if (!missing(na.pad)) {
 		warning("na.pad argument is deprecated")
@@ -54,9 +58,9 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
     if (is.vector(width) && !is.list(width) && length(width) == 1 &&
 		by.column && length(by) == 1 && by == 1 && (missing(partial) | identical(partial, FALSE)) &&
 		length(list(...)) < 1 && length(sw <- deparse(substitute(FUN))) == 1) {
-		  if (sw == "mean" && all(!is.na(data))) {
+		  if (sw == "mean" && !anyNA(data)) {
 				return(rollmean(data, width, fill = fill, align = align))
-		  } else if (sw == "median" && width %% 2 == 1) {
+		  } else if (sw == "median" && width %% 2 == 1 && !anyNA(data)) {
 				return(rollmedian(data, width, fill = fill, align = align))
 	      } else if (sw == "max") {
 				return(rollmax(data, width, fill = fill, align = align))

@@ -50,6 +50,13 @@ na.locf.default <- function(object, na.rm = TRUE, fromLast, rev, maxgap = Inf, r
 	if (na.rm) na.trim(object, is.na = "all") else object
 }
 
+na.locf.data.frame <- function(object, na.rm = TRUE, fromLast = FALSE, maxgap = Inf, ...)
+{
+    object[] <- lapply(object, na.locf0, fromLast = fromLast, maxgap = maxgap)
+    if (na.rm) na.omit(object) else object
+}
+
+
 na.contiguous.data.frame <-
 na.contiguous.zoo <- function(object, ...) 
 {

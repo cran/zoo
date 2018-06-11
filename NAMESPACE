@@ -71,6 +71,7 @@ export(
   "na.approx.default",
   "na.fill",
   "na.fill.default",
+  "na.fill0",
   "na.locf",
   "na.locf.default",
   "na.locf0",
@@ -356,6 +357,7 @@ export(
   S3method("na.approx", "default")
   S3method("na.fill", "default")
   S3method("na.locf", "default")
+  S3method("na.locf", "data.frame")
   S3method("na.spline", "default")
   S3method("na.trim", "default")
   S3method("na.aggregate", "default")
@@ -370,6 +372,7 @@ export(
 
 ## coercion to classes Date, list, yearmon, yearqtr, zoo, zooreg
   S3method("as.Date", "default", ".as_Date_default")
+  S3method("as.Date", "mondate", ".as_Date_default")
   S3method("as.Date", "numeric")
   S3method("as.list", "ts")
   S3method("as.yearmon", "date")
@@ -406,6 +409,7 @@ export(
   S3method("as.zoo", "its")
   S3method("as.zoo", "matrix")
   S3method("as.zoo", "mcmc")
+  S3method("as.zoo", "tis")
   S3method("as.zoo", "ts")
   S3method("as.zoo", "xts")
   S3method("as.zoo", "zoo")

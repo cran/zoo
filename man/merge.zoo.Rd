@@ -147,5 +147,19 @@ cbind(x, y = coredata(y)[ix])
 window(na.locf(merge(x, y), fromLast = TRUE), index(x))
 
 
+## c() can combine several zoo series, e.g., zoo series with Date index
+z <- zoo(1:5, as.Date("2000-01-01") + 0:4)
+z2 <- zoo(6:7, time(z)[length(z)] + 1:2)
+
+## c() combines these in a single series
+c(z, z2)
+
+## the order does not matter
+c(z2, z)
+
+## note, however, that combining a zoo series with an unclassed vector
+## of observations coerces to zoo/Date first and can give unexpected results
+c(z, 6:7)
+
 }
 \keyword{ts}

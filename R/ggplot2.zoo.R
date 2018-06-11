@@ -5,6 +5,11 @@ fortify.zoo <- function(model, data, names = c("Index", "Series", "Value"),
   ## dimensions
   n <- NROW(model)
   k <- NCOL(model)
+
+  ## dots only named data.frame arguments
+  dots <- list(...)
+  dots <- dots[names(dots) %in%
+    c("row.names", "check.rows", "check.names", "fix.empty.names", "stringsAsFactors")]
   
   ## series labels
   lab <- colnames(model)
@@ -25,12 +30,16 @@ fortify.zoo <- function(model, data, names = c("Index", "Series", "Value"),
   
   ## either long format (melt = TRUE) or wide format (melt = FALSE)
   if(melt) {
-    df <- if(k == 1L) {
-      data.frame(index(model), factor(rep.int(1, n), labels = lab), coredata(model), ...)
+    df <- if(k == 1L) {    
+      do.call("data.frame", c(
+        list(index(model), factor(rep.int(1, n), labels = lab), coredata(model)),
+	dots))
     } else {
-      data.frame(index(model)[rep.int(1:n, k)],
-        factor(rep(1:k, each = n), levels = 1:k, labels = lab),
-	as.vector(coredata(model)), ...)
+      do.call("data.frame", c(
+        list(index(model)[rep.int(1:n, k)],
+          factor(rep(1:k, each = n), levels = 1:k, labels = lab),
+	  as.vector(coredata(model))),
+	dots))
     }
     if (!is.null(sep)) {
       df <- data.frame(df[1L], 
@@ -40,7 +49,9 @@ fortify.zoo <- function(model, data, names = c("Index", "Series", "Value"),
     nl <- length(nm)
     names(df) <- c(nm[1L], make.unique(rep_len(nm[-c(1L, nl)], ncol(df) - 2L)), nm[nl])
   } else {
-    df <- cbind(data.frame(index(model), ...), coredata(model))
+    df <- cbind(
+      do.call("data.frame", c(list(index(model)), dots)), 
+      coredata(model))
     names(df) <- c(nm[1L], lab)  
   }
   

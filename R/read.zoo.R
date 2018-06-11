@@ -202,7 +202,7 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   }
   
   ## sanity checking
-  if(any(is.na(ix))) {
+  if(anyNA(ix)) {
     idx <- which(is.na(ix))
 	msg <- if (length(idx) == 1)
 		paste("index has bad entry at data row", idx)
@@ -288,7 +288,7 @@ write.zoo <- function(x, file = "", index.name = "Index",
   if(is.null(col.names)) col.names <- !is.null(colnames(x))
   dx <- as.data.frame(x)  
   stopifnot(all(names(dx) != index.name))
-  dx[[index.name]] <- index(x)
+  dx[[index.name]] <- as.character(index(x))
   dx <- dx[, c(ncol(dx), 1:(ncol(dx)-1))]
   write.table(dx, file = file, row.names = row.names, col.names = col.names, ...)
 }

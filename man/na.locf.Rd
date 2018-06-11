@@ -139,6 +139,15 @@ zq <- zoo(c(1, NA, 3, 4), as.yearqtr(2000) + 0:3/4)
 tt <- as.yearmon(start(zq)) + seq(0, len = 3 * length(zq))/12
 na.locf(zq, xout = tt, maxgap = 0)
 
+## na.locf() can also be mimicked with ave()
+x <- c(NA, 10, NA, NA, 20, NA)
+f <- function(x) x[1]
+ave(x, cumsum(!is.na(x)), FUN = f)
 
+## by replacing f() with other functions various generalizations can be
+## obtained, e.g.,
+f <- function(x) if (length(x) > 3) x else x[1]  # like maxgap
+f <- function(x) replace(x, 1:min(length(x)), 3) # replace up to 2 NAs
+f <- function(x) if (!is.na(x[1]) && x[1] > 0) x[1] else x  # only positve numbers
 }
 \keyword{ts}

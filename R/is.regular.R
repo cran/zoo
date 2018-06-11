@@ -5,7 +5,7 @@ is.regular <- function(x, strict = FALSE) {
 is.regular.zoo <- function(x, strict = FALSE)
 {
   delta <- suppressWarnings(try(diff(as.numeric(index(x))), silent = TRUE))
-  if(class(delta) == "try-error" || any(is.na(delta))) FALSE
+  if(inherits(delta, "try-error") || anyNA(delta)) FALSE
   else if(length(delta) < 1) FALSE
   else if(strict) identical(all.equal(delta, rep.int(delta[1], length(delta))), TRUE)
   else {
@@ -40,7 +40,7 @@ frequency.zoo <- function(x, ...)
 
   ## check regularity
   delta <- suppressWarnings(try(diff(as.numeric(index(x))), silent = TRUE))
-  reg <- if(class(delta) == "try-error" || any(is.na(delta))) FALSE
+  reg <- if(inherits(delta, "try-error") || anyNA(delta)) FALSE
   else {
     delta <- unique(delta)
     rval <- identical(all.equal(delta/min(delta), round(delta/min(delta))), TRUE)
@@ -73,7 +73,7 @@ frequency.zoo <- function(x, ...)
   
 "frequency<-.zoo" <- function(x, value) {
   delta <- suppressWarnings(try(diff(as.numeric(index(x))), silent = TRUE))
-  freqOK <- if(class(delta) == "try-error" || any(is.na(delta))) FALSE
+  freqOK <- if(inherits(delta, "try-error") || anyNA(delta)) FALSE
     else if(length(delta) < 1) TRUE
     else identical(all.equal(delta*value, round(delta*value)), TRUE)
   stopifnot(freqOK)
