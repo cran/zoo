@@ -86,11 +86,17 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 	# convert widths to offsets using align
 	align <- match.arg(align)
 
-	if (!is.list(width)) width <- lapply(width, function(w) {
+	width <- if (!is.list(width)) {
+	  lapply(trunc(width), function(w) {
 			if (align == "right") seq(to = 0, length.out = w)
 			else if (align == "center") seq(to = floor(w/2), length.out = w)
 			else seq(from = 0, length.out = w)
-	})
+	  })
+	} else {
+	  lapply(width, function(w) {
+	                if(is.null(w)) NULL else trunc(w)
+	  })
+	}
 	# recycle width (using by if length(width) == 1)
 	width <- if (length(width) == 1) {
 		w <- rep(list(NULL), NROW(data))

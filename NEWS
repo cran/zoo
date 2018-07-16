@@ -1,3 +1,15 @@
+Changes in Version 1.8-3
+
+  o The 'width' argument in rollapply() is now trunc()-ated to an integer
+    rather than implicitly coercing it (which lead to inconsistent and/or
+    unintended behavior for non-integer widths in previous versions).
+    Analogously for argument "k" in the other roll*() functions.
+
+  o Consistently use read.zoo(text = ...) and read.table(text = ...)
+    instead of read.zoo(textConnection(...)) and read.table(textConnection(...))
+    in order to cleanly open/close the text connection.
+
+
 Changes in Version 1.8-2
 
   o Properly register autoplot() and fortify() methods for "zoo" objects

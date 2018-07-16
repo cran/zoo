@@ -136,10 +136,10 @@ tail1 <- function(x) tail(x, 1)
 cls <- c("NULL", "NULL", "NULL", "character", "numeric", "numeric")
 nms <- c("", "", "", "time", "value", "volume")
 
-z <- read.zoo(textConnection(Lines), aggregate = tail1,
+z <- read.zoo(text = Lines, aggregate = tail1,
   FUN = times, sep = "|", colClasses = cls, col.names = nms)
 
-z2 <- read.zoo(textConnection(Lines), aggregate = sum,
+z2 <- read.zoo(text = Lines, aggregate = sum,
   FUN = times, sep = "|", colClasses = cls, col.names = nms)
 
 z$volume <- z2$volume
@@ -158,7 +158,7 @@ Lines <- "Date Stock Price
 2000-01-01 ORCL 12
 2000-01-02 ORCL 13"
 
-stocks <- read.zoo(textConnection(Lines), header = TRUE, split = "Stock")
+stocks <- read.zoo(text = Lines, header = TRUE, split = "Stock")
 stocks
 @
 
@@ -640,7 +640,7 @@ Lines <- "Time,Value
 2009-10-09 6:00:00,185"
 
 library("chron")
-z <- read.zoo(textConnection(Lines), FUN = as.chron, sep = ",", header = TRUE)
+z <- read.zoo(text = Lines, FUN = as.chron, sep = ",", header = TRUE)
 g <- seq(start(z), end(z), by = times("00:10:00"))
 na.locf(z, xout = g)
 @

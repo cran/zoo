@@ -21,6 +21,7 @@ rollmean.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   align <- match.arg(align)
 
   n <- length(index(x))
+  k <- trunc(k)
   if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (mean), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
@@ -84,6 +85,7 @@ rollsum.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   align <- match.arg(align)
 
   n <- length(index(x))
+  k <- trunc(k)
   if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (sum), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
@@ -157,6 +159,7 @@ rollmax.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   }
 
   n <- length(x)
+  k <- trunc(k)
   if(k > n) return(rollapply(x, k, FUN = (max), fill = fill, align = align, ...))
 
   ix <- switch(align,
@@ -222,6 +225,7 @@ rollmedian.zoo <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
   align <- match.arg(align)
 
   n <- length(index(x))
+  k <- trunc(k)
   if(k > n || anyNA(coredata(x))) return(rollapply(x, k, FUN = (median), fill = fill, align = align, ...))
 
   if (length(dim(x)) == 2) {
@@ -264,7 +268,3 @@ rollmedian.ts <- function(x, k, fill = if (na.pad) NA, na.pad = FALSE,
 		
 		as.ts(rollmedian(as.zoo(x), k, fill = fill, align = align, ...))
 }
-
-
-
-

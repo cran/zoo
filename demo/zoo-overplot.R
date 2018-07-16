@@ -324,10 +324,8 @@ Lines <- '"Time","IEMP (rand/US$) Index","Distress"
 01/02/08,0.08,0'
 
 library(zoo)
-z <- read.zoo(textConnection(Lines), format = "%d/%m/%y", sep = ",",
+z <- read.zoo(text = Lines, format = "%d/%m/%y", sep = ",",
 header = TRUE, col.names = c("", "IEMP", "Distress"))
 
-plot(cbind(z$IEMP, ifelse(z$Distress, z, NA)), col = 1:2, screen = 1,
-ylab = "IEMP")
+plot(cbind(z$IEMP, ifelse(z$Distress, z, NA)), col = 1:2, screen = 1, ylab = "IEMP")
 legend("bottomright", c("Normal", "Distress"), lty = 1, col = 1:2)
-
