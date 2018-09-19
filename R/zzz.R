@@ -23,8 +23,10 @@ register_s3_method <- function(pkg, generic, class, fun = NULL) {
 }
 
 .onLoad <- function(libname, pkgname) {
-  register_s3_method("ggplot2", "autoplot", "zoo")
-  register_s3_method("ggplot2", "fortify", "zoo")
+  if(getRversion() < "3.6.0") {
+    register_s3_method("ggplot2", "autoplot", "zoo")
+    register_s3_method("ggplot2", "fortify", "zoo")
+  }
   invisible()
 }
 
