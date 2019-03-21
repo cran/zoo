@@ -42,6 +42,7 @@
 <<preliminaries, echo=FALSE, results=hide>>=
 library("zoo")
 Sys.setenv(TZ = "GMT")
+suppressWarnings(RNGversion("3.5.0"))
 @
 
 \mysection[1. I know that duplicate times are not allowed but my data has them. What do I do?]{1. I know that duplicate times are not allowed but my data has them. What do I do?}

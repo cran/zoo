@@ -1,3 +1,39 @@
+Changes in Version 1.8-5
+
+  o Added dedicated diff() methods for "yearmon" and "yearqtr" objects.
+
+  o Fix potential problems when logic comparisons in if() are not of
+    length 1 (reported by Kurt Hornik).
+
+  o Fix potential protect calls found by rchk. ScalarInteger() and
+    MAKE_CLASS() potentially allocate (reported and patched by Kurt Hornik).
+
+  o Set useDynamicSymbols to FALSE as it is better practice to not allow
+    the DLL to be searched for entry points via strings (suggested by Kurt
+    Hornik).
+
+  o Replace as.zoo.xts() with xts:::as.zoo.xts(). Both zoo and xts register
+    an as.zoo.xts() method with the xts version being slightly better. Hence
+    the zoo version was replaced with the xts version as the package that owns
+    the class should define the conversion method.
+
+  o read.zoo(x) did not process columns correctly who had column names
+    that are intergers in 1:ncol(x).
+
+  o Add example on ?ggplot2.zoo that illustrates how to use scale_x_yearmon
+    for a discrete labeling (rather than continuous). Adapted from:
+    https://stackoverflow.com/questions/54591625/missing-yearmon-labels-using-ggplot-scale-x-yearmon/54592173#54592173
+
+  o Added suppressWarnings(RNGversion("3.5.0")) in all vignettes and manual
+    pages that use set.seed() to make computations reproducible. This is
+    necessitated by recent (> 3.5.0) improvements in R's default RNG to
+    yield the same output in all CRAN checks.
+
+  o Added maxgap=Inf argument to na.trim(). In particular na.approx() and
+    na.spline() now pass on maxgap=maxgap to na.trim() so that leading/trailing
+    NAs are handled consistently with inner NAs (pointed out by Ken Williams).
+
+
 Changes in Version 1.8-4
 
   o Conditional registration of S3 methods simplified in R-devel (aka

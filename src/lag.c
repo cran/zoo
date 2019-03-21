@@ -297,7 +297,8 @@ Rprintf("zoo_lag\n");
     if(IS_S4_OBJECT(getAttrib(x, install("index")))) {
       /* need to assure that this is timeDate */
       SEXP tmp = PROTECT(getAttrib(x, install("index"))); P++;
-      SEXP timeDate = PROTECT(NEW_OBJECT(MAKE_CLASS("timeDate"))); P++;
+      SEXP class = PROTECT(MAKE_CLASS("timeDate")); P++;
+      SEXP timeDate = PROTECT(NEW_OBJECT(class)); P++;
       copyMostAttrib(index,newindex);
       SET_SLOT(timeDate,install("Data"),newindex);
       SEXP format = PROTECT(GET_SLOT(tmp, install("format"))); P++;
@@ -326,6 +327,9 @@ Rprintf("zoo_lag\n");
 }
 
 SEXP zoo_lagts (SEXP x, SEXP _k, SEXP _pad) {
-  int k = INTEGER(_k)[0]*-1; /* change zoo default negative handling */
-  return zoo_lag (x, ScalarInteger(k), _pad);
+  int k_pos = INTEGER(_k)[0]*-1; /* change zoo default negative handling */
+  SEXP k = PROTECT(ScalarInteger(k_pos));
+  SEXP ans = zoo_lag (x, k, _pad);
+  UNPROTECT(1);
+  return ans;
 }

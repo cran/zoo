@@ -137,6 +137,7 @@ panel.polygon.zoo(x, ...)
 \examples{
 if(require("lattice") & require("grid")) {
 
+suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
 

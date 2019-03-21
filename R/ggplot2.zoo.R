@@ -21,7 +21,7 @@ fortify.zoo <- function(model, data, names = c("Index", "Series", "Value"),
   if(!is.null(names(names))) names <- names[nm]
   if(is.list(names)) {
     names(names) <- nm
-    for(i in 1L:3L) if(is.null(names[[i]]) || is.na(names[[i]])) names[[i]] <- nm[i]
+    for(i in 1L:3L) if(is.null(names[[i]]) || anyNA(names[[i]])) names[[i]] <- nm[i]
     nm <- unlist(names)
   } else {
     names <- rep_len(names, 3L)

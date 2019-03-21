@@ -246,3 +246,5 @@ unique.yearqtr <- function(x, incomparables = FALSE, ...) {
 }
 
 xtfrm.yearqtr <- function(x) as.numeric(x)
+
+diff.yearqtr <- function(x, ...) as.numeric(NextMethod())

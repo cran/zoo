@@ -222,4 +222,5 @@ unique.yearmon <- function(x, incomparables = FALSE, ...) {
 
 xtfrm.yearmon <- function(x) as.numeric(x)
 
+diff.yearmon <- function(x, ...) as.numeric(NextMethod())
 

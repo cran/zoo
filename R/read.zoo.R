@@ -58,8 +58,12 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
   if (is.list(index.column) && length(index.column) == 1 && 
 	index.column[[1]] == 1) index.column <- unlist(index.column)
 
-  is.index.column <- seq_along(rval) %in% unname(unlist(index.column)) |
-	names(rval) %in% unname(unlist(index.column))
+  is.index.column <- unname(unlist(index.column))
+  is.index.column <- if(is.numeric(is.index.column)) {
+     seq_along(rval) %in% is.index.column
+  } else {
+     seq_along(rval) %in% is.index.column | names(rval) %in% is.index.column
+ }
 
   name.to.num <- function(x) if (is.character(x))
 		match(x, names(rval), nomatch = 0) else x

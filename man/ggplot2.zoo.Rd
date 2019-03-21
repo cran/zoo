@@ -158,6 +158,13 @@ fortify(z)
 fortify(z, melt = TRUE, sep = ".",
   names = list(Series = c("Lower", "Upper")))
 
+## scale_x_yearmon for a discrete labeling (rather than continuous)
+df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
+ggplot(df, aes(x = dates, y = values)) + 
+ geom_bar(position = "dodge", stat = "identity") +      
+ theme_light() + xlab("Month") + ylab("values")+ 
+ scale_x_continuous(breaks = as.numeric(df$dates), labels = format(df$dates,"\%Y \%m"))
+
 }
 }
 

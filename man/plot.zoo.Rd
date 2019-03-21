@@ -85,6 +85,7 @@ single panel plots in the same way as with other classic graphics.
 For multi-panel graphics, \code{plot.zoo} takes over the layout so
 \code{par(mfrow=...)} cannot be used.  \code{Axis} can be used within
 the panels themselves but not outside the panel.  See examples.
+Also, \code{par(new = TRUE)} is not supported for multi-panel graphics.
 
 In addition to classical time series line plots, there is also a
 simple \code{\link{barplot}} method for \code{"zoo"} series.
@@ -196,6 +197,7 @@ plot(zoo(coredata(z)), xaxt = "n", panel = function(x, y, ..., Time = time(z)) {
 
 ## plot with left and right axes
 ## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
+suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 z <- zoo(cbind(A = cumsum(rnorm(100)), B = cumsum(rnorm(100, mean = 0.2))))
 opar <- par(mai = c(.8, .8, .2, .8))

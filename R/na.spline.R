@@ -1,6 +1,6 @@
 na.spline <- function(object, ...) UseMethod("na.spline")
 
-na.spline.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, along) {
+na.spline.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, maxgap = Inf, along) {
 
     if (!missing(along)) {
         warning("along to be deprecated - use x instead")
@@ -27,13 +27,13 @@ na.spline.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, al
         if (length(dim(objectm)) == 2) colnames(objectm) <- colnames(object)
         result <- window(objectm, index = xout)
     }
-    result[] <- na.spline.default(object, x = x, xout = xout, na.rm = FALSE, ...)
+    result[] <- na.spline.default(object, x = x, xout = xout, na.rm = FALSE, ..., maxgap = maxgap)
     if ((!missing(order.by) && !is.null(order.by)) || !missing.xout) {
         index(result) <- order.by
     }
 
     if (na.rm) {
-        result <- na.trim(result, is.na = "all")
+        result <- na.trim(result, is.na = "all", maxgap = maxgap)
     }
 
     result
@@ -85,7 +85,7 @@ na.spline.default <- function(object, x = index(object), xout = x, ..., na.rm = 
     }
 
     if (na.rm) {
-        result <- na.trim(result, is.na = "all")
+        result <- na.trim(result, is.na = "all", maxgap = maxgap)
     }
 
     result

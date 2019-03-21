@@ -9,16 +9,18 @@ Generic function for removing leading and trailing \code{NA}s.
 \usage{
 na.trim(object, \dots)
 \method{na.trim}{default}(object, sides = c("both", "left", "right"), 
-	is.na = c("any", "all"), \dots)
+	is.na = c("any", "all"), maxgap = Inf, \dots)
 }
 \arguments{
   \item{object}{an object.}
   \item{sides}{character specifying whether \code{NA}s are to be removed from
-both sides, just from the left side or just from the right side.}
+    both sides, just from the left side or just from the right side.}
   \item{is.na}{If "any" then a row will be regarded as \code{NA} if it has
 	any \code{NA}s.  If "all" then a row will be regarded as \code{NA}
 	only if all elements in the row are \code{NA}.  For one dimensional
 	zoo objects this argument has no effect.}
+  \item{maxgap}{maximum number of consecutive \code{NA}s to
+    trim. Any longer gaps will be left unchanged.}
   \item{\dots}{further arguments passed to methods.}
 }
 

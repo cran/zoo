@@ -44,8 +44,8 @@ read.delim2.zoo(\dots, read = read.delim2)
   \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
     (if the series is regular)?}
   \item{index.column}{numeric vector or list. The column names or numbers of the data frame 
-    in which the index/time is stored.  If the \code{read.table} \code{colClasses} 
-    argument is used and \code{"NULL"} is among its componennts then 
+    in which the index/time is stored.  If the \code{read.table} argument \code{colClasses} 
+    is used and \code{"NULL"} is among its components then 
     \code{index.column} refers to the column numbers after the columns 
     corresponding to \code{"NULL"} in \code{colClasses} have been removed.  
     If specified as a list then one argument will be passed to argument \code{FUN} per component so that, 

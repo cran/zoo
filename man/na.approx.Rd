@@ -16,13 +16,13 @@ values.
 }
 \usage{
 na.approx(object, \dots) 
-\method{na.approx}{zoo}(object, x = index(object), xout, \dots, na.rm = TRUE, along)
+\method{na.approx}{zoo}(object, x = index(object), xout, \dots, na.rm = TRUE, maxgap = Inf, along)
 \method{na.approx}{zooreg}(object, \dots) 
 \method{na.approx}{ts}(object, \dots)
 \method{na.approx}{default}(object, x = index(object), xout, \dots, na.rm = TRUE, maxgap = Inf, along) 
 
 na.spline(object, \dots) 
-\method{na.spline}{zoo}(object, x = index(object), xout, \dots, na.rm = TRUE, along)
+\method{na.spline}{zoo}(object, x = index(object), xout, \dots, na.rm = TRUE, maxgap = Inf, along)
 \method{na.spline}{zooreg}(object, \dots) 
 \method{na.spline}{ts}(object, \dots)
 \method{na.spline}{default}(object, x = index(object), xout, \dots, na.rm = TRUE, maxgap = Inf, along) 
@@ -32,7 +32,8 @@ na.spline(object, \dots)
   \item{object}{object in which \code{NA}s are to be replaced}
   \item{x, xout}{Variables to be used for interpolation as in \code{\link{approx}}.}
   \item{na.rm}{logical. If the result of the (spline) interpolation
-    still results in \code{NA}s, should these be removed?}
+    still results in leading and/or trailing \code{NA}s, should these be removed
+    (using \code{\link{na.trim}})?}
   \item{maxgap}{maximum number of consecutive \code{NA}s to
     fill. Any longer gaps will be left unchanged. Note that all methods listed
     above can accept \code{maxgap} as it is ultimately passed to the 

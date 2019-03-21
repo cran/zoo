@@ -1,6 +1,6 @@
 
-R version 3.5.0 (2018-04-23) -- "Joy in Playing"
-Copyright (C) 2018 The R Foundation for Statistical Computing
+R version 3.5.3 (2019-03-11) -- "Great Truth"
+Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -197,6 +197,7 @@ Jan 2000 Feb 2000 Mar 2000 Apr 2000 May 2000 Jun 2000
                 300                 895                1495                1900 
 > 
 > # aggregate weekly series to a series with frequency of 52 per year
+> suppressWarnings(RNGversion("3.5.0"))
 > set.seed(1)
 > z <- zooreg(1:100 + rnorm(100), start = as.Date("2001-01-01"), deltat = 7)
 > 
@@ -544,18 +545,16 @@ Frequency = 3
 + fortify(z, melt = TRUE, sep = ".",
 +   names = list(Series = c("Lower", "Upper")))
 + 
++ ## scale_x_yearmon for a discrete labeling (rather than continuous)
++ df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
++ ggplot(df, aes(x = dates, y = values)) + 
++  geom_bar(position = "dodge", stat = "identity") +      
++  theme_light() + xlab("Month") + ylab("values")+ 
++  scale_x_continuous(breaks = as.numeric(df$dates), labels = format(df$dates,"%Y %m"))
++ 
 + }
 Loading required package: ggplot2
 Loading required package: scales
-  Index Lower Upper Value
-1     1     a     A     1
-2     2     a     A     2
-3     1     a     B     2
-4     2     a     B     3
-5     1     b     A     3
-6     2     b     A     4
-7     1     c     B     4
-8     2     c     B     5
 > 
 > 
 > 
@@ -932,6 +931,7 @@ Warning in merge.zoo(x, y1, y2, all = TRUE) :
 > m <- 5 # no of years
 > n <- 6 # no of sites
 > sites <- LETTERS[1:n]
+> suppressWarnings(RNGversion("3.5.0"))
 > set.seed(1)
 > DF <- data.frame(site = sites, year = 2000 + 1:m, data = rnorm(m*n))
 > tozoo <- function(x) zoo(x$data, x$year) 
@@ -1569,6 +1569,7 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > 
 > ## plot with left and right axes
 > ## modified from http://www.mayin.org/ajayshah/KB/R/html/g6.html
+> suppressWarnings(RNGversion("3.5.0"))
 > set.seed(1)
 > z <- zoo(cbind(A = cumsum(rnorm(100)), B = cumsum(rnorm(100, mean = 0.2))))
 > opar <- par(mai = c(.8, .8, .2, .8))
@@ -2408,6 +2409,7 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 > ### ** Examples
 > 
 > ## example time series:
+> suppressWarnings(RNGversion("3.5.0"))
 > set.seed(0)
 > flow <- ts(filter(rlnorm(200, mean = 1), 0.8, method = "r"))
 > 
@@ -2502,6 +2504,7 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 > 
 > if(require("lattice") & require("grid")) {
 + 
++ suppressWarnings(RNGversion("3.5.0"))
 + set.seed(1)
 + z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
 + 
@@ -3181,7 +3184,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.023 0.068 2.102 0 0 
+Time elapsed:  1.857 0.076 1.949 0 0 
 > grDevices::dev.off()
 null device 
           1 

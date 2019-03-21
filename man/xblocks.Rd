@@ -77,6 +77,7 @@ xblocks(x, ...)
 }
 \examples{
 ## example time series:
+suppressWarnings(RNGversion("3.5.0"))
 set.seed(0)
 flow <- ts(filter(rlnorm(200, mean = 1), 0.8, method = "r"))
 

@@ -126,6 +126,7 @@ merge(z, coredata(z),  1)
 m <- 5 # no of years
 n <- 6 # no of sites
 sites <- LETTERS[1:n]
+suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 DF <- data.frame(site = sites, year = 2000 + 1:m, data = rnorm(m*n))
 tozoo <- function(x) zoo(x$data, x$year) 

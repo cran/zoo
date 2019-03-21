@@ -51,7 +51,11 @@ as.zoo.timeSeries <- function(x, ...) {
 }
 
 as.zoo.xts <- function(x, ...) {
-  zoo(coredata(x), order.by = index(x), ...)
+  y <- coredata(x)
+  if (length(y) == 0) {
+    y <- NULL
+  }
+  zoo(y, order.by = index(x), ...)
 }
 
 as.zooreg.xts <- function(x, frequency = NULL, ...) {

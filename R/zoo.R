@@ -84,7 +84,7 @@ print.zoo <- function (x, style = ifelse(length(dim(x)) == 0,
 
 summary.zoo <- function(object, ...) 
 {
-	y <- as.data.frame(object)
+	y <- as.data.frame(object, row.names = NULL)
 	if (length(colnames(object)) < 1) {
 		lab <- deparse(substitute(object))
 		colnames(y) <- if (NCOL(object) == 1) lab

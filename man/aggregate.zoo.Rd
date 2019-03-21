@@ -134,6 +134,7 @@ x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
 aggregate(x, time(x) - as.numeric(time(x)) \%\% 600, mean)
 
 # aggregate weekly series to a series with frequency of 52 per year
+suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 z <- zooreg(1:100 + rnorm(100), start = as.Date("2001-01-01"), deltat = 7)
 

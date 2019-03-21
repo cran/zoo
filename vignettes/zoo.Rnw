@@ -66,6 +66,7 @@ online <- FALSE ## if set to FALSE the local copy of MSFT.rda
                 ## is used instead of get.hist.quote()
 options(prompt = "R> ")
 Sys.setenv(TZ = "GMT")
+suppressWarnings(RNGversion("3.5.0"))
 @
 
 \section{Introduction} \label{sec:intro}
@@ -204,7 +205,8 @@ available when the new generic \code{ORDER()} was introduced. If there is a
 \code{xtfrm()} for a class, the default \code{ORDER()} method typically works.}
 
 To illustrate the usage of \code{zoo()}, we first load the package and set the
-random seed to make the examples in this paper exactly reproducible.
+random seed to make the examples in this paper exactly reproducible. (Note that
+\code{RNGversion("3.5.0")} is used also in versions > 3.5.0.)
 
 <<zoo-prelim>>=
 library("zoo")
