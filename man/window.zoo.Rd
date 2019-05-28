@@ -37,6 +37,9 @@ object) or it is replaced.
 \seealso{\code{\link{zoo}}}
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## zoo example
 x.date <- as.Date(paste(2003, rep(1:4, 4:1), seq(1,19,2), sep = "-"))
 x <- zoo(matrix(rnorm(20), ncol = 2), x.date)

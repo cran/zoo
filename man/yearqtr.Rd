@@ -110,6 +110,8 @@ as.yearqtr(x, \dots)
   \code{\link{strptime}}.}
 
 \examples{
+Sys.setenv(TZ = "GMT")
+
 x <- as.yearqtr(2000 + seq(0, 7)/4)
 x
 
@@ -124,6 +126,9 @@ dd <- as.Date(x)
 format.yearqtr(dd)
 as.Date(x, frac = 1)
 as.POSIXct(x)
+
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
 
 zz <- zoo(rnorm(8), x, frequency = 4)
 zz

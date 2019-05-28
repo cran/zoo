@@ -60,6 +60,9 @@ always used.
 }  
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## coercion to zoo:
 ## default method
 as.zoo(rnorm(5))

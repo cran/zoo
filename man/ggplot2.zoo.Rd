@@ -93,6 +93,9 @@
 
 \examples{
 if(require("ggplot2") && require("scales")) {
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## example data
 x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
 x <- zoo(rnorm(5), x.Date)

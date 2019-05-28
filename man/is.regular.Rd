@@ -65,6 +65,9 @@ is.regular(z, strict = TRUE)
 is.regular(z[-3])
 is.regular(z[-3], strict = TRUE)
 
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## checking of an irregular zoo series
 z <- zoo(1:10, rnorm(10))
 z

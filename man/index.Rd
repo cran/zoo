@@ -42,6 +42,9 @@ the methods of \code{start} and \code{end}.
 \seealso{\code{\link{time}}, \code{\link{zoo}}}
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 x.date <- as.Date(paste(2003, 2, c(1, 3, 7, 9, 14), sep = "-"))
 x <- zoo(rnorm(5), x.date)
 

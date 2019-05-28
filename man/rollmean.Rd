@@ -84,6 +84,9 @@ An object of the same class as \code{x} with the rolling mean/max/median/sum.
 \seealso{\code{\link{rollapply}}, \code{\link{zoo}}, \code{\link{na.fill}}}
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
 x <- zoo(rnorm(12), x.Date)
 

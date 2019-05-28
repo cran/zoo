@@ -260,6 +260,9 @@ dimension (\code{NROW(x)}) by which \code{x} is ordered.
 \seealso{\code{\link{zooreg}}, \code{\link{plot.zoo}}, \code{\link{index}}, \code{\link{merge.zoo}}}
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## simple creation and plotting
 x.Date <- as.Date("2003-02-01") + c(1, 3, 7, 9, 14) - 1
 x <- zoo(rnorm(5), x.Date)

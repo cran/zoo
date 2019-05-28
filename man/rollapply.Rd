@@ -97,6 +97,9 @@ rollapplyr(\dots, align = "right")
 \seealso{\code{\link{rollmean}}}
 
 \examples{
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
+
 ## rolling mean
 z <- zoo(11:15, as.Date(31:35))
 rollapply(z, 2, mean)

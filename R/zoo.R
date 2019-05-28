@@ -232,13 +232,13 @@ str.zoo <- function(object, ...)
     return(setNames(merge(object, value, drop = FALSE), x))
   }
   if(length(dim(object)) != 2) stop("not possible for univariate zoo series")
-  if(NCOL(object) > 0L & is.null(colnames(object))) stop("only possible for zoo series with column names")
-  wi <- match(x, colnames(object))
+  if(NCOL(object) > 0L && is.null(cnam <- colnames(object))) stop("only possible for zoo series with column names")
+  wi <- match(x, cnam)
   if(is.na(wi)) {
     if(!is.null(value)) {
       object <- cbind(object, value)
       if(is.null(dim(object))) dim(object) <- c(length(object), 1)
-      colnames(object)[NCOL(object)] <- x  
+      if(!identical(colnames(object), cnam)) colnames(object)[NCOL(object)] <- x  
     }
   } else {
     if(is.null(value)) {

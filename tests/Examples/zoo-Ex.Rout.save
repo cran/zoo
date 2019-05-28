@@ -1,5 +1,5 @@
 
-R version 3.5.3 (2019-03-11) -- "Great Truth"
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
 Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -190,10 +190,11 @@ Jan 2000 Feb 2000 Mar 2000 Apr 2000 May 2000 Jun 2000
      111      127      141      157      172      187 
 > 
 > # aggregate POSIXct seconds data every 10 minutes
+> Sys.setenv(TZ = "GMT")
 > tt <- seq(10, 2000, 10)
 > x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
 > aggregate(x, time(x) - as.numeric(time(x)) %% 600, mean)
-1970-01-01 01:00:00 1970-01-01 01:10:00 1970-01-01 01:20:00 1970-01-01 01:30:00 
+1970-01-01 00:00:00 1970-01-01 00:10:00 1970-01-01 00:20:00 1970-01-01 00:30:00 
                 300                 895                1495                1900 
 > 
 > # aggregate weekly series to a series with frequency of 52 per year
@@ -309,6 +310,9 @@ detaching ‘package:chron’
 > 
 > ### ** Examples
 > 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
 > ## coercion to zoo:
 > ## default method
 > as.zoo(rnorm(5))
@@ -381,6 +385,9 @@ $x.2
 > ### Keywords: ts
 > 
 > ### ** Examples
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > x.date <- as.Date(paste(2003, rep(1:4, 4:1), seq(1,20,2), sep = "-"))
 > x <- zoo(matrix(rnorm(20), ncol = 2), x.date)
@@ -480,6 +487,9 @@ Frequency = 3
 > ### ** Examples
 > 
 > if(require("ggplot2") && require("scales")) {
++ suppressWarnings(RNGversion("3.5.0"))
++ set.seed(1)
++ 
 + ## example data
 + x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
 + x <- zoo(rnorm(5), x.Date)
@@ -575,6 +585,9 @@ detaching ‘package:scales’, ‘package:ggplot2’
 > 
 > ### ** Examples
 > 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
 > x.date <- as.Date(paste(2003, 2, c(1, 3, 7, 9, 14), sep = "-"))
 > x <- zoo(rnorm(5), x.date)
 > 
@@ -669,6 +682,9 @@ detaching ‘package:scales’, ‘package:ggplot2’
 [1] TRUE
 > is.regular(z[-3], strict = TRUE)
 [1] FALSE
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > ## checking of an irregular zoo series
 > z <- zoo(1:10, rnorm(10))
@@ -1845,6 +1861,9 @@ Jan 1998 Feb 1998
 > 
 > ### ** Examples
 > 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
 > ## rolling mean
 > z <- zoo(11:15, as.Date(31:35))
 > rollapply(z, 2, mean)
@@ -2240,6 +2259,9 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 > 
 > ### ** Examples
 > 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
 > x.Date <- as.Date(paste(2004, rep(1:4, 4:1), sample(1:28, 10), sep = "-"))
 > x <- zoo(rnorm(12), x.Date)
 > 
@@ -2308,6 +2330,9 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 > ### Keywords: ts
 > 
 > ### ** Examples
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > ## zoo example
 > x.date <- as.Date(paste(2003, rep(1:4, 4:1), seq(1,19,2), sep = "-"))
@@ -2666,6 +2691,8 @@ detaching ‘package:grid’, ‘package:lattice’
 > 
 > ### ** Examples
 > 
+> Sys.setenv(TZ = "GMT")
+> 
 > x <- as.yearmon(2000 + seq(0, 23)/12)
 > x
  [1] "Jan 2000" "Feb 2000" "Mar 2000" "Apr 2000" "May 2000" "Jun 2000"
@@ -2695,18 +2722,12 @@ detaching ‘package:grid’, ‘package:lattice’
 [16] "2001-04-30" "2001-05-31" "2001-06-30" "2001-07-31" "2001-08-31"
 [21] "2001-09-30" "2001-10-31" "2001-11-30" "2001-12-31"
 > as.POSIXct(x)
- [1] "2000-01-01 01:00:00 CET"  "2000-02-01 01:00:00 CET" 
- [3] "2000-03-01 01:00:00 CET"  "2000-04-01 02:00:00 CEST"
- [5] "2000-05-01 02:00:00 CEST" "2000-06-01 02:00:00 CEST"
- [7] "2000-07-01 02:00:00 CEST" "2000-08-01 02:00:00 CEST"
- [9] "2000-09-01 02:00:00 CEST" "2000-10-01 02:00:00 CEST"
-[11] "2000-11-01 01:00:00 CET"  "2000-12-01 01:00:00 CET" 
-[13] "2001-01-01 01:00:00 CET"  "2001-02-01 01:00:00 CET" 
-[15] "2001-03-01 01:00:00 CET"  "2001-04-01 02:00:00 CEST"
-[17] "2001-05-01 02:00:00 CEST" "2001-06-01 02:00:00 CEST"
-[19] "2001-07-01 02:00:00 CEST" "2001-08-01 02:00:00 CEST"
-[21] "2001-09-01 02:00:00 CEST" "2001-10-01 02:00:00 CEST"
-[23] "2001-11-01 01:00:00 CET"  "2001-12-01 01:00:00 CET" 
+ [1] "2000-01-01 GMT" "2000-02-01 GMT" "2000-03-01 GMT" "2000-04-01 GMT"
+ [5] "2000-05-01 GMT" "2000-06-01 GMT" "2000-07-01 GMT" "2000-08-01 GMT"
+ [9] "2000-09-01 GMT" "2000-10-01 GMT" "2000-11-01 GMT" "2000-12-01 GMT"
+[13] "2001-01-01 GMT" "2001-02-01 GMT" "2001-03-01 GMT" "2001-04-01 GMT"
+[17] "2001-05-01 GMT" "2001-06-01 GMT" "2001-07-01 GMT" "2001-08-01 GMT"
+[21] "2001-09-01 GMT" "2001-10-01 GMT" "2001-11-01 GMT" "2001-12-01 GMT"
 > 
 > # given a Date, x, return the Date of the next Friday
 > nextfri <- function(x) 7 * ceiling(as.numeric(x - 1)/7) + as.Date(1)
@@ -2726,6 +2747,9 @@ detaching ‘package:grid’, ‘package:lattice’
 [11] "2000-12-15" "2000-12-15" "2001-03-15" "2001-03-15" "2001-03-15"
 [16] "2001-06-15" "2001-06-15" "2001-06-15" "2001-09-15" "2001-09-15"
 [21] "2001-09-15" "2001-12-15" "2001-12-15" "2001-12-15"
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > z <- zoo(rnorm(24), x, frequency = 12)
 > z
@@ -2808,6 +2832,8 @@ Feb 2000  NA   6
 > 
 > ### ** Examples
 > 
+> Sys.setenv(TZ = "GMT")
+> 
 > x <- as.yearqtr(2000 + seq(0, 7)/4)
 > x
 [1] "2000 Q1" "2000 Q2" "2000 Q3" "2000 Q4" "2001 Q1" "2001 Q2" "2001 Q3"
@@ -2833,10 +2859,11 @@ Feb 2000  NA   6
 [1] "2000-03-31" "2000-06-30" "2000-09-30" "2000-12-31" "2001-03-31"
 [6] "2001-06-30" "2001-09-30" "2001-12-31"
 > as.POSIXct(x)
-[1] "2000-01-01 01:00:00 CET"  "2000-04-01 02:00:00 CEST"
-[3] "2000-07-01 02:00:00 CEST" "2000-10-01 02:00:00 CEST"
-[5] "2001-01-01 01:00:00 CET"  "2001-04-01 02:00:00 CEST"
-[7] "2001-07-01 02:00:00 CEST" "2001-10-01 02:00:00 CEST"
+[1] "2000-01-01 GMT" "2000-04-01 GMT" "2000-07-01 GMT" "2000-10-01 GMT"
+[5] "2001-01-01 GMT" "2001-04-01 GMT" "2001-07-01 GMT" "2001-10-01 GMT"
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > zz <- zoo(rnorm(8), x, frequency = 4)
 > zz
@@ -2871,6 +2898,9 @@ Feb 2000  NA   6
 > ### Keywords: ts
 > 
 > ### ** Examples
+> 
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
 > 
 > ## simple creation and plotting
 > x.Date <- as.Date("2003-02-01") + c(1, 3, 7, 9, 14) - 1
@@ -3184,7 +3214,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.857 0.076 1.949 0 0 
+Time elapsed:  1.7 0.225 1.676 0 0 
 > grDevices::dev.off()
 null device 
           1 

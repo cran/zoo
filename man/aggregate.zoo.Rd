@@ -129,6 +129,7 @@ zz[!duplicated(as.yearmon(time(zz)))]
 aggregate(zz, as.yearmon, head, 1)
 
 # aggregate POSIXct seconds data every 10 minutes
+Sys.setenv(TZ = "GMT")
 tt <- seq(10, 2000, 10)
 x <- zoo(tt, structure(tt, class = c("POSIXt", "POSIXct")))
 aggregate(x, time(x) - as.numeric(time(x)) \%\% 600, mean)

@@ -98,6 +98,8 @@ yearmon(x)
 \seealso{\code{\link{yearqtr}}, \code{\link{zoo}}, \code{\link{zooreg}}, \code{\link{ts}}}
 
 \examples{
+Sys.setenv(TZ = "GMT")
+
 x <- as.yearmon(2000 + seq(0, 23)/12)
 x
 
@@ -123,6 +125,9 @@ next.month(d)
 
 # 3rd Friday in last month of the quarter of Date x
 as.Date(as.yearmon(as.yearqtr(x)) + 2/12) + 14
+
+suppressWarnings(RNGversion("3.5.0"))
+set.seed(1)
 
 z <- zoo(rnorm(24), x, frequency = 12)
 z
