@@ -302,15 +302,16 @@ rollmean(z2, 5, fill = NA)
 ### code chunk number 41: strucchange1
 ###################################################
 library("strucchange")
-library("DAAG")
-data("fruitohms")
-ocus <- gefp(ohms ~ 1, order.by = ~ juice, data = fruitohms)
+data("Journals", package = "AER")
+Journals$age <- 2000 - Journals$foundingyear
+scus <- gefp(log(subs) ~ log(price/citations), order.by = ~ age,
+  data = Journals)
 
 
 ###################################################
 ### code chunk number 42: strucchange2
 ###################################################
-plot(ocus)
+plot(scus)
 
 
 ###################################################

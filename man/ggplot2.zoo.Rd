@@ -9,6 +9,8 @@
 \alias{scale_y_yearmon}
 \alias{scale_x_yearqtr}
 \alias{scale_y_yearqtr}
+\alias{scale_type.yearmon}
+\alias{scale_type.yearqtr}
 
 \title{Convenience Functions for Plotting zoo Objects with ggplot2}
 
@@ -33,7 +35,6 @@
   yearqtr_trans(format = "\%Y-\%q", n = 5)
   scale_x_yearqtr(\dots, format = "\%Y-\%q", n = 5)
   scale_y_yearqtr(\dots, format = "\%Y-\%q", n = 5)
-  
 }
 
 \arguments{
@@ -140,7 +141,7 @@ autoplot(z) +
 autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
 
 z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
-autoplot(z.yq) + scale_x_yearqtr()
+autoplot(z.yq)
 
 ## mimic matplot
 data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
@@ -158,16 +159,15 @@ fortify(z, melt = TRUE, names = c(Index = "Time"))
 ## with/without splitting
 z <- zoo(cbind(a.A = 1:2, a.B = 2:3, b.A = 3:4, c.B = 4:5))
 fortify(z)
-fortify(z, melt = TRUE, sep = ".",
-  names = list(Series = c("Lower", "Upper")))
+fortify(z, melt = TRUE, sep = ".", names = list(Series = c("Lower", "Upper")))
 
-## scale_x_yearmon for a discrete labeling (rather than continuous)
+## scale_x_yearmon with custom discrete breaks
 df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
-ggplot(df, aes(x = dates, y = values)) + 
- geom_bar(position = "dodge", stat = "identity") +      
- theme_light() + xlab("Month") + ylab("values")+ 
- scale_x_continuous(breaks = as.numeric(df$dates), labels = format(df$dates,"\%Y \%m"))
-
+ggdf <- ggplot(df, aes(x = dates, y = values)) +
+  geom_bar(position = "dodge", stat = "identity") + theme_light() +
+  xlab("Month") + ylab("Values")
+ggdf ## with default scale_x_yearmon
+ggdf + scale_x_yearmon(breaks = df$dates) ## with custom discrete breaks
 }
 }
 

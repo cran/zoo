@@ -37,7 +37,8 @@ na.spline(object, \dots)
   \item{maxgap}{maximum number of consecutive \code{NA}s to
     fill. Any longer gaps will be left unchanged. Note that all methods listed
     above can accept \code{maxgap} as it is ultimately passed to the 
-    \code{default} method.}
+    \code{default} method. In \code{na.spline} the \code{maxgap} argument cannot
+    be combined with \code{xout}, though.}
   \item{along}{deprecated.}
   \item{\dots}{further arguments passed to methods. The \code{n} argument of \code{\link{approx}} is currently not supported.}
 }

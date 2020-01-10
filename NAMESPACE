@@ -144,10 +144,12 @@ export(
   "yearmon_trans",
   "scale_x_yearmon",
   "scale_y_yearmon",
+  "scale_type.yearqtr",
 
   "yearqtr_trans",
   "scale_x_yearqtr",
-  "scale_y_yearqtr"
+  "scale_y_yearqtr",
+  "scale_type.yearmon"
 )
 
 ## methods for class zoo
@@ -233,6 +235,8 @@ export(
 if(getRversion() >= "3.6.0") {
   S3method(ggplot2::autoplot, "zoo")
   S3method(ggplot2::fortify, "zoo")
+  S3method(ggplot2::scale_type, "yearmon")
+  S3method(ggplot2::scale_type, "yearqtr")
 }
 
 ## methods for class zooreg

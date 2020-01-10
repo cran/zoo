@@ -52,7 +52,7 @@
 
 \SweaveOpts{engine=R,eps=FALSE}
 %\VignetteIndexEntry{zoo: An S3 Class and Methods for Indexed Totally Ordered Observations}
-%\VignetteDepends{zoo,timeDate,tseries,strucchange,DAAG}
+%\VignetteDepends{zoo,timeDate,tseries,strucchange,AER}
 %\VignetteKeywords{totally ordered observations, irregular time series, S3, R}
 %\VignettePackage{zoo}
 
@@ -793,50 +793,61 @@ are used for illustrating how \pkg{zoo} can be extended by creating a new index 
 \subsection[strucchange: Empirical fluctuation processes]{\pkg{strucchange}: Empirical fluctuation processes}
 \label{sec:strucchange}
 
+\emph{Previously, this section featured an example from the \pkg{DAAG} package that
+is not actively maintained on CRAN anymore. Instead, another example for employing
+\pkg{zoo} along with \pkg{strucchange} to test for parameter instabilities in cross-section
+data is used which was one of the inspirations for model-based recursive partitioning
+\citep{zoo:Zeileis+Hothorn+Hornik:2008}.}
+
 The package \pkg{strucchange} provides a collection of methods for testing,
 monitoring and dating structural changes, in particular in linear regression models.
 Tests for structural change assess whether the parameters of a model remain
 constant over an ordering with respect to a specified variable, usually time.
+However, the same tests are also useful in cross-section data, especially for
+establishing a splitting criterion in model-based recursive partitioning
+\citep{zoo:Zeileis+Hothorn+Hornik:2008}.
 To adequately store and visualize empirical fluctuation processes which 
-capture instabilities over this ordering, a data type for indexed ordered
+capture instabilities over some ordering, a data type for indexed ordered
 observations is required. This was the motivation for starting the \pkg{zoo}
 project.
 
-A simple example for the need of \code{"zoo"} objects in \pkg{strucchange}
+An example for the need of \code{"zoo"} objects in \pkg{strucchange}
 which can not be (easily) implemented by other irregular time series classes
-available in \proglang{R} is described in the following. We assess the constancy of the
-electrical resistance over the apparent juice content of kiwi fruits.\footnote{A different
-approach would be to test whether the slope of a regression of electrical resistance
-on juice content changes with increasing juice content, i.e., to test for
-instabilities in \code{ohms \~{} juice} instead of \code{ohms \~{} 1}. Both lead to 
-similar results.} The data
-set \code{fruitohms} is contained in the \pkg{DAAG} package \citep{zoo:DAAG:2004}.
-The fitted \code{ocus} object contains the OLS-based CUSUM process for the mean
-of the electrical resistance (variable \code{ohms}) indexed by the juice
-content (variable \code{juice}).
+available in \proglang{R} is described in the following. We assess the stability
+of the regression coefficients of a certain economic demand equation over another
+available covariate. The task is to test the null hypothesis that the price elasticity in the demand
+for economic journals is stable across the age of these journals vs.\ the alternative
+that the price elasticity changes somehow across the age (possibly in a non-linear or even
+non-smooth way). The data set \code{Journals} is contained in the \pkg{AER} package
+\citep{zoo:Kleiber+Zeileis:2008} and the demand equation in log-log form is given
+by \code{log(subs) ~ log(price/citations)} with price additionally adjusted for
+scientific impact.
+The fitted \code{scus} object contains the score-based CUSUM process for both
+the intercept and the slope (i.e., the price elasticity).
 
 <<strucchange1>>=
 library("strucchange")
-library("DAAG")
-data("fruitohms")
-ocus <- gefp(ohms ~ 1, order.by = ~ juice, data = fruitohms)
+data("Journals", package = "AER")
+Journals$age <- 2000 - Journals$foundingyear
+scus <- gefp(log(subs) ~ log(price/citations), order.by = ~ age,
+  data = Journals)
 @
 
 \begin{figure}[h!]
 \begin{center}
 <<strucchange2,fig=TRUE,height=4,width=6>>=
-plot(ocus)
+plot(scus)
 @
-\caption{\label{fig:strucchange} Empirical M-fluctuation process for \code{fruitohms} data}
+\caption{\label{fig:strucchange} Empirical M-fluctuation process for \code{Journals} data}
 \end{center}
 \end{figure}
 
-This OLS-based CUSUM process can be visualized using the \code{plot} method
+This score-based CUSUM process can be visualized using the \code{plot} method
 for \code{"gefp"} objects which builds on the \code{"zoo"} method and yields in
 this case the plot in Figure~\ref{fig:strucchange} showing the process which
 crosses its 5\% critical value and 
-thus signals a significant decrease in the mean electrical resistance over the
-juice content. For more information on the package \pkg{strucchange} and the 
+thus signals a significant change in the price elasticity for journals older
+vs.\ younger than about 18 years. For more information on the package \pkg{strucchange} and the 
 function \code{gefp} see \cite{zoo:Zeileis+Leisch+Hornik:2002} and 
 \cite{zoo:Zeileis:2005}.
 
@@ -1047,7 +1058,7 @@ The results in this paper were obtained using \proglang{R}
 \pkg{strucchange} \Sexpr{gsub("-", "--", packageDescription("strucchange")$Version)},
 \pkg{timeDate} \Sexpr{gsub("-", "--", packageDescription("timeDate")$Version)},
 \pkg{tseries} \Sexpr{gsub("-", "--", packageDescription("tseries")$Version)} and
-\pkg{DAAG} \Sexpr{gsub("-", "--", packageDescription("DAAG")$Version)}.
+\pkg{AER} \Sexpr{gsub("-", "--", packageDescription("AER")$Version)}.
 \proglang{R} itself and all packages used are available from
 CRAN at \url{https://CRAN.R-project.org/}.
 

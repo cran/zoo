@@ -90,8 +90,10 @@ read.delim2.zoo(\dots, read = read.delim2)
     is given if there are any duplicated time indexes.  Note that most
     \code{zoo} functions do not accept objects with duplicate time indexes. 
     See \code{\link{aggregate.zoo}}.}
-  \item{\dots}{further arguments passed to \code{\link{read.table}},
-    \code{\link{write.table}}, or \code{\link{read.zoo}}, respectively.}
+  \item{\dots}{further arguments passed to other functions. In the \code{read.*.zoo}
+    the arguments are passed to the function specified in \code{read}
+    (unless \code{file} is a \code{data.frame} already). In \code{write.zoo} the
+    arguments are passed to \code{\link{write.table}}.}
   \item{text}{character. If \code{file} is not supplied and this is, then
     data are read from the value of \code{text} via a text connection.
     See below for an example.}

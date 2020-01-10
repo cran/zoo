@@ -1,5 +1,5 @@
 
-R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+R version 3.6.1 (2019-07-05) -- "Action of the Toes"
 Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -482,7 +482,7 @@ Frequency = 3
 > ### Title: Convenience Functions for Plotting zoo Objects with ggplot2
 > ### Aliases: autoplot.zoo fortify.zoo ggplot2.zoo facet_free yearmon_trans
 > ###   yearqtr_trans scale_x_yearmon scale_y_yearmon scale_x_yearqtr
-> ###   scale_y_yearqtr
+> ###   scale_y_yearqtr scale_type.yearmon scale_type.yearqtr
 > 
 > ### ** Examples
 > 
@@ -534,7 +534,7 @@ Frequency = 3
 + autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
 + 
 + z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
-+ autoplot(z.yq) + scale_x_yearqtr()
++ autoplot(z.yq)
 + 
 + ## mimic matplot
 + data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
@@ -552,16 +552,15 @@ Frequency = 3
 + ## with/without splitting
 + z <- zoo(cbind(a.A = 1:2, a.B = 2:3, b.A = 3:4, c.B = 4:5))
 + fortify(z)
-+ fortify(z, melt = TRUE, sep = ".",
-+   names = list(Series = c("Lower", "Upper")))
++ fortify(z, melt = TRUE, sep = ".", names = list(Series = c("Lower", "Upper")))
 + 
-+ ## scale_x_yearmon for a discrete labeling (rather than continuous)
++ ## scale_x_yearmon with custom discrete breaks
 + df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
-+ ggplot(df, aes(x = dates, y = values)) + 
-+  geom_bar(position = "dodge", stat = "identity") +      
-+  theme_light() + xlab("Month") + ylab("values")+ 
-+  scale_x_continuous(breaks = as.numeric(df$dates), labels = format(df$dates,"%Y %m"))
-+ 
++ ggdf <- ggplot(df, aes(x = dates, y = values)) +
++   geom_bar(position = "dodge", stat = "identity") + theme_light() +
++   xlab("Month") + ylab("Values")
++ ggdf ## with default scale_x_yearmon
++ ggdf + scale_x_yearmon(breaks = df$dates) ## with custom discrete breaks
 + }
 Loading required package: ggplot2
 Loading required package: scales
@@ -1927,6 +1926,23 @@ Jan 1998 Feb 1998
         NA        1.5        2.0        3.0        3.5        4.0        5.0 
 2000-01-09 2000-01-10 2000-01-11 
        5.5        6.5         NA 
+> ##
+> ## - without expansion to regular grid: find interval widths
+> ## that encompass the previous 3 days for each Date
+> w <- seq_along(tt) - findInterval(tt - 3, tt)
+> ## a solution to computing the widths 'w' that is easier to read but slower
+> ## w <- sapply(tt, function(x) sum(tt >= x - 2 & tt <= x))
+> ##
+> ## - rolling sum from 3-day windows
+> ## without vs. with expansion to regular grid
+> rollapplyr(z, w, sum)
+2000-01-02 2000-01-03 2000-01-06 2000-01-07 2000-01-08 2000-01-09 2000-01-11 
+         1          3          3          7         12         15         13 
+> rollapplyr(zm, 3, sum, partial = TRUE, na.rm = TRUE)
+2000-01-02 2000-01-03 2000-01-04 2000-01-05 2000-01-06 2000-01-07 2000-01-08 
+         1          3          3          2          3          7         12 
+2000-01-09 2000-01-10 2000-01-11 
+        15         11         13 
 > 
 > 
 > ## rolling weekly sums (with some missing dates)
@@ -3214,7 +3230,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.7 0.225 1.676 0 0 
+Time elapsed:  2.183 0.169 2.221 0.001 0.002 
 > grDevices::dev.off()
 null device 
           1 

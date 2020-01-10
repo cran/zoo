@@ -147,6 +147,17 @@ g <- zoo(, seq(start(z), end(z), "day"))
 zm <- merge(z, g)
 ## - 3-day rolling mean
 rollapply(zm, 3, mean, na.rm = TRUE, fill = NA)
+##
+## - without expansion to regular grid: find interval widths
+## that encompass the previous 3 days for each Date
+w <- seq_along(tt) - findInterval(tt - 3, tt)
+## a solution to computing the widths 'w' that is easier to read but slower
+## w <- sapply(tt, function(x) sum(tt >= x - 2 & tt <= x))
+##
+## - rolling sum from 3-day windows
+## without vs. with expansion to regular grid
+rollapplyr(z, w, sum)
+rollapplyr(zm, 3, sum, partial = TRUE, na.rm = TRUE)
 
 
 ## rolling weekly sums (with some missing dates)

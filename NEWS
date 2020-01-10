@@ -1,3 +1,17 @@
+Changes in Version 1.8-7
+
+  o Added scale_type() methods for yearmon/yearqtr to facilitate ggplot2
+    visualizations of zoo series with yearmon/yearqtr time index (suggested
+    by Brian Diggs). This requires at least ggplot2 3.0.0.
+    
+  o In merge.zoo() "character" columns are now processed in the same way
+    as "logical" columns.
+    
+  o Replaced the "fruitohms" example in the "zoo" vignette because the
+    corresponding "DAAG" package is not actively maintained on CRAN anymore.
+    Instead the "Journals" data from the "AER" package is used.
+
+
 Changes in Version 1.8-6
 
   o Adding a zero-width zoo series via $<- to an existing zoo series

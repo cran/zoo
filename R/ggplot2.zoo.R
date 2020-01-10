@@ -124,4 +124,6 @@ scale_y_yearqtr <- function(..., format = "%Y-%q", n = 5) {
   ggplot2::scale_y_continuous(..., trans = yearqtr_trans(format, n))
 }
 
+scale_type.yearqtr <- function(x) c("yearqtr", "continuous")
 
+scale_type.yearmon <- function(x) c("yearmon", "continuous")

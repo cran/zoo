@@ -26,6 +26,8 @@ register_s3_method <- function(pkg, generic, class, fun = NULL) {
   if(getRversion() < "3.6.0") {
     register_s3_method("ggplot2", "autoplot", "zoo")
     register_s3_method("ggplot2", "fortify", "zoo")
+    register_s3_method("ggplot2", "scale_type", "yearmon")
+    register_s3_method("ggplot2", "scale_type", "yearqtr")
   }
   invisible()
 }
