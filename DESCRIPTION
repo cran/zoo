@@ -1,6 +1,6 @@
 Package: zoo
-Version: 1.8-7
-Date: 2020-01-10
+Version: 1.8-8
+Date: 2020-05-01
 Title: S3 Infrastructure for Regular and Irregular Time Series (Z's
         Ordered Observations)
 Authors@R: c(person(given = "Achim", family = "Zeileis", role = c("aut", "cre"), email = "Achim.Zeileis@R-project.org",
@@ -22,7 +22,7 @@ Imports: utils, graphics, grDevices, lattice (>= 0.20-27)
 License: GPL-2 | GPL-3
 URL: http://zoo.R-Forge.R-project.org/
 NeedsCompilation: yes
-Packaged: 2020-01-10 16:08:51 UTC; zeileis
+Packaged: 2020-05-02 13:38:49 UTC; zeileis
 Author: Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>),
   Gabor Grothendieck [aut],
   Jeffrey A. Ryan [aut],
@@ -30,4 +30,4 @@ Author: Achim Zeileis [aut, cre] (<https://orcid.org/0000-0003-0918-3766>),
   Felix Andrews [ctb]
 Maintainer: Achim Zeileis <Achim.Zeileis@R-project.org>
 Repository: CRAN
-Date/Publication: 2020-01-10 21:20:02 UTC
+Date/Publication: 2020-05-02 16:14:00 UTC

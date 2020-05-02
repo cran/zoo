@@ -58,6 +58,7 @@ na.approx.default <- function(object, x = index(object), xout = x, ..., na.rm = 
 	if(sum(!na) < 2L) {
 	    ## approx() cannot be applied here, hence simply:
 	    yf <- rep.int(NA, length(xout))
+	    mode(yf) <- mode(y)
 	    if(any(!na)) {
 	        if(x[!na] %in% xout) {
 		    yf[xout == x[!na]] <- y[!na]

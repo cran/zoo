@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2016-04-28 r70561) -- "Unsuffered Consequences"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R version 3.6.3 (2020-02-29) -- "Holding the Windsock"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -32,6 +32,9 @@ Type 'q()' to quit R.
 > 
 > ## for chron objects
 > library("chron")
+NOTE: The default cutoff when expanding a 2-digit year
+to a 4-digit year will change from 30 to 69 by Aug 2020
+(as for Date and POSIXct in base R.)
 > as.Date(dates("01/01/2000"))
 [1] "2000-01-01"
 > as.Date(chron("01/01/2000", "00:00:00"))
@@ -136,4 +139,4 @@ The following object is masked from 'package:base':
 > 
 > proc.time()
    user  system elapsed 
-  0.912   0.048   0.950 
+  0.624   0.264   0.596 

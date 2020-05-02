@@ -159,8 +159,9 @@ c(z, z2)
 c(z2, z)
 
 ## note, however, that combining a zoo series with an unclassed vector
-## of observations coerces to zoo/Date first and can give unexpected results
-c(z, 6:7)
+## of observations would try to coerce the indexes first
+## which might either give an unexpected result or an error in R >= 4.1.0
+## c(z, 6:7)
 
 }
 \keyword{ts}

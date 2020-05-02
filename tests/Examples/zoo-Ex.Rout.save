@@ -1,6 +1,6 @@
 
-R version 3.6.1 (2019-07-05) -- "Action of the Toes"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R version 3.6.3 (2020-02-29) -- "Holding the Windsock"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -170,6 +170,9 @@ The following objects are masked from ‘package:base’:
 + merge(y2, y0)
 + }
 Loading required package: chron
+NOTE: The default cutoff when expanding a 2-digit year
+to a 4-digit year will change from 30 to 69 by Aug 2020
+(as for Date and POSIXct in base R.)
             A  B
 1970-01-01 11 11
 1970-02-01 NA NA
@@ -991,10 +994,9 @@ Warning in merge.zoo(x, y1, y2, all = TRUE) :
          1          2          3          4          5          6          7 
 > 
 > ## note, however, that combining a zoo series with an unclassed vector
-> ## of observations coerces to zoo/Date first and can give unexpected results
-> c(z, 6:7)
-1970-01-02 1970-01-03 2000-01-01 2000-01-02 2000-01-03 2000-01-04 2000-01-05 
-         6          7          1          2          3          4          5 
+> ## of observations would try to coerce the indexes first
+> ## which might either give an unexpected result or an error in R >= 4.1.0
+> ## c(z, 6:7)
 > 
 > 
 > 
@@ -1214,6 +1216,9 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000 Jan 2001
 +   na.approx(z, xout = tseq)
 + }
 Loading required package: chron
+NOTE: The default cutoff when expanding a 2-digit year
+to a 4-digit year will change from 30 to 69 by Aug 2020
+(as for Date and POSIXct in base R.)
 (01/01/00 10:10:00) (01/01/00 10:20:00) (01/01/00 10:30:00) 
                 1.0                 2.0                 2.5 
 > 
@@ -3230,7 +3235,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.183 0.169 2.221 0.001 0.002 
+Time elapsed:  1.805 0.213 1.79 0.002 0 
 > grDevices::dev.off()
 null device 
           1 

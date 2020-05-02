@@ -150,9 +150,13 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
       stop("series cannot be merged with non-unique index entries in a series")
     ## 2. for differing classes
     indexclasses <- sapply(indexlist, function(x) class(x)[1])
-    if (!all(indexclasses == indexclasses[1])) 
+    if (!all(indexclasses == indexclasses[1L])) {
         warning(paste("Index vectors are of different classes:", 
             paste(indexclasses, collapse = " ")))
+        if(all(vapply(indexlist, function(e) inherits(e, "Date") || is.numeric(e), NA))) {
+            indexlist <- lapply(indexlist, as.Date)
+	}
+    }
 
     # fn to get the unique elements in x, in sorted order, using only
     # [, match, length and order

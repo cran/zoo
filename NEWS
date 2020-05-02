@@ -1,3 +1,12 @@
+Changes in Version 1.8-8
+
+  o diff.zoo(x, arithmetic = FALSE) now also works if x contains negative
+    data.
+
+  o merge.zoo() now handles the combination of Date and numeric indexes
+    explicitly to work around the new behavior of c.Date() in R >= 4.1.0.
+
+
 Changes in Version 1.8-7
 
   o Added scale_type() methods for yearmon/yearqtr to facilitate ggplot2
