@@ -117,8 +117,8 @@ panel.polygon.zoo(x, ...)
 
   Similarly, there are now methods for the generic \pkg{lattice} drawing
   functions \code{\link[lattice]{llines}},
-  \code{\link[lattice]{lpoints}}, and
-  \code{\link[lattice]{ltext}}. These can also be called as 
+  \code{\link[lattice:llines]{lpoints}}, and
+  \code{\link[lattice:llines]{ltext}}. These can also be called as 
   \code{panel.lines}, \code{panel.points}, and \code{panel.text},
   respectively. The old interfaces (\code{panel.lines.zoo},
   \code{panel.points.zoo}, and \code{panel.text.zoo}), will be

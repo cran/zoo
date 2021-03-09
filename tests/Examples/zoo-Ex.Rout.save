@@ -1,6 +1,6 @@
 
-R version 3.6.3 (2020-02-29) -- "Holding the Windsock"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R version 4.0.4 (2021-02-15) -- "Lost Library Book"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -170,9 +170,6 @@ The following objects are masked from ‘package:base’:
 + merge(y2, y0)
 + }
 Loading required package: chron
-NOTE: The default cutoff when expanding a 2-digit year
-to a 4-digit year will change from 30 to 69 by Aug 2020
-(as for Date and POSIXct in base R.)
             A  B
 1970-01-01 11 11
 1970-02-01 NA NA
@@ -1216,9 +1213,6 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000 Jan 2001
 +   na.approx(z, xout = tseq)
 + }
 Loading required package: chron
-NOTE: The default cutoff when expanding a 2-digit year
-to a 4-digit year will change from 30 to 69 by Aug 2020
-(as for Date and POSIXct in base R.)
 (01/01/00 10:10:00) (01/01/00 10:20:00) (01/01/00 10:30:00) 
                 1.0                 2.0                 2.5 
 > 
@@ -1482,7 +1476,7 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > 
 > ### Name: plot.zoo
 > ### Title: Plotting zoo Objects
-> ### Aliases: plot.zoo barplot.zoo lines.zoo points.zoo
+> ### Aliases: plot.zoo barplot.zoo boxplot.zoo lines.zoo points.zoo
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -1677,6 +1671,9 @@ Sep 2000 Oct 2000 Nov 2000 Dec 2000
 > ## barplot
 > x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)
 > barplot(x, beside = TRUE)
+> 
+> ## boxplot
+> boxplot(x)
 > 
 > ## 3d plot
 > ## The persp function in R (not part of zoo) works with zoo objects.
@@ -1994,7 +1991,7 @@ NA  2  5  9 12  9 NA
  0  2  5  9 12  9  5 
 > 
 > # this will exclude time points 1 and 2
-> # It corresonds to align = "right", width = 3
+> # It corresponds to align = "right", width = 3
 > rollapply(zoo(1:8), list(seq(-2, 0)), sum)
  3  4  5  6  7  8 
  6  9 12 15 18 21 
@@ -2261,6 +2258,30 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 [1,]    1    2    3    4
 > convolve(A, B, type = "filter")
 [1] 70
+> 
+> 
+> # weighted sum including partials near ends, keeping
+> ## alignment with wts correct
+> points <- zoo(cbind(lon = c(11.8300715, 11.8296697,
++     11.8268708, 11.8267236, 11.8249612, 11.8251062),
++   lat = c(48.1099048, 48.10884, 48.1067431, 48.1066077,
++     48.1037673, 48.103318),
++   dist = c(46.8463805878941, 33.4921440879536, 10.6101735030534,
++     18.6085009578724, 6.97253109610173, 9.8912817449265)))
+> mysmooth <- function(z, wts = c(0.3, 0.4, 0.3)) { 
++   notna <- !is.na(z)
++   sum(z[notna] * wts[notna]) / sum(wts[notna])
++ }
+> points2 <- points
+> points2[, 1:2] <- rollapply(rbind(NA, coredata(points)[, 1:2], NA), 3, mysmooth)
+> points2
+       lon      lat      dist
+1 11.82990 48.10945 46.846381
+2 11.82895 48.10853 33.492144
+3 11.82767 48.10733 10.610174
+4 11.82624 48.10580 18.608501
+5 11.82553 48.10448  6.972531
+6 11.82504 48.10351  9.891282
 > 
 > 
 > 
@@ -3235,7 +3256,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.805 0.213 1.79 0.002 0 
+Time elapsed:  1.901 0.06 1.961 0 0 
 > grDevices::dev.off()
 null device 
           1 

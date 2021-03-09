@@ -181,7 +181,7 @@ rollapply(z, 3, sum, na.rm = TRUE, fill = NA)
 rollapply(z, 3, sum, na.rm = TRUE, partial = TRUE)
 
 # this will exclude time points 1 and 2
-# It corresonds to align = "right", width = 3
+# It corresponds to align = "right", width = 3
 rollapply(zoo(1:8), list(seq(-2, 0)), sum)
 
 # but this will include points 1 and 2
@@ -306,6 +306,23 @@ convolve(A, B, type = "open")
 # convolve(..., type = "filter")
 rollapplyr(A, length(B), cross)
 convolve(A, B, type = "filter")
+
+
+# weighted sum including partials near ends, keeping
+## alignment with wts correct
+points <- zoo(cbind(lon = c(11.8300715, 11.8296697,
+    11.8268708, 11.8267236, 11.8249612, 11.8251062),
+  lat = c(48.1099048, 48.10884, 48.1067431, 48.1066077,
+    48.1037673, 48.103318),
+  dist = c(46.8463805878941, 33.4921440879536, 10.6101735030534,
+    18.6085009578724, 6.97253109610173, 9.8912817449265)))
+mysmooth <- function(z, wts = c(0.3, 0.4, 0.3)) { 
+  notna <- !is.na(z)
+  sum(z[notna] * wts[notna]) / sum(wts[notna])
+}
+points2 <- points
+points2[, 1:2] <- rollapply(rbind(NA, coredata(points)[, 1:2], NA), 3, mysmooth)
+points2
 }
 \keyword{iteration}
 \keyword{array}

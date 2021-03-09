@@ -120,14 +120,14 @@ str.zoo <- function(object, ...)
   n2 <- if(nargs() == 1) length(as.vector(rval)) else n
   if(missing(i)) i <- 1:n
 
-  if (all(class(i) == "matrix")) i <- as.vector(i)
+  if (inherits(i, "matrix")) i <- as.vector(i)
   ## also support that i can be index:
   ## if i is not numeric/integer/logical, it is interpreted to be the index
-  if (all(class(i) == "logical"))
+  if (inherits(i, "logical"))
     i <- which(rep(i, length.out = n2))
-  else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
+  else if (inherits(i, "zoo") && inherits(coredata(i), "logical")) {
     i <- which(coredata(merge(zoo(,time(x)), i)))
-  } else if(!((all(class(i) == "numeric") || all(class(i) == "integer")))) 
+  } else if(!((inherits(i, "numeric") || inherits(i, "integer")))) 
     i <- which(MATCH(index(x), i, nomatch = 0L) > 0L)
   
   if(length(dim(rval)) == 2) {
@@ -158,8 +158,8 @@ str.zoo <- function(object, ...)
   n.ok <- TRUE
   value2 <- NULL
   
-  if (all(class(i) == "matrix")) i <- as.vector(i)
-  if (all(class(i) == "logical")) {
+  if (inherits(i, "matrix")) i <- as.vector(i)
+  if (inherits(i, "logical")) {
     if (length(i) == n) {
 		i <- which(i)
 		n.ok <- TRUE
@@ -167,10 +167,10 @@ str.zoo <- function(object, ...)
 		i <- which(rep(i, length.out = n))
 		n.ok <- all(i <= n2)
 	}
-  } else if (inherits(i, "zoo") && all(class(coredata(i)) == "logical")) {
+  } else if (inherits(i, "zoo") && inherits(coredata(i), "logical")) {
     i <- which(coredata(merge(zoo(,time(x)), i)))
     n.ok <- all(i <= n2)
-  } else if(!((all(class(i) == "numeric") || all(class(i) == "integer")))) {
+  } else if(!((inherits(i, "numeric") || inherits(i, "integer")))) {
     ## all time indexes in index(x)?
     i.ok <- MATCH(i, index(x), nomatch = 0L) > 0L
     if(any(!i.ok)) {

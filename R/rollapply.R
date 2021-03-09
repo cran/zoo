@@ -120,7 +120,7 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 				FUN(data[replace(posns, !ix, 0)], ...)
 			}
 		}
-    } else {
+        } else {
 		# dimensioned
 		#
 		# same f as in TRUE leg except data[.] becomes data[.,]
@@ -141,6 +141,11 @@ rollapply.zoo <- function(data, width, FUN, ..., by = 1,
 		MoreArgs = list(data = dat, ...), SIMPLIFY = FALSE) 
 		
 	ix <- !sapply(dat, is.null) # integer indexes of non-nulls
+
+        ## flatten data if output of FUN has a dim and > 1 row (e.g., matrix or data.frame)
+        if(any(sapply(dat[ix], function(d) !is.null(nrow(d)) && nrow(d) > 1L))) {
+	    dat[ix] <- lapply(dat[ix], function(d) unlist(as.data.frame(d)))
+	}
 
 	if (!missing(fill) || !missing(na.pad)) {
 

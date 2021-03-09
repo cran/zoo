@@ -1,6 +1,7 @@
 \name{plot.zoo}
 \alias{plot.zoo}
 \alias{barplot.zoo}
+\alias{boxplot.zoo}
 \alias{lines.zoo}
 \alias{points.zoo}
 \title{Plotting zoo Objects}
@@ -88,11 +89,13 @@ the panels themselves but not outside the panel.  See examples.
 Also, \code{par(new = TRUE)} is not supported for multi-panel graphics.
 
 In addition to classical time series line plots, there is also a
-simple \code{\link{barplot}} method for \code{"zoo"} series.
+simple \code{\link{barplot}} method for \code{"zoo"} series. Additionally,
+there is a \code{\link{boxplot}} method that visualizes the \code{coredata}
+of the \code{"zoo"} series with a box plot.
 }
 
 \seealso{\code{\link{zoo}}, \code{\link{plot.ts}}, \code{\link{barplot}},
-\code{\link{xyplot.zoo}}}
+\code{\link{boxplot}}, \code{\link{xyplot.zoo}}}
 
 \examples{
 ## example dates
@@ -285,6 +288,9 @@ plot(zoo(EuStockMarkets), col = rainbow(4), panel = pnl.xyarea)
 ## barplot
 x <- zoo(cbind(rpois(5, 2), rpois(5, 3)), x.Date)
 barplot(x, beside = TRUE)
+
+## boxplot
+boxplot(x)
 
 ## 3d plot
 ## The persp function in R (not part of zoo) works with zoo objects.

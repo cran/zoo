@@ -8,6 +8,9 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
     if (frequency > 1 && abs(frequency - round(frequency)) < ts.eps)
     	frequency <- round(frequency)
 
+    ## detect if integer index is intended
+    intgr <- ((length(start) < 1L) || is.integer(start)) && ((length(end) < 1L) || is.integer(end))
+
     ## check data and choose default
     if (missing(data) || is.null(data)) data <- NA
     if(!(is.vector(data) || is.factor(data) || is.atomic(data) || is.matrix(data) || is.data.frame(data)))
@@ -69,6 +72,8 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 	## support of calendar index (yearqtr/yearmon) for quarterly/monthly data
 	if(calendar && frequency %in% c(4, 12) && numORint(order.by)) {
 	  order.by <- if(frequency == 4) as.yearqtr(order.by) else as.yearmon(order.by)
+	} else if(intgr) {
+	  if(isTRUE(all.equal(order.by, round(order.by)))) order.by <- as.integer(round(order.by))
 	}
 	
         attr(data, "oclass") <- attr(data, "class")

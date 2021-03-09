@@ -5,3 +5,5 @@ barplot.zoo <- function(height, names.arg = NULL, ...)
   if(is.null(names.arg)) names.arg <- index2char(index(height))
   barplot(x, names.arg = names.arg, ...)
 }
+
+boxplot.zoo <- function(x, ...) boxplot(coredata(x), ...)

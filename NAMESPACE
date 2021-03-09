@@ -166,6 +166,7 @@ export(
   S3method("as.ts", "zoo")
   S3method("as.vector", "zoo")
   S3method("barplot", "zoo")
+  S3method("boxplot", "zoo")
   S3method("c", "zoo")
   S3method("cbind", "zoo")
   S3method("coredata", "zoo")

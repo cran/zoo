@@ -153,7 +153,9 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
     if (!all(indexclasses == indexclasses[1L])) {
         warning(paste("Index vectors are of different classes:", 
             paste(indexclasses, collapse = " ")))
-        if(all(vapply(indexlist, function(e) inherits(e, "Date") || is.numeric(e), NA))) {
+	if(all(indexclasses %in% c("numeric", "integer"))) {
+	    indexlist <- lapply(indexlist, as.numeric)
+	} else if(all(vapply(indexlist, function(e) inherits(e, "Date") || is.numeric(e), NA))) {
             indexlist <- lapply(indexlist, as.Date)
 	}
     }

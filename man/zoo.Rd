@@ -236,7 +236,7 @@ the \code{POSIXct} class in base \R:
 If \code{x} and \code{y} are \code{POSIXct} objects with \code{tzone}
 attributes, the attribute will always be dropped in \code{c(x, y)}, even
 if it is the same across both \code{x} and \code{y}. Although this is documented
-at \code{\link[base]{c.POSIXct}}, one may want to employ a workaround
+at \code{\link[base:DateTimeClasses]{c.POSIXct}}, one may want to employ a workaround
 as shown at \url{https://stat.ethz.ch/pipermail/r-devel/2010-August/058112.html}.
 }
 

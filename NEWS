@@ -1,3 +1,30 @@
+Changes in Version 1.8-9
+
+  o Added a basic boxplot(x, ...) method for zoo objects that simply calls
+    boxplot(coredata(x), ...).
+
+  o Bug fix in [.zoo and [<-.zoo where indexing with matrices did not
+    work correctly anymore in R 4.x.y because "matrix" objects now additionally
+    inherit from "array" objects. (Reported by Bill Cunliffe.)
+
+  o Improved internal functionality in na.spline.default() in the same way
+    na.approx.default() was enhanced in zoo 1.7-14 and 1.7-13. One difference
+    is that while na.approx() requires at least two non-NA observations,
+    na.spline() just needs one non-NA observation (using a constant to
+    interpolate in that case).
+
+  o If the FUN in rollapply() returns a matrix or data.frame with more than
+    one row per element/time point, then this is flattened now so that the
+    result is again a matrix with one row per element/time point.
+
+  o merge.zoo() now handles the case of all indexes being integer or numeric
+    by coercing the integer indexes to numeric (reported by Simone Giannerini).
+
+  o zooreg(x) now allows to create an integer index if start (and end, if any)
+    are integer and the implied deltat is not numerically different from an
+    integer value.
+
+
 Changes in Version 1.8-8
 
   o diff.zoo(x, arithmetic = FALSE) now also works if x contains negative

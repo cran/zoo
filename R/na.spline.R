@@ -55,15 +55,35 @@ na.spline.default <- function(object, x = index(object), xout = x, ..., na.rm = 
 
     na.spline.vec <- function(x, y, xout = x, ...) {
         na <- is.na(y)
+	if(sum(!na) < 1L) {
+	    ## splinefun() cannot be applied here, hence simply:
+	    yf <- rep.int(NA, length(xout))
+	    mode(yf) <- mode(y)
+	    if(any(!na)) {
+	        if(x[!na] %in% xout) {
+		    yf[xout == x[!na]] <- y[!na]
+		}
+	    }
+	    return(yf)
+	}
+	if(all(!na) && (length(xout) > maxgap) && !all(xout %in% x)) {
+	    ## for maxgap to work correctly 'y' has to contain
+	    ## actual NAs and be expanded to the full x-index
+	    xf <- sort(unique(c(x, xout)))
+	    yf <- rep.int(NA, length(xf))
+	    yf[MATCH(x, xf)] <- y
+	    x <- xf
+	    y <- yf
+	}
         yf <- splinefun(x[!na], y[!na], ...)(xout)
         if (maxgap < length(y)) {
-            ## construct version of y with only gaps > maxgap
+            ## construct a series like y but with only gaps > maxgap
+            ## (actual values don't matter as we only use is.na(ygap) below)
             ygap <- .fill_short_gaps(y, seq_along(y), maxgap = maxgap)
-            ## construct y values at 'x', keeping NAs from ygap
-            ## (spline() does not allow NAs to be propagated)
+            ## construct y values at 'xout', keeping NAs from ygap
+            ## (using indexing, as approx() does not allow NAs to be propagated)
             ix <- splinefun(x, seq_along(y), ...)(xout)
-            yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]),
-                    NA, yf)
+            yx <- ifelse(is.na(ygap[floor(ix)] + ygap[ceiling(ix)]), NA, yf)
             yx
         } else {
             yf

@@ -72,7 +72,6 @@ xblocks(x, ...)
   Felix Andrews \email{felix@nfrac.org}
 }
 \seealso{
-  \code{\link[latticeExtra]{panel.xblocks}},
   \code{\link{rect}}
 }
 \examples{
