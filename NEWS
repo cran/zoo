@@ -1,3 +1,18 @@
+Changes in Version 1.8-10
+
+  o The transform() method now internally uses a list of zoo series (as opposed
+    to a data.frame of numeric variables, as used in previous versions). This
+    means that the transformations can really operate on full zoo series.
+
+  o Added MATCH() methods for classes "Date", "POSIXct", and "POSIXlt", all
+    of which essentially match the underlying numeric vector (suggested by
+    Kurt Hornik).
+
+  o In zooreg() the "ts.eps" argument is now also used (in squares) as the
+    tolerance in the all.equal() comparisons used to determine the underlying
+    regular time grid.
+
+
 Changes in Version 1.8-9
 
   o Added a basic boxplot(x, ...) method for zoo objects that simply calls

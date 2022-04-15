@@ -355,6 +355,9 @@ if(getRversion() >= "3.6.0") {
 
 ## default methods and methods for misc classes
   S3method("MATCH", "default")
+  S3method("MATCH", "Date")
+  S3method("MATCH", "POSIXct")
+  S3method("MATCH", "POSIXlt")
   S3method("MATCH", "times")
   S3method("ORDER", "default")
   S3method("ORDER", "chron")

@@ -352,28 +352,27 @@ quantile.zoo <- function(x, ...) quantile(coredata(x), ...)
 
 transform.zoo <- function(`_data`, ...)
 {
-  ## zoo series elements
-  if(is.null(dim(coredata(`_data`)))) warning("transform() is only useful for matrix-based zoo series")
-  ix <- index(`_data`)
-  freq <- attr(`_data`, "frequency")
-  `_data` <- as.data.frame(`_data`)
-
-  ## get transformations
-  e <- eval(substitute(list(...)), `_data`, parent.frame())
-  trafo <- names(e)
-  inx <- match(trafo, names(`_data`))
-  matched <- !is.na(inx)
-
+  ## turn zoo matrix into a list of zoo series
+  if (is.null(dim(coredata(`_data`)))) warning("transform() is only useful for matrix-based zoo series")
+  `_data` <- as.list(`_data`)
+  
   ## evaluate transformations
-  if(any(matched)) {
-    `_data`[inx[matched]] <- e[matched]
-    `_data` <- data.frame(`_data`)
-  }
-  if (!all(matched)) 
-    `_data` <- do.call("data.frame", c(list(`_data`), e[!matched]))
+  e <- eval(substitute(list(...)), `_data`, parent.frame())
 
-  ## return zoo
-  zoo(`_data`, ix, freq)
+  ## zoo series that are replaced
+  inx <- match(names(e), names(`_data`))
+  matched <- !is.na(inx)
+  if (any(matched)) `_data`[inx[matched]] <- e[matched]
+
+  ## merge zoo series (including those that are added)
+  z <- do.call("merge", c(`_data`, e[!matched]))
+
+  ## always return a zoo matrix (even if just one column)
+  if(is.null(dim(coredata(z)))) {
+    dim(z) <- c(length(z), 1L)
+    names(z) <- names(e)
+  }
+  return(z)
 }
 
 `dim<-.zoo` <- function(x, value) {

@@ -51,8 +51,8 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
         ## check whether lengths of data and index match
 	# wrong lengths sometimes: order.by <- seq(start, end, by = deltat)
 	order.by <- start + seq(0, length.out = ndata) * deltat
-	if(identical(all.equal(start*frequency, round(start*frequency)), TRUE)) {
-	  order.by <- floor(frequency*order.by + .0001)/frequency
+	if(isTRUE(all.equal(start * frequency, round(start * frequency), tolerance = ts.eps^2))) {
+	  order.by <- floor(frequency * order.by + .0001)/frequency
         }
 	
 	## support also non-numeric indexes
@@ -73,7 +73,7 @@ zooreg <- function(data, start = 1, end = numeric(), frequency = 1,
 	if(calendar && frequency %in% c(4, 12) && numORint(order.by)) {
 	  order.by <- if(frequency == 4) as.yearqtr(order.by) else as.yearmon(order.by)
 	} else if(intgr) {
-	  if(isTRUE(all.equal(order.by, round(order.by)))) order.by <- as.integer(round(order.by))
+	  if(isTRUE(all.equal(order.by, round(order.by), tolerance = ts.eps^2))) order.by <- as.integer(round(order.by))
 	}
 	
         attr(data, "oclass") <- attr(data, "class")
