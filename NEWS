@@ -1,3 +1,30 @@
+Changes in Version 1.8-11
+
+  o The as.ts() methods for both "zoo" and "zooreg" objects now allow to pass on
+    the fill argument (through ...) to the underlying merge() call. Thus, you can
+    say as.ts(z, fill = 0) to fill potential gaps with 0s instead of NAs.
+
+  o The na.spline() method for "ts" objects had been provided internally in the
+    package but has only been correctly registered in the NAMESPACE now.
+
+  o The merge() method gained a sep = "." argument to optionally use a different
+    separator character when making pasting suffixes to column names for making
+    them unique (suggested by Joshua Ulrich).
+
+  o The MATCH() methods for Date/POSIXct/POSIXlt object now coerce the "table"
+    argument (if necessary) to Date or POSIXct, respectively, before calling
+    match(unclass(x), unclass(table), ...) internally.
+
+  o In case of a Date/POSIXct/POSIXlt "table" and a plain atomic argument "x",
+    the default MATCH() method coerces "x" to Date or POSIXct, respectively,
+    before calling match(unclass(x), unclass(table), ...) internally.
+
+  o As the "fts" package has been archived on CRAN for several months, it has been
+    excluded from the Suggests of the package. The as.zoo() method for "fts"
+    objects continues to be part of the package, though, just the hyperlinks in
+    the documentation have been removed.
+
+
 Changes in Version 1.8-10
 
   o The transform() method now internally uses a list of zoo series (as opposed

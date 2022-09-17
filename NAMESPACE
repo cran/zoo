@@ -261,6 +261,7 @@ if(getRversion() >= "3.6.0") {
   S3method("is.regular", "ts")
   S3method("na.approx", "ts")
   S3method("na.fill", "ts")
+  S3method("na.spline", "ts")
   S3method("na.StructTS", "ts")
   S3method("na.trim", "ts")
   S3method("rollapply", "ts")

@@ -12,7 +12,7 @@ versions of database \emph{join} operations.
 \usage{
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
   check.names = FALSE, retclass = c("zoo", "list", "data.frame"),
-  drop = TRUE)
+  drop = TRUE, sep = ".")
 }
 
 \arguments{
@@ -33,6 +33,8 @@ versions of database \emph{join} operations.
     matrix), should the result be a vector (\code{drop = TRUE}) or a
     1-column matrix (\code{drop = FALSE})? The former is the default
     in the \code{Merge} method, the latter in the \code{cbind} method.}
+  \item{sep}{character. Separator character that should be used when
+    pasting \code{suffixes} to column names for making them unique.}
 }
 
 \details{

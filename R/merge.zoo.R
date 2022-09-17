@@ -74,18 +74,18 @@ c.zoo <- function(...) {
     rbind.zoo(...)
 }
 
-cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, drop = FALSE)
+cbind.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, drop = FALSE, sep = ".")
 {
-  merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo", drop = drop)
+  merge.zoo(..., all = all, fill = fill, suffixes = suffixes, retclass = "zoo", drop = drop, sep = sep)
 }
 
 
-merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = FALSE, retclass = c("zoo", "list", "data.frame"), drop = TRUE)
+merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names = FALSE, retclass = c("zoo", "list", "data.frame"), drop = TRUE, sep = ".")
 {
     if (!is.null(retclass)) retclass <- match.arg(retclass)
     # cl are calls to the args and args is a list of the arguments
     cl <- as.list(match.call())
-    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- cl$check.names <- cl$drop <- NULL
+    cl[[1]] <- cl$all <- cl$fill <- cl$retclass <- cl$suffixes <- cl$check.names <- cl$drop <- cl$sep <- NULL
     args <- list(...)
 
     parent <- parent.frame()
@@ -293,7 +293,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
       rval <- lapply(rval, todf)
       ## name processing
       nam2 <- sapply(rval, function(z) 1:NCOL(z))
-      for(i in 1:length(nam2)) nam2[[i]] <- paste(names(nam2)[i], nam2[[i]], sep = ".")
+      for(i in 1:length(nam2)) nam2[[i]] <- paste(names(nam2)[i], nam2[[i]], sep = sep)
       nam1 <- unlist(ifelse(sapply(rval, NCOL) > 1, nam2, nam1))
       rval <- do.call("cbind", rval)
       names(rval) <- nam1
@@ -331,7 +331,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
 				if (ncol(a) == 0) return(NULL)
                 rval <- colnames(a)
                 if (is.null(rval)) {
-                  rval <- paste(1:NCOL(a), suffixes[i], sep = ".")
+                  rval <- paste(1:NCOL(a), suffixes[i], sep = sep)
                 }
                 else {
                   rval[rval == ""] <- as.character(which(rval == ""))
@@ -349,7 +349,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
         }
         zoocolnames <- lapply(seq_along(args), f)
         f <- function(i) ifelse(fixme[[i]], paste(zoocolnames[[i]], 
-            suffixes[i], sep = "."), zoocolnames[[i]])
+            suffixes[i], sep = sep), zoocolnames[[i]])
         if (any(duplicated(unlist(zoocolnames)))) 
             zoocolnames <- lapply(seq_along(args), f)
     } else {
@@ -358,7 +358,7 @@ merge.zoo <- function(..., all = TRUE, fill = NA, suffixes = NULL, check.names =
                 return(NULL)
             if (NCOL(a) < 2) 
                 return("")
-            else return(paste(".", 1:NCOL(a), sep = ""))
+            else return(paste(sep, 1:NCOL(a), sep = ""))
         }
         zoocolnames <- lapply(args, fixcolnames)
         zoocolnames <- lapply(seq_along(args), function(i) 

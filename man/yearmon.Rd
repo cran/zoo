@@ -124,7 +124,13 @@ next.month <- function(d) as.Date(as.yearmon(d) + 1/12) +
 next.month(d)
 
 # 3rd Friday in last month of the quarter of Date x
-as.Date(as.yearmon(as.yearqtr(x)) + 2/12) + 14
+## first day of last month of quarter
+y <- as.Date(zoo::as.yearmon(zoo::as.yearqtr(x), frac = 1))
+## number of days to first Friday
+n <- sapply(y, function(z) which(format(z + 0:6, "\%w") == "5")) - 1
+## add number of days to third Friday
+y + n + 14
+
 
 suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)

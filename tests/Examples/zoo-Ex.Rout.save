@@ -1,6 +1,6 @@
 
-R version 4.0.4 (2021-02-15) -- "Lost Library Book"
-Copyright (C) 2021 The R Foundation for Statistical Computing
+R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
+Copyright (C) 2022 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -39,7 +39,8 @@ The following objects are masked from ‘package:base’:
 > 
 > ### Name: MATCH
 > ### Title: Value Matching
-> ### Aliases: MATCH MATCH.default MATCH.times
+> ### Aliases: MATCH MATCH.default MATCH.times MATCH.timeDate MATCH.Date
+> ###   MATCH.POSIXct MATCH.POSIXlt
 > ### Keywords: manip
 > 
 > ### ** Examples
@@ -2783,12 +2784,18 @@ detaching ‘package:grid’, ‘package:lattice’
 [1] "2005-02-01" "2005-03-03" "2005-04-02" "2005-05-01"
 > 
 > # 3rd Friday in last month of the quarter of Date x
-> as.Date(as.yearmon(as.yearqtr(x)) + 2/12) + 14
- [1] "2000-03-15" "2000-03-15" "2000-03-15" "2000-06-15" "2000-06-15"
- [6] "2000-06-15" "2000-09-15" "2000-09-15" "2000-09-15" "2000-12-15"
-[11] "2000-12-15" "2000-12-15" "2001-03-15" "2001-03-15" "2001-03-15"
-[16] "2001-06-15" "2001-06-15" "2001-06-15" "2001-09-15" "2001-09-15"
-[21] "2001-09-15" "2001-12-15" "2001-12-15" "2001-12-15"
+> ## first day of last month of quarter
+> y <- as.Date(zoo::as.yearmon(zoo::as.yearqtr(x), frac = 1))
+> ## number of days to first Friday
+> n <- sapply(y, function(z) which(format(z + 0:6, "%w") == "5")) - 1
+> ## add number of days to third Friday
+> y + n + 14
+ [1] "2000-03-17" "2000-03-17" "2000-03-17" "2000-06-16" "2000-06-16"
+ [6] "2000-06-16" "2000-09-15" "2000-09-15" "2000-09-15" "2000-12-15"
+[11] "2000-12-15" "2000-12-15" "2001-03-16" "2001-03-16" "2001-03-16"
+[16] "2001-06-15" "2001-06-15" "2001-06-15" "2001-09-21" "2001-09-21"
+[21] "2001-09-21" "2001-12-21" "2001-12-21" "2001-12-21"
+> 
 > 
 > suppressWarnings(RNGversion("3.5.0"))
 > set.seed(1)
@@ -3256,7 +3263,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.901 0.06 1.961 0 0 
+Time elapsed:  1.953 0.048 2.009 0 0 
 > grDevices::dev.off()
 null device 
           1 
