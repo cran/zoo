@@ -78,16 +78,20 @@ autoplot.zoo <- function(object, geom = "line", facets, ...)
     facets <- if(single) NULL else Series ~ .
   } else {
     auto <- FALSE
-  }  
+  }
 
+  ## process defaults as for old qplot-based interface
+  if(is.character(geom)) geom <- get(paste0("geom_", geom), asNamespace("ggplot2"))
+  if(inherits(facets, "formula")) facets <- ggplot2::facet_grid(facets)
+  
   ## "fake" variables for nonstandard evaluation
   Index <- Value <- Series <- NULL
-  
+
   ## call qplot
   gg <- if(single | (!is.null(facets) & auto)) {
-    ggplot2::qplot(Index, Value, data = df, geom = geom, facets = facets, ...) + ggplot2::ylab(if(single) levels(df$Series) else "") + ggplot2::xlab("Index")
+    ggplot2::ggplot(df, ggplot2::aes(x = Index, y = Value, ...)) + geom() + facets + ggplot2::ylab(if(single) levels(df$Series) else "") + ggplot2::xlab("Index")
   } else {
-    ggplot2::qplot(Index, Value, data = df, group = Series, geom = geom, facets = facets, colour = Series, ...) + ggplot2::ylab("") + ggplot2::xlab("Index")
+    ggplot2::ggplot(df, ggplot2::aes(x = Index, y = Value, group = Series, colour = Series, ...)) + geom() + facets + ggplot2::ylab("") + ggplot2::xlab("Index")    
   }
   return(gg)
 }

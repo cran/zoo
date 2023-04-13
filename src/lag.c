@@ -31,14 +31,14 @@ SEXP zoo_lag (SEXP x, SEXP _k, SEXP _pad)
 Rprintf("zoo_lag\n");
 #endif
   SEXP result;
-  int i,j;
+  R_xlen_t i,j;
   double *result_real=NULL;
   int    *result_int=NULL;
 
   int k=INTEGER(_k)[0] * -1; /* -1 is zoo convention */
   int k_positive = (k > 0) ? 1 : 0;
-  int nr = nrows(x);
-  int nc = ncols(x);
+  R_xlen_t nr = nrows(x);
+  R_xlen_t nc = ncols(x);
   int P=0;
   int PAD = INTEGER(coerceVector(_pad,INTSXP))[0];
 
@@ -49,11 +49,11 @@ Rprintf("zoo_lag\n");
     error("abs(k) must be less than nrow(x)");
 
   PROTECT(result = allocVector(TYPEOF(x), 
-          length(x) - (PAD ? 0 : abs(k)*nc))); P++;
+          xlength(x) - (PAD ? 0 : abs(k)*nc))); P++;
 
-  int nrr;
-  if(length(result) > 0)
-    nrr = (int)(length(result)/nc);
+  R_xlen_t nrr;
+  if(xlength(result) > 0)
+    nrr = (R_xlen_t)(xlength(result)/nc);
   else  /* handle zero-length objects */
     nrr = nr - (PAD ? 0 : abs(k));
 

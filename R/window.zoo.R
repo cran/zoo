@@ -12,8 +12,8 @@ window.zoo <- function(x, index. = index(x), start = NULL, end = NULL, ...)
     end <- floor(end[1]*freq + (end[2] - 1) + .0001)/freq
   }
 
-  if(is.null(start)) {
-    if(is.null(end)) {
+  if(is.null(start) || any(is.na(start))) {
+    if(is.null(end) || any(is.na(end))) {
       wi <- which(MATCH(all.indexes, index., nomatch = 0) > 0)
       return(x[wi, , drop = FALSE])
     } else {
@@ -21,7 +21,7 @@ window.zoo <- function(x, index. = index(x), start = NULL, end = NULL, ...)
       return(x[wi, , drop = FALSE])
     }
   } else {
-    if(is.null(end)) {
+    if(is.null(end) || any(is.na(end))) {
       wi <- which(in.index & all.indexes >= start)
     } else {
       wi <- which(in.index & all.indexes >= start & all.indexes <= end)
@@ -44,8 +44,8 @@ window.zoo <- function(x, index. = index(x), start = NULL, end = NULL, ...)
     end <- floor(end[1]*freq + (end[2] - 1) + .0001)/freq
   }
   
-  if (!is.null(start)) index. <- index.[index. >= start]
-  if (!is.null(end)) index. <- index.[index. <= end]
+  if (!is.null(start) && !is.na(start)) index. <- index.[index. >= start]
+  if (!is.null(end) && !is.na(end)) index. <- index.[index. <= end]
 
   wi <- which(MATCH(ix, index., nomatch = 0) > 0)
   if (length(dim(x)) == 0)

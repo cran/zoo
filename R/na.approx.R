@@ -25,7 +25,7 @@ na.approx.zoo <- function(object, x = index(object), xout, ..., na.rm = TRUE, ma
         }
         objectm <- merge(object.x, zoo(, xout))
         if (length(dim(objectm)) == 2) colnames(objectm) <- colnames(object)
-        result <- window(objectm, index = xout)
+        result <- window(objectm, index. = xout)
     }
     result[] <- na.approx.default(object, x = x, xout = xout, na.rm = FALSE, ..., maxgap = maxgap)
     if ((!missing(order.by) && !is.null(order.by)) || !missing.xout) {

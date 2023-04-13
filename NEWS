@@ -1,3 +1,19 @@
+Changes in Version 1.8-12
+
+  o The autoplot() method for "zoo" objects now uses ggplot() directly rather
+    than the qplot() function which has been deprecated in recent versions of
+    ggplot2.
+
+  o Support start = NA and end = NA in addition to start = NULL and end = NULL
+    for unspecified start and end time of a window() of a zoo series.
+
+  o Remove unnecessary S3 method declarations for axis.yearmon/yearqtr as
+    axis() is no S3 generic, only Axis() is (reported by Kurt Hornik).
+
+  o The helper function index2char() now calls format() instead of as.character()
+    for objects inheriting from class POSIXt.
+
+
 Changes in Version 1.8-11
 
   o The as.ts() methods for both "zoo" and "zooreg" objects now allow to pass on

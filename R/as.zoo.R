@@ -52,7 +52,7 @@ as.zoo.timeSeries <- function(x, ...) {
 
 as.zoo.xts <- function(x, ...) {
   y <- coredata(x)
-  if (length(y) == 0) {
+  if (is.null(dim(y)) && length(y) == 0) {
     y <- NULL
   }
   zoo(y, order.by = index(x), ...)

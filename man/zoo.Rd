@@ -40,6 +40,7 @@
 \alias{index2char}
 \alias{index2char.default}
 \alias{index2char.numeric}
+\alias{index2char.POSIXt}
 
 \alias{head.ts}
 \alias{tail.ts}

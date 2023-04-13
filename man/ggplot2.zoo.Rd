@@ -39,13 +39,14 @@
 
 \arguments{
   \item{object}{an object of class \code{"zoo"}.}
-  \item{geom}{character specifying which \code{geom} to use
-    in \code{\link[ggplot2]{qplot}}.}
-  \item{facets}{specification of \code{facets} for \code{\link[ggplot2]{qplot}}. The
+  \item{geom}{character (e.g., \code{"line"}) or function (e.g., \code{\link[ggplot2]{geom_line}})
+    specifying which \code{geom} to use.}
+  \item{facets}{specification of \code{facets} for \code{\link[ggplot2]{facet_grid}}. The
     default in the \code{autoplot} method is to use \code{facets = NULL} for univariate
     series and \code{facets = Series ~ .} for multivariate series.}
-  \item{\dots}{further arguments passed to \code{\link[ggplot2]{qplot}}
-    for \code{autoplot} (and not used for \code{fortify}). For the \code{scale_*_*}
+  \item{\dots}{further arguments passed to \code{\link[ggplot2]{aes}}
+    for \code{autoplot} (e.g., \code{linetype = Series} and/or \code{shape = Series}).
+    For \code{fortify} the arguments are not used. For the \code{scale_*_*}
     functions the arguments are passed on to \code{scale_*_continuous}.}
   \item{model}{an object of class \code{"zoo"} to be converted to
     a \code{"data.frame"}.}
@@ -69,8 +70,7 @@
   \code{fortify.zoo} takes a zoo object and converts it into a data frame
   (intended for ggplot2). \code{autoplot.zoo} takes a zoo object and returns a
   ggplot2 object. It essentially uses the mapping \code{aes(x = Time, y = Value, group = Series)}
-  and adds \code{colour = Series}, \code{linetype = Series}, \code{shape = Series}
-  in the case of a multivariate series with \code{facets = NULL}.
+  and adds \code{colour = Series} in the case of a multivariate series with \code{facets = NULL}.
 }
 
 \value{
@@ -89,7 +89,7 @@
 }
 
 \seealso{
-  \code{\link[ggplot2]{autoplot}}, \code{\link[ggplot2]{fortify}}, \code{\link[ggplot2]{qplot}}
+  \code{\link[ggplot2]{autoplot}}, \code{\link[ggplot2]{fortify}}, \code{\link[ggplot2]{ggplot}}
 }
 
 \examples{
@@ -120,11 +120,10 @@ autoplot(z)                      ## multiple without color/linetype
 autoplot(z, facets = Series ~ .) ## multiple with series-dependent color/linetype
 autoplot(z, facets = NULL)       ## single with series-dependent color/linetype
 ## by hand with color/linetype and with/without facets
-qplot(x = Index, y = Value, group = Series, colour = Series,
-  linetype = Series, facets = Series ~ ., data = fortify(z, melt = TRUE)) +
-  geom_line() + xlab("Index") + ylab("")
-ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
+ggz <- ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
   data = fortify(z, melt = TRUE)) + geom_line() + xlab("Index") + ylab("")
+ggz
+ggz + facet_grid(Series ~ .)
 ## variations
 autoplot(z, geom = "point")
 autoplot(z, facets = NULL) + geom_point()

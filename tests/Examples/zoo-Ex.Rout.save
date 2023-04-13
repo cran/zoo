@@ -1,5 +1,5 @@
 
-R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
+R version 4.2.2 Patched (2022-11-10 r83330) -- "Innocent and Trusting"
 Copyright (C) 2022 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -514,11 +514,10 @@ Frequency = 3
 + autoplot(z, facets = Series ~ .) ## multiple with series-dependent color/linetype
 + autoplot(z, facets = NULL)       ## single with series-dependent color/linetype
 + ## by hand with color/linetype and with/without facets
-+ qplot(x = Index, y = Value, group = Series, colour = Series,
-+   linetype = Series, facets = Series ~ ., data = fortify(z, melt = TRUE)) +
-+   geom_line() + xlab("Index") + ylab("")
-+ ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
++ ggz <- ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
 +   data = fortify(z, melt = TRUE)) + geom_line() + xlab("Index") + ylab("")
++ ggz
++ ggz + facet_grid(Series ~ .)
 + ## variations
 + autoplot(z, geom = "point")
 + autoplot(z, facets = NULL) + geom_point()
@@ -2943,7 +2942,7 @@ Feb 2000  NA   6
 > ###   na.contiguous.list na.contiguous.default na.contiguous.zoo scale.zoo
 > ###   xtfrm.zoo names.zoo names<-.zoo quantile.zoo rev.zoo transform.zoo
 > ###   ifelse.zoo dim<-.zoo index2char index2char.default index2char.numeric
-> ###   head.ts tail.ts
+> ###   index2char.POSIXt head.ts tail.ts
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -3263,7 +3262,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.953 0.048 2.009 0 0 
+Time elapsed:  1.909 0.039 1.948 0 0 
 > grDevices::dev.off()
 null device 
           1 
