@@ -1,3 +1,33 @@
+Changes in Version 1.8-13
+
+  o New tinyplot() method for "zoo" objects that is similar to the autoplot()
+    method but employs the tinyplot package rather than ggplot2 for drawing.
+
+  o In "yearmon" and "yearqtr" try harder to assure that the underlying vector
+    type remains numeric (without getting coerced). Also added nicer handling
+    and printing of zero-length yearmon/yearqtr vectors and added a [<- method
+    for "yearmon" and "yearqtr" objects and (suggested by Kyle F. Butts).
+
+  o The diff() method for "zoo" objects gained the argument log = FALSE so that
+    diff(x, log = TRUE) can also be used instead of diff(log(x)).
+
+  o The as.vector() method for "zoo" objects now applies to coredata() directly
+    rather than going through as.matrix(). The latter was used in previous
+    versions setting up unnecessary additional row/column names etc. with
+    unnecessary computational overhead. (Reported by Ethan Smith at
+    https://github.com/joshuaulrich/xts/issues/406)
+
+  o In write.zoo(), by default, the index() is formatted using format() rather
+    than as.character() now (reported in https://stackoverflow.com/questions/77553026).
+    Alternatively, the function FUN to format the time index can also be specified
+    by the user.
+
+  o The zoo documentation had aliases for head.ts and tail.ts, although these
+    methods were only very briefly part of the zoo development version and never
+    released. The aliases have been removed now and the base stats package
+    will actually provide head.ts() and tail.ts() starting from R 4.5.0.
+
+
 Changes in Version 1.8-12
 
   o The autoplot() method for "zoo" objects now uses ggplot() directly rather

@@ -42,9 +42,6 @@
 \alias{index2char.numeric}
 \alias{index2char.POSIXt}
 
-\alias{head.ts}
-\alias{tail.ts}
-
 \title{Z's Ordered Observations}
 \description{
 \code{zoo} is the creator for an S3 class of indexed

@@ -4,8 +4,8 @@ yearqtr <- function(x) structure(floor(4*x + .001)/4, class = "yearqtr")
 ## coercion to yearqtr: always go via numeric
 as.yearqtr <- function(x, ...) UseMethod("as.yearqtr")
 as.yearqtr.default <- function(x, ...) as.yearqtr(as.numeric(x))
-as.yearqtr.numeric <- function(x, ...) structure(floor(4*x + .0001)/4, class = "yearqtr")
-as.yearqtr.integer <- function(x, ...) structure(x, class = "yearqtr")
+as.yearqtr.numeric <- function(x, ...) yearqtr(x)
+as.yearqtr.integer <- function(x, ...) structure(as.numeric(x), class = "yearqtr")
 
 # as.jul.yearqtr <- function(x, ...) jul(as.Date(x, ...)) # jul is from tis
 as.yearqtr.mondate <-
@@ -19,8 +19,8 @@ as.yearqtr.yearqtr <- function(x, ...) x
 as.yearqtr.factor <- function(x, ...) as.yearqtr(as.character(x), ...)
 as.yearqtr.character <- function(x, format, ...) {
     non.na <- x[!is.na(x)]
-    if (length(non.na) == 0) 
-        return(structure(rep(NA, length(x)), class = "yearqtr"))
+    if (length(non.na) == 0L) 
+        return(structure(rep(NA_real_, length(x)), class = "yearqtr"))
     if (missing(format) || format == "") {
         format <- if (all(regexpr("q", non.na) > 0))  { "%Y q%q"
         } else if (all(regexpr("Q", non.na) > 0)) { "%Y Q%q"
@@ -122,8 +122,12 @@ quarters.yearqtr <- function(x, abbreviate = FALSE) {
 }
 
 
-print.yearqtr <- function(x, ...) { 
-    print(format(x), ...)
+print.yearqtr <- function(x, ...) {
+    if(length(x) == 0L) {
+      cat("yearqtr of length 0\n")
+    } else {
+      print(format(x), ...)
+    }
     invisible(x) 
 }
 
@@ -141,6 +145,16 @@ print.yearqtr <- function(x, ...) {
     cl <- oldClass(x)
     class(x) <- NULL
     val <- NextMethod("[[")
+    class(val) <- cl
+    val
+}
+
+"[<-.yearqtr" <- function (x, ..., value) 
+{
+    cl <- oldClass(x)
+    value <- unclass(as.yearqtr(value))
+    class(x) <- NULL
+    val <- NextMethod("[")
     class(val) <- cl
     val
 }

@@ -21,7 +21,8 @@ read.zoo(file, format = "", tz = "", FUN = NULL,
   regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL,
   split = NULL, aggregate = FALSE, \dots, text, read = read.table)
   
-write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL, \dots)
+write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL,
+  FUN = format, \dots)
 
 read.csv.zoo(\dots, read = read.csv)
 read.csv2.zoo(\dots, read = read.csv2)
@@ -39,8 +40,10 @@ read.delim2.zoo(\dots, read = read.delim2)
     is subsequently processed to a \code{"zoo"} series.}
   \item{format}{date format argument passed to \code{FUN}.}
   \item{tz}{time zone argument passed to \code{\link{as.POSIXct}}.}
-  \item{FUN}{a function for computing the index from the first column
-    of the data. See details.}
+  \item{FUN}{a function for processing the time index. In \code{read.zoo}
+    this is the function that computes the index from the \code{index.column},
+    see the details. In \code{write.zoo} it is a function that formats the
+    index prior to writing it to \code{file}.}
   \item{regular}{logical. Should the series be coerced to class \code{"zooreg"}
     (if the series is regular)?}
   \item{index.column}{numeric vector or list. The column names or numbers of the data frame 
@@ -154,7 +157,7 @@ if the index field is entirely numeric the default is to pass it to \code{FUN}
 or the built-in date conversion routine
 a number, rather than a character string. 
 Thus, a date field such as \code{09122007} intended
-to represent December 12, 2007 would be seen as \code{9122007}
+to represent September 12, 2007 would be seen as \code{9122007}
 and interpreted as the 91st day 
 thereby generating an error.  
 

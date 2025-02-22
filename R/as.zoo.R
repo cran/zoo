@@ -65,7 +65,7 @@ as.zooreg.xts <- function(x, frequency = NULL, ...) {
 as.zoo.zoo <- function(x, ...) x
 
 as.vector.zoo <- function(x, mode = "any")
-	as.vector(as.matrix(x), mode = mode)
+	as.vector(coredata(x), mode = mode)
 
 as.matrix.zoo <- function(x, ...) 
 {

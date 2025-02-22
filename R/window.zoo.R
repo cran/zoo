@@ -101,7 +101,7 @@ lag.zooreg <- function(x, k = 1, na.pad = FALSE, ...)
    if (na.pad) merge(x, zoo(, time(x0))) else x
 }
 
-diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, ...)
+diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, log = FALSE, ...)
 {
     ix <- index(x)
     stopifnot(differences >= 1)
@@ -109,7 +109,7 @@ diff.zoo <- function(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FA
     ## for relative differences, use division only if 'x' contains negative values
     ## other numerically more stable log-transform
     if(arithmetic || all(coredata(x) > 0)) {
-      if (!arithmetic) x <- log(x)
+      if (!arithmetic || log) x <- log(x)
       if (lag > 0) for(i in 1:differences) x <- x - lag(x, k = -lag, ...) else for(i in 1:differences) x <- lag(x, k = -lag, ...) - x
       if (!arithmetic) x <- exp(x)
     } else {

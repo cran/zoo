@@ -136,6 +136,9 @@ export(
   "as.Date.yearqtr",
   "as.Date.ts",
    
+## tinyplot interface (currently fully exported)
+  "tinyplot.zoo",
+
 ## ggplot2 interface (currently fully exported)
   "facet_free",
   "fortify.zoo",
@@ -240,6 +243,11 @@ if(getRversion() >= "3.6.0") {
   S3method(ggplot2::scale_type, "yearqtr")
 }
 
+## conditional registration of tinyplot method
+if(getRversion() >= "3.6.0") {
+  S3method(tinyplot::tinyplot, "zoo")
+}
+
 ## methods for class zooreg
   S3method("as.ts", "zooreg")
   S3method("deltat", "zooreg")
@@ -298,6 +306,7 @@ if(getRversion() >= "3.6.0") {
   S3method("Summary", "yearmon")
   S3method("[", "yearmon")
   S3method("[[", "yearmon")
+  S3method("[<-", "yearmon")
   S3method("as.POSIXct", "yearmon")
   S3method("as.POSIXlt", "yearmon")
   S3method("as.character", "yearmon")
@@ -327,6 +336,7 @@ if(getRversion() >= "3.6.0") {
   S3method("Summary", "yearqtr")
   S3method("[", "yearqtr")
   S3method("[[", "yearqtr")
+  S3method("[<-", "yearqtr")
   S3method("as.POSIXct", "yearqtr")
   S3method("as.POSIXlt", "yearqtr")
   S3method("as.character", "yearqtr")

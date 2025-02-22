@@ -8,7 +8,7 @@ Methods for computing lags and differences of \code{"zoo"} objects.
 
 \usage{
 \method{lag}{zoo}(x, k = 1, na.pad = FALSE, \dots)
-\method{diff}{zoo}(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, \dots)
+\method{diff}{zoo}(x, lag = 1, differences = 1, arithmetic = TRUE, na.pad = FALSE, log = FALSE, \dots)
 }
 
 \arguments{
@@ -21,14 +21,14 @@ Methods for computing lags and differences of \code{"zoo"} objects.
   \item{arithmetic}{logical. Should arithmetic (or geometric) differences be computed?}
   \item{na.pad}{logical. If \code{TRUE} it adds any times that would not otherwise have been in
     the result with a value of \code{NA}.  If \code{FALSE} those times are dropped.}
+  \item{log}{logical. Should the differences of the log series be computed?}
   \item{\dots}{currently not used.}
 }
 
 \details{
 These methods for \code{"zoo"} objects behave analogously to the default
-methods. The only additional arguments are \code{arithmetic} in \code{diff}
-\code{na.pad} in \code{lag.zoo} which can also be specified in \code{diff.zoo}
-as part of the dots.
+methods. The only additional arguments are \code{arithmetic} and \code{log} in \code{diff}
+and \code{na.pad} in both \code{lag.zoo} and \code{diff.zoo}.
 Also, \code{"k"} can be a vector of lags in which case the names of
 \code{"k"}, if any, are used in naming the result.
 

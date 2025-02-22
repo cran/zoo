@@ -5,7 +5,7 @@ yearmon <- function(x) structure(floor(12*x + .0001)/12, class = "yearmon")
 as.yearmon <- function(x, ...) UseMethod("as.yearmon")
 as.yearmon.default <- function(x, ...) as.yearmon(as.numeric(x))
 as.yearmon.numeric <- function(x, ...) yearmon(x)
-as.yearmon.integer <- function(x, ...) structure(x, class = "yearmon")
+as.yearmon.integer <- function(x, ...) structure(as.numeric(x), class = "yearmon")
 as.yearmon.yearqtr <- function(x, frac = 0, ...) {
     if (frac == 0) yearmon(as.numeric(x)) else
     as.yearmon(as.Date(x, frac = frac), ...)
@@ -19,6 +19,9 @@ as.yearmon.timeDate <-
 as.yearmon.jul <- function(x, ...) as.yearmon(as.Date(x, ...))
 as.yearmon.factor <- function(x, ...) as.yearmon(as.character(x), ...)
 as.yearmon.character <- function(x, format = "", ...) {
+    non.na <- x[!is.na(x)]
+    if (length(non.na) == 0L) 
+        return(structure(rep(NA_real_, length(x)), class = "yearmon"))
    if (format == "") {
         nch <- nchar(gsub("[^-]", "", x))
 		nch[is.na(x)] <- NA
@@ -89,8 +92,12 @@ format.yearmon <- function(x, format = "%b %Y", ...)
     xx
 }
 
-print.yearmon <- function(x, ...) { 
-    print(format(x), ...)
+print.yearmon <- function(x, ...) {
+    if(length(x) == 0L) {
+      cat("yearmon of length 0\n")
+    } else {
+      print(format(x), ...)
+    }
     invisible(x) 
 }
 
@@ -116,6 +123,16 @@ quarters.yearmon <- function(x, abbreviate = FALSE) {
     cl <- oldClass(x)
     class(x) <- NULL
     val <- NextMethod("[[")
+    class(val) <- cl
+    val
+}
+
+"[<-.yearmon" <- function (x, ..., value) 
+{
+    cl <- oldClass(x)
+    value <- unclass(as.yearmon(value))
+    class(x) <- NULL
+    val <- NextMethod("[")
     class(val) <- cl
     val
 }

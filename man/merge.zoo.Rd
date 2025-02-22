@@ -24,7 +24,7 @@ versions of database \emph{join} operations.
   \item{suffixes}{character vector of the same length as the number of
     \code{"zoo"} objects specifying the suffixes to be used for making
     the merged column names unique.}
-  \item{check.names}{See \code{link{read.table}}.}
+  \item{check.names}{See \code{\link{read.table}}.}
   \item{retclass}{character that specifies the class of the returned result.
     It can be \code{"zoo"} (the default), \code{"list"} or \code{NULL}. For 
     details see below.}

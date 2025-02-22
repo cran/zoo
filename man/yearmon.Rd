@@ -11,7 +11,6 @@
 \alias{as.yearmon.jul}
 \alias{as.yearmon.POSIXt}
 \alias{as.yearmon.character}
-\alias{as.yearmon.date}
 \alias{as.yearmon.factor}
 \alias{as.Date}
 \alias{as.Date.numeric}
