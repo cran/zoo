@@ -266,7 +266,7 @@ Rprintf("zoo_lag\n");
   //} else {
     SEXP index, newindex;
     PROTECT(index = getAttrib(x, install("index"))); P++;
-    if(IS_S4_OBJECT(index)) {
+    if(isS4(index)) {
       /* should make this
          1) generic for any S4 object if possible
          2) test for timeDate as this is important
@@ -294,7 +294,7 @@ Rprintf("zoo_lag\n");
       default:
         break;
     }
-    if(IS_S4_OBJECT(getAttrib(x, install("index")))) {
+    if(isS4(getAttrib(x, install("index")))) {
       /* need to assure that this is timeDate */
       SEXP tmp = PROTECT(getAttrib(x, install("index"))); P++;
       SEXP class = PROTECT(MAKE_CLASS("timeDate")); P++;

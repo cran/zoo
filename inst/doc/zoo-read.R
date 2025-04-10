@@ -36,15 +36,28 @@ DF
 
 
 ###################################################
-### code chunk number 4: ex2b
+### code chunk number 4: ex2-locale-c
+###################################################
+ct <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "C")
+
+
+###################################################
+### code chunk number 5: ex2b
 ###################################################
 z <- read.zoo(DF, FUN = function(x)
-  times(as.chron(paste("1970-01-01", x), format = "%Y-%m-%d %H:%M:%S %p")))
+  times(as.chron(paste("1970-01-01", x), format = "%Y-%m-%d %I:%M:%S %p")))
 z
 
 
 ###################################################
-### code chunk number 5: ex3
+### code chunk number 6: ex2-locale-orig
+###################################################
+Sys.setlocale("LC_TIME", ct)
+
+
+###################################################
+### code chunk number 7: ex3
 ###################################################
 Lines <- "
 Date;Time;Close
@@ -69,7 +82,7 @@ z
 
 
 ###################################################
-### code chunk number 6: ex4
+### code chunk number 8: ex4
 ###################################################
 Lines <- "
 Date Time O H L C
@@ -85,7 +98,7 @@ z
 
 
 ###################################################
-### code chunk number 7: ex5
+### code chunk number 9: ex5
 ###################################################
 Lines <-
 "  views  number  timestamp day            time
@@ -115,32 +128,32 @@ z
 
 
 ###################################################
-### code chunk number 8: ex5a
+### code chunk number 10: ex5a
 ###################################################
 (z45 <- z[format(time(z), "%w") %in% 4:5,])
 
 
 ###################################################
-### code chunk number 9: ex5b
+### code chunk number 11: ex5b
 ###################################################
 z45[!duplicated(format(time(z45), "%U"), fromLast = TRUE), ]
 
 
 ###################################################
-### code chunk number 10: ex5c
+### code chunk number 12: ex5c
 ###################################################
 g <- seq(start(z), end(z), by = "day")
 z.filled <- na.locf(z, xout = g)
 
 
 ###################################################
-### code chunk number 11: ex5e
+### code chunk number 13: ex5e
 ###################################################
 z.filled[format(time(z.filled), "%w") == "5", ]
 
 
 ###################################################
-### code chunk number 12: ex6
+### code chunk number 14: ex6
 ###################################################
 Lines <- "
 Date,Time,Open,High,Low,Close,Up,Down
@@ -150,7 +163,7 @@ Date,Time,Open,High,Low,Close,Up,Down
 
 
 ###################################################
-### code chunk number 13: ex6a
+### code chunk number 15: ex6a
 ###################################################
 f <- function(d, t) chron(d, paste(t, "00", sep = ":"),
   format = c("m.d.y", "h:m:s"))
@@ -160,7 +173,7 @@ z
 
 
 ###################################################
-### code chunk number 14: ex6b
+### code chunk number 16: ex6b
 ###################################################
 f2 <- function(d, t) as.chron(paste(d, t), format = "%d.%m.%Y %H:%M")
 z2 <- read.zoo(text = Lines, sep = ",", header = TRUE, 
@@ -169,7 +182,7 @@ z2
 
 
 ###################################################
-### code chunk number 15: ex6c
+### code chunk number 17: ex6c
 ###################################################
 z3 <- read.zoo(text = Lines, sep = ",", header = TRUE, 
   index = 1:2, tz = "", format = "%d.%m.%Y %H:%M")
@@ -177,7 +190,7 @@ z3
 
 
 ###################################################
-### code chunk number 16: ex7
+### code chunk number 18: ex7
 ###################################################
 Lines <- "Date Time V2   V3   V4   V5
 2010-10-15 13:43:54 73.8 73.8 73.8 73.8
@@ -193,7 +206,7 @@ z
 
 
 ###################################################
-### code chunk number 17: ex8
+### code chunk number 19: ex8
 ###################################################
 Lines <- "
 13/10/2010      A       23
@@ -212,7 +225,7 @@ z
 
 
 ###################################################
-### code chunk number 18: ex9
+### code chunk number 20: ex9
 ###################################################
 Lines <- '
 "","Fish_ID","Date","R2sqrt"
@@ -230,7 +243,7 @@ z2
 
 
 ###################################################
-### code chunk number 19: ex10
+### code chunk number 21: ex10
 ###################################################
 Lines <-
 " iteration         Datetime    VIC1    NSW1     SA1    QLD1
@@ -249,7 +262,7 @@ z2
 
 
 ###################################################
-### code chunk number 20: ex11
+### code chunk number 22: ex11
 ###################################################
 DF <- structure(list(
   Date = structure(c(14609, 14638, 14640, 14666, 14668, 14699,
@@ -266,7 +279,7 @@ na.locf(z)[!duplicated(as.yearmon(time(z)), fromLast = TRUE)]
 
 
 ###################################################
-### code chunk number 21: ex12
+### code chunk number 23: ex12
 ###################################################
 Lines <- "
 2009-10-07      0.009378
@@ -287,7 +300,7 @@ z
 
 
 ###################################################
-### code chunk number 22: ex13
+### code chunk number 24: ex13
 ###################################################
 Lines <- "
 timestamp,time-step-index,value
@@ -301,7 +314,7 @@ z2
 
 
 ###################################################
-### code chunk number 23: ex14
+### code chunk number 25: ex14
 ###################################################
 Lines <- "
 Date Time Value
@@ -313,7 +326,7 @@ z
 
 
 ###################################################
-### code chunk number 24: ex15
+### code chunk number 26: ex15
 ###################################################
 Lines <- "
 Year   Qtr1  Qtr2  Qtr3  Qtr4   
@@ -328,7 +341,7 @@ zq
 
 
 ###################################################
-### code chunk number 25: further (eval = FALSE)
+### code chunk number 27: further (eval = FALSE)
 ###################################################
 ## filenames <- dir(pattern = "csv$") 
 ## z <- read.zoo(filenames, header = TRUE, sep = ",", fixed = FALSE)

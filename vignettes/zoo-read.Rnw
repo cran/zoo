@@ -104,6 +104,11 @@ z
 \textbf{Strategy:} The idea is to add some dummy date (here 1970-01-01) to the
 \class{character} lables, then transform to \class{chron} and extract the \class{times}.
 
+\textbf{Caveat:} The AM/PM labels are locale-dependent (e.g., could be am/pm or
+a.m./p.m. in other English locales). Hence, it needs to be checked whether the
+\verb+%p+ attribute is read correctly in the current locale. Here, a C locale
+is used to assure reproducibility.
+
 <<ex2a>>=
 DF <- structure(list(
   Time = structure(1:5, .Label = c("7:10:03 AM", "7:10:36 AM",
@@ -115,10 +120,19 @@ DF <- structure(list(
 DF
 @
 
+<<ex2-locale-c, results=hide>>=
+ct <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "C")
+@
+
 <<ex2b>>=
 z <- read.zoo(DF, FUN = function(x)
-  times(as.chron(paste("1970-01-01", x), format = "%Y-%m-%d %H:%M:%S %p")))
+  times(as.chron(paste("1970-01-01", x), format = "%Y-%m-%d %I:%M:%S %p")))
 z
+@
+
+<<ex2-locale-orig, results=hide>>=
+Sys.setlocale("LC_TIME", ct)
 @
 
 \newpage

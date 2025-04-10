@@ -184,76 +184,48 @@ library("tseries")
 ### code chunk number 24: data handling if offline
 ###################################################
 if(online) {
-  sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31")
-  sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
+  msft <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31")
+  msft2 <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31",
     compression = "m", quote = "Close")
-  eur.usd <- get.hist.quote(instrument = "EUR/USD", provider = "oanda", start = "2004-01-01", end = "2004-12-31")
-  save(sunw, sunw2, eur.usd, file = "sunw.rda")
+  save(msft, msft2, file = "msft2004.rda")
 } else {
-  load("sunw.rda")
+  load("msft2004.rda")
 }
 
 
 ###################################################
 ### code chunk number 25: get.hist.quote daily series (eval = FALSE)
 ###################################################
-## sunw <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31")
+## msft <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31")
 
 
 ###################################################
 ### code chunk number 26: get.hist.quote monthly series (eval = FALSE)
 ###################################################
-## sunw2 <- get.hist.quote(instrument = "SUNW", start = "2004-01-01", end = "2004-12-31",
+## msft2 <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31",
 ##   compression = "m", quote = "Close")
 
 
 ###################################################
 ### code chunk number 27: change index to yearmon
 ###################################################
-time(sunw2) <- as.yearmon(time(sunw2))
+time(msft2) <- as.yearmon(time(msft2))
 
 
 ###################################################
 ### code chunk number 28: compute same series via aggregate
 ###################################################
-sunw3 <- aggregate(sunw[, "Close"], as.yearmon, tail, 1)
+msft3 <- aggregate(msft[, "Close"], as.yearmon, tail, 1)
 
 
 ###################################################
 ### code chunk number 29: compute returns
 ###################################################
-r <- prices2returns(sunw3)
+r <- prices2returns(msft3)
 
 
 ###################################################
-### code chunk number 30: get.hist.quote oanda (eval = FALSE)
-###################################################
-## eur.usd <- get.hist.quote(instrument = "EUR/USD", provider = "oanda", start = "2004-01-01", end = "2004-12-31")
-
-
-###################################################
-### code chunk number 31: is.weekend convenience function
-###################################################
-is.weekend <- function(x) ((as.numeric(x)-2) %% 7) < 2
-
-
-###################################################
-### code chunk number 32: omit weekends
-###################################################
-eur.usd <- eur.usd[!is.weekend(time(eur.usd))]
-
-
-###################################################
-### code chunk number 33: is.weekend based on POSIXlt
-###################################################
-is.weekend <- function(x) {
-  x <- as.POSIXlt(x)
-  x$wday > 5 | x$wday < 1
-}
-
-
-###################################################
-### code chunk number 34: summaries
+### code chunk number 30: summaries
 ###################################################
 date1 <- seq(as.Date("2001-01-01"), as.Date("2002-12-1"), by = "day")
 len1 <- length(date1)
@@ -294,5 +266,20 @@ data1w <- ag(data1, nexttue, c("mean", "sd"))
 
 head(data1q)
 head(data1w)
+
+
+###################################################
+### code chunk number 31: is.weekend convenience function
+###################################################
+is.weekend <- function(x) ((as.numeric(x)-2) %% 7) < 2
+
+
+###################################################
+### code chunk number 32: is.weekend based on POSIXlt
+###################################################
+is.weekend <- function(x) {
+  x <- as.POSIXlt(x)
+  x$wday > 5 | x$wday < 1
+}
 
 

@@ -108,10 +108,10 @@ yearmon_trans <- function(format = "%b %Y", n = 5) {
 }
 
 scale_x_yearmon <- function(..., format = "%b %Y", n = 5) {
-  ggplot2::scale_x_continuous(..., trans = yearmon_trans(format, n))
+  ggplot2::scale_x_continuous(..., transform = yearmon_trans(format, n))
 }
 scale_y_yearmon <- function(..., format = "%b %Y", n = 5) {
-  ggplot2::scale_y_continuous(..., trans = yearmon_trans(format, n))
+  ggplot2::scale_y_continuous(..., transform = yearmon_trans(format, n))
 }
 
 yearqtr_trans <- function(format = "%Y-%q", n = 5) {
@@ -122,10 +122,10 @@ yearqtr_trans <- function(format = "%Y-%q", n = 5) {
 }
 
 scale_x_yearqtr <- function(..., format = "%Y-%q", n = 5) {
-  ggplot2::scale_x_continuous(..., trans = yearqtr_trans(format, n))
+  ggplot2::scale_x_continuous(..., transform = yearqtr_trans(format, n))
 }
 scale_y_yearqtr <- function(..., format = "%Y-%q", n = 5) {
-  ggplot2::scale_y_continuous(..., trans = yearqtr_trans(format, n))
+  ggplot2::scale_y_continuous(..., transform = yearqtr_trans(format, n))
 }
 
 scale_type.yearqtr <- function(x) c("yearqtr", "continuous")

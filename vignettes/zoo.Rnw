@@ -72,7 +72,7 @@ suppressWarnings(RNGversion("3.5.0"))
 \section{Introduction} \label{sec:intro}
 
 The \proglang{R} system for statistical computing
-\citep[\url{http://www.R-project.org/}]{zoo:R:2008}
+\citep[\url{https://www.R-project.org/}]{zoo:R:2008}
 ships with a class for regularly spaced time series,
 \code{"ts"} in package \pkg{stats}, but has no native class for
 irregularly spaced time series. With the increased interest in
@@ -864,7 +864,7 @@ A typical application for irregular time series which became increasingly
 important over the last years in computational statistics and finance is
 daily (or higher frequency) financial data. The package \pkg{tseries} provides
 the function \code{get.hist.quote} for obtaining historical financial data
-by querying Yahoo!\ Finance at \url{http://finance.yahoo.com/},
+by querying Yahoo!\ Finance at \url{https://finance.yahoo.com/},
 an online portal quoting data provided by Reuters. The following code
 queries the quotes of Microsoft Corp.\ starting from 2001-01-01
 until 2004-09-30:
