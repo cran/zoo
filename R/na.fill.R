@@ -18,10 +18,10 @@ na.fill0 <- function(object, fill, ix = !is.na(object))
     if (!is.logical(ix)) ix <- seq_along(object) %in% ix
     replace(object, !ix, as.list(fill)[[1L]])
   } else {
-    fill <- rep(as.list(fill), length = 3L)
+    fill <- rep(as.list(fill), length.out = 3L)
     if (identical(fill[[2L]], "extend")) 
       stop("fill[[2L]] cannot be 'extend'")
-    ix <- if (is.logical(ix)) rep(ix, length = length(object)) else seq_along(object) %in% ix
+    ix <- if (is.logical(ix)) rep(ix, length.out = length(object)) else seq_along(object) %in% ix
     wx <- which(ix)
     if (length(wx) == 0L) {
       object[] <- fill[[2L]]

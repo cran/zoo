@@ -9,8 +9,8 @@
 
 \Address{
   \pkg{zoo} Development Team\\
-  \proglang{R}-Forge: \url{http://R-Forge.R-project.org/projects/zoo/}\\
-  Comprehensive \proglang{R} Archive Network: \url{http://CRAN.R-project.org/package=zoo}
+  \proglang{R}-Forge: \url{https://R-Forge.R-project.org/projects/zoo/}\\
+  Comprehensive \proglang{R} Archive Network: \url{https://CRAN.R-project.org/package=zoo}
 }
 
 \Keywords{irregular time series, ordered observations, time index}

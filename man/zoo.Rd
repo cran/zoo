@@ -242,7 +242,7 @@ as shown at \url{https://stat.ethz.ch/pipermail/r-devel/2010-August/058112.html}
   Achim Zeileis and Gabor Grothendieck (2005).
   \pkg{zoo}: S3 Infrastructure for Regular and Irregular Time Series.
   \emph{Journal of Statistical Software}, \bold{14(6)}, 1-27.
-  URL http://www.jstatsoft.org/v14/i06/ and available as 
+  \doi{10.18637/jss.v014.i06} and available as 
   \code{vignette("zoo")}.
   
   Ajay Shah, Achim Zeileis and Gabor Grothendieck (2005).

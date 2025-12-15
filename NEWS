@@ -1,3 +1,9 @@
+Changes in Version 1.8-15
+
+  * Documentation fix in BibTeX files requested by CRAN : Use `doi` field rather
+    than `url` for DOIs, and updates to various URLs.
+
+
 Changes in Version 1.8-14
 
   * In the `scale_x_yearmon()` function the `scale_x_continuous()` function
