@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Reading Data in zoo</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Reading Data in zoo</h1>
+
+
+
+<p>This vignette gives examples of how to read data in various formats
+in the <code>zoo</code> package using the <code>read.zoo()</code>
+function. The function <code>read.zoo()</code> function expects either a
+text <code>file</code> (or text connection) as input or data frame. The
+former case is handled by first using <code>read.table()</code> to
+produce the data frame. (Instead of a text <code>file</code>, the
+<code>text</code> argument can be used to read a text string that is
+already stored in R which is used in the examples of this vignette.)
+Subsequently, <code>read.zoo()</code> provides a wide collection of
+convenience functionality to turn that data frame into a
+<code>zoo</code> series with a specific structure and a specific time
+index. In this vignette, an overview is provided of the wide variety of
+cases that can be handled with <code>read.zoo()</code>. All examples
+assume that <code>zoo</code> is already loaded and (if necessary) that
+the <code>chron</code> package has been loaded as well.</p>
+<p>Note that functions <code>read.csv.zoo()</code>,
+<code>read.csv2.zoo()</code>, <code>read.delim.zoo()</code>, and
+<code>read.delim2.zoo()</code> are available that call the respective
+<code>read.*()</code> function instead of <code>read.table()</code> and
+subsequently <code>read.zoo()</code>. However, these convenience
+interfaces are not employed in this vignette in order to demonstrate
+setting all arguments `by hand’.</p>
+<div id="example-1" class="section level2">
+<h2>Example 1</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>integer</code>.</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>integer</code>.</p>
+<p><strong>Strategy:</strong> No transformation of time index needed,
+hence only a simple call to <code>read.zoo()</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="st">time latitude longitude altitude  distance heartrate</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="st">1277648884 0.304048 -0.793819      260  0.000000        94</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="st">1277648885 0.304056 -0.793772      262  4.307615        95</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="st">1277648894 0.304075 -0.793544      263 25.237911       103</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="st">1277648902 0.304064 -0.793387      256 40.042988       115</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##            latitude longitude altitude  distance heartrate
+## 1277648884 0.304048 -0.793819      260  0.000000        94
+## 1277648885 0.304056 -0.793772      262  4.307615        95
+## 1277648894 0.304075 -0.793544      263 25.237911       103
+## 1277648902 0.304064 -0.793387      256 40.042988       115</code></pre>
+</div>
+<div id="example-2" class="section level2">
+<h2>Example 2</h2>
+<p><strong>Input class:</strong> <code>data.frame</code>.</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating AM/PM times but no date.</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>times</code> (from
+<code>chron</code>).</p>
+<p><strong>Strategy:</strong> The idea is to add some dummy date (here
+1970-01-01) to the <code>character</code> lables, then transform to
+<code>chron</code> and extract the <code>times</code>.</p>
+<p><strong>Caveat:</strong> The AM/PM labels are locale-dependent (e.g.,
+could be am/pm or a.m./p.m. in other English locales). Hence, it needs
+to be checked whether the attribute is read correctly in the current
+locale. Here, a C locale is used to assure reproducibility.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>DF <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">Time =</span> <span class="fu">structure</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;7:10:03 AM&quot;</span>, <span class="st">&quot;7:10:36 AM&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="st">&quot;7:11:07 AM&quot;</span>, <span class="st">&quot;7:11:48 AM&quot;</span>, <span class="st">&quot;7:12:25 AM&quot;</span>), <span class="at">class =</span> <span class="st">&quot;factor&quot;</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">Bid =</span> <span class="fu">c</span>(<span class="fl">6118.5</span>, <span class="fl">6118.5</span>, <span class="fl">6119.5</span>, <span class="dv">6119</span>, <span class="dv">6119</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">Offer =</span> <span class="fu">c</span>(<span class="fl">6119.5</span>, <span class="fl">6119.5</span>, <span class="fl">6119.5</span>, <span class="dv">6120</span>, <span class="fl">6119.5</span>)),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;Time&quot;</span>, <span class="st">&quot;Bid&quot;</span>, <span class="st">&quot;Offer&quot;</span>), <span class="at">row.names =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="sc">-</span><span class="dv">5</span><span class="dt">L</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">&quot;data.frame&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>DF</span></code></pre></div>
+<pre><code>##         Time    Bid  Offer
+## 1 7:10:03 AM 6118.5 6119.5
+## 2 7:10:36 AM 6118.5 6119.5
+## 3 7:11:07 AM 6119.5 6119.5
+## 4 7:11:48 AM 6119.0 6120.0
+## 5 7:12:25 AM 6119.0 6119.5</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(DF, <span class="at">FUN =</span> <span class="cf">function</span>(x)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">times</span>(<span class="fu">as.chron</span>(<span class="fu">paste</span>(<span class="st">&quot;1970-01-01&quot;</span>, x), <span class="at">format =</span> <span class="st">&quot;%Y-%m-%d %I:%M:%S %p&quot;</span>)))</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##             Bid  Offer
+## 07:10:03 6118.5 6119.5
+## 07:10:36 6118.5 6119.5
+## 07:11:07 6119.5 6119.5
+## 07:11:48 6119.0 6120.0
+## 07:12:25 6119.0 6119.5</code></pre>
+</div>
+<div id="example-3" class="section level2">
+<h2>Example 3</h2>
+<p><strong>Input class:</strong> Text file/connection
+(semicolon-separated with header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 1) and times (column 2).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code> series,
+with separate columns for each date.</p>
+<p><strong>Output index:</strong> <code>times</code> (from
+<code>chron</code>).</p>
+<p><strong>Strategy:</strong> Split the data based on date (column 1)
+and process times (column 2) to <code>times</code>. Enhance column names
+at the end.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="st">Date;Time;Close</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="st">01/09/2009;10:00;56567</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="st">01/09/2009;10:05;56463</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="st">01/09/2009;10:10;56370</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="st">01/09/2009;16:45;55771</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="st">01/09/2009;16:50;55823</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="st">01/09/2009;16:55;55814</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="st">02/09/2009;10:00;55626</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="st">02/09/2009;10:05;55723</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="st">02/09/2009;10:10;55659</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="st">02/09/2009;16:45;55742</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="st">02/09/2009;16:50;55717</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="st">02/09/2009;16:55;55385</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">times</span>(<span class="fu">paste</span>(x, <span class="dv">0</span>, <span class="at">sep =</span> <span class="st">&quot;:&quot;</span>))</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>, </span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  <span class="at">split =</span> <span class="dv">1</span>, <span class="at">index =</span> <span class="dv">2</span>, <span class="at">FUN =</span> f)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">colnames</span>(z) <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">&quot;X(..).(..).(....)&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">3-</span><span class="sc">\\</span><span class="st">2-</span><span class="sc">\\</span><span class="st">1&quot;</span>, <span class="fu">colnames</span>(z))</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##          01/09/2009 02/09/2009
+## 10:00:00      56567      55626
+## 10:05:00      56463      55723
+## 10:10:00      56370      55659
+## 16:45:00      55771      55742
+## 16:50:00      55823      55717
+## 16:55:00      55814      55385</code></pre>
+</div>
+<div id="example-4" class="section level2">
+<h2>Example 4</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 1) and times (column 2).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>chron</code> (from
+<code>chron</code>).</p>
+<p><strong>Strategy:</strong> Indicate vector of two columns in
+<code>index</code>, which is subsequently processed by a
+<code>FUN</code> taking two arguments and returning a <code>chron</code>
+time/date.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="st">Date Time O H L C</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="st">1/2/2005 17:05 1.3546 1.3553 1.3546 1.35495</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="st">1/2/2005 17:10 1.3553 1.3556 1.3549 1.35525</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="st">1/2/2005 17:15 1.3556 1.35565 1.35515 1.3553</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="st">1/2/2005 17:25 1.355 1.3556 1.355 1.3555</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="st">1/2/2005 17:30 1.3556 1.3564 1.35535 1.3563</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(d, t) <span class="fu">as.chron</span>(<span class="fu">paste</span>(<span class="fu">as.Date</span>(<span class="fu">chron</span>(d)), t))</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">FUN =</span> f)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##                          O       H       L       C
+## (01/02/05 17:05:00) 1.3546 1.35530 1.35460 1.35495
+## (01/02/05 17:10:00) 1.3553 1.35560 1.35490 1.35525
+## (01/02/05 17:15:00) 1.3556 1.35565 1.35515 1.35530
+## (01/02/05 17:25:00) 1.3550 1.35560 1.35500 1.35550
+## (01/02/05 17:30:00) 1.3556 1.35640 1.35535 1.35630</code></pre>
+</div>
+<div id="example-5" class="section level2">
+<h2>Example 5</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with non-matching header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 6) and unneeded weekdays (column 5) and times
+(column 7).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>Date</code>.</p>
+<p><strong>Strategy:</strong> First, <code>skip</code> the header line,
+remove unneeded columns by setting <code>colClasses</code> to
+<code>&quot;NULL&quot;</code>, and set suitable <code>col.names</code>. Second,
+convert the date column to a <code>Date</code> index using
+<code>format</code>. Finally, aggregate over duplicate dates, keeping
+only the last observation.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="st">&quot;  views  number  timestamp day            time</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="st">1  views  910401 1246192687 Sun 6/28/2009 12:38</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="st">2  views  921537 1246278917 Mon 6/29/2009 12:35</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="st">3  views  934280 1246365403 Tue 6/30/2009 12:36</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="st">4  views  986463 1246888699 Mon  7/6/2009 13:58</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="st">5  views  995002 1246970243 Tue  7/7/2009 12:37</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="st">6  views 1005211 1247079398 Wed  7/8/2009 18:56</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="st">7  views 1011144 1247135553 Thu  7/9/2009 10:32</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="st">8  views 1026765 1247308591 Sat 7/11/2009 10:36</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="st">9  views 1036856 1247436951 Sun 7/12/2009 22:15</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="st">10 views 1040909 1247481564 Mon 7/13/2009 10:39</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="st">11 views 1057337 1247568387 Tue 7/14/2009 10:46</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="st">12 views 1066999 1247665787 Wed 7/15/2009 13:49</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="st">13 views 1077726 1247778752 Thu 7/16/2009 21:12</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="st">14 views 1083059 1247845413 Fri 7/17/2009 15:43</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="st">15 views 1083059 1247845824 Fri 7/17/2009 18:45</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="st">16 views 1089529 1247914194 Sat 7/18/2009 10:49</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>cl <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;NULL&quot;</span>, <span class="st">&quot;numeric&quot;</span>, <span class="st">&quot;character&quot;</span>)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>)]</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>cn <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">&quot;views&quot;</span>, <span class="st">&quot;number&quot;</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">skip =</span> <span class="dv">1</span>, <span class="at">col.names =</span> cn, <span class="at">colClasses =</span> cl,</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>  <span class="at">index =</span> <span class="dv">3</span>, <span class="at">format =</span> <span class="st">&quot;%m/%d/%Y&quot;</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  <span class="at">aggregate =</span> <span class="cf">function</span>(x) <span class="fu">tail</span>(x, <span class="dv">1</span>))</span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##              views     number
+## 2009-06-28  910401 1246192687
+## 2009-06-29  921537 1246278917
+## 2009-06-30  934280 1246365403
+## 2009-07-06  986463 1246888699
+## 2009-07-07  995002 1246970243
+## 2009-07-08 1005211 1247079398
+## 2009-07-09 1011144 1247135553
+## 2009-07-11 1026765 1247308591
+## 2009-07-12 1036856 1247436951
+## 2009-07-13 1040909 1247481564
+## 2009-07-14 1057337 1247568387
+## 2009-07-15 1066999 1247665787
+## 2009-07-16 1077726 1247778752
+## 2009-07-17 1083059 1247845824
+## 2009-07-18 1089529 1247914194</code></pre>
+<p>Extract all Thursdays and Fridays.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>(z45 <span class="ot">&lt;-</span> z[<span class="fu">format</span>(<span class="fu">time</span>(z), <span class="st">&quot;%w&quot;</span>) <span class="sc">%in%</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>,])</span></code></pre></div>
+<pre><code>##              views     number
+## 2009-07-09 1011144 1247135553
+## 2009-07-16 1077726 1247778752
+## 2009-07-17 1083059 1247845824</code></pre>
+<p>Keep last entry in each week.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>z45[<span class="sc">!</span><span class="fu">duplicated</span>(<span class="fu">format</span>(<span class="fu">time</span>(z45), <span class="st">&quot;%U&quot;</span>), <span class="at">fromLast =</span> <span class="cn">TRUE</span>), ]</span></code></pre></div>
+<pre><code>##              views     number
+## 2009-07-09 1011144 1247135553
+## 2009-07-17 1083059 1247845824</code></pre>
+<p>Alternative approach: Above approach labels each point as it was
+originally labeled, i.e., if Thursday is used it gets the date of that
+Thursday. Another approach is to always label the resulting point as
+Friday and also use the last available value even if its not
+Thursday.</p>
+<p>Create daily grid and fill in so Friday is filled in with prior value
+if Friday is <code>NA</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">start</span>(z), <span class="fu">end</span>(z), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>z.filled <span class="ot">&lt;-</span> <span class="fu">na.locf</span>(z, <span class="at">xout =</span> g)</span></code></pre></div>
+<p>Extract Fridays, including those filled in from previous day.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>z.filled[<span class="fu">format</span>(<span class="fu">time</span>(z.filled), <span class="st">&quot;%w&quot;</span>) <span class="sc">==</span> <span class="st">&quot;5&quot;</span>, ]</span></code></pre></div>
+<pre><code>##              views     number
+## 2009-07-03  934280 1246365403
+## 2009-07-10 1011144 1247135553
+## 2009-07-17 1083059 1247845824</code></pre>
+</div>
+<div id="example-6" class="section level2">
+<h2>Example 6</h2>
+<p><strong>Input class:</strong> Text file/connection (comma-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 1) and times (column 2).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>chron</code> (from
+<code>chron</code>) or <code>POSIXct</code>.</p>
+<p><strong>Strategy:</strong> Three versions, all using vector
+<code>index = 1:2</code>.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="st">Date,Time,Open,High,Low,Close,Up,Down</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="st">05.02.2001,00:30,421.20,421.20,421.20,421.20,11,0</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="st">05.02.2001,01:30,421.20,421.40,421.20,421.40,7,0</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="st">05.02.2001,02:00,421.30,421.30,421.30,421.30,0,5&quot;</span></span></code></pre></div>
+<p>With custom <code>FUN</code> using <code>chron()</code> after
+appending seconds.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(d, t) <span class="fu">chron</span>(d, <span class="fu">paste</span>(t, <span class="st">&quot;00&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;:&quot;</span>),</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>  <span class="at">format =</span> <span class="fu">c</span>(<span class="st">&quot;m.d.y&quot;</span>, <span class="st">&quot;h:m:s&quot;</span>))</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">FUN  =</span> f)</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##                      Open  High   Low Close Up Down
+## (05.02.01 00:30:00) 421.2 421.2 421.2 421.2 11    0
+## (05.02.01 01:30:00) 421.2 421.4 421.2 421.4  7    0
+## (05.02.01 02:00:00) 421.3 421.3 421.3 421.3  0    5</code></pre>
+<p>With custom <code>FUN</code> using <code>as.chron()</code> with
+suitable <code>format</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="cf">function</span>(d, t) <span class="fu">as.chron</span>(<span class="fu">paste</span>(d, t), <span class="at">format =</span> <span class="st">&quot;%d.%m.%Y %H:%M&quot;</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>z2 <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">FUN  =</span> f2)</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>z2</span></code></pre></div>
+<pre><code>##                      Open  High   Low Close Up Down
+## (02/05/01 00:30:00) 421.2 421.2 421.2 421.2 11    0
+## (02/05/01 01:30:00) 421.2 421.4 421.2 421.4  7    0
+## (02/05/01 02:00:00) 421.3 421.3 421.3 421.3  0    5</code></pre>
+<p>Without <code>FUN</code>, hence the <code>index</code> columns are
+pasted together and then passt do <code>as.POSIXct()</code> because
+<code>tz</code> and <code>format</code> are specified.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>z3 <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">tz =</span> <span class="st">&quot;&quot;</span>, <span class="at">format =</span> <span class="st">&quot;%d.%m.%Y %H:%M&quot;</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>z3</span></code></pre></div>
+<pre><code>##                      Open  High   Low Close Up Down
+## 2001-02-05 00:30:00 421.2 421.2 421.2 421.2 11    0
+## 2001-02-05 01:30:00 421.2 421.4 421.2 421.4  7    0
+## 2001-02-05 02:00:00 421.3 421.3 421.3 421.3  0    5</code></pre>
+</div>
+<div id="example-7" class="section level2">
+<h2>Example 7</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 1) and times (column 2).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>POSIXct</code>.</p>
+<p><strong>Strategy:</strong> Due to standard date/time formats, only
+<code>index = 1:2</code> and <code>tz = &quot;&quot;</code> need to be specified
+to produce <code>POSIXct</code> index.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;Date Time V2   V3   V4   V5</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="st">2010-10-15 13:43:54 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="st">2010-10-15 13:44:15 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="st">2010-10-15 13:45:51 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="st">2010-10-15 13:46:21 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="st">2010-10-15 13:47:27 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="st">2010-10-15 13:47:54 73.8 73.8 73.8 73.8</span></span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a><span class="st">2010-10-15 13:49:51 73.7 73.7 73.7 73.7</span></span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">tz =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##                       V2   V3   V4   V5
+## 2010-10-15 13:43:54 73.8 73.8 73.8 73.8
+## 2010-10-15 13:44:15 73.8 73.8 73.8 73.8
+## 2010-10-15 13:45:51 73.8 73.8 73.8 73.8
+## 2010-10-15 13:46:21 73.8 73.8 73.8 73.8
+## 2010-10-15 13:47:27 73.8 73.8 73.8 73.8
+## 2010-10-15 13:47:54 73.8 73.8 73.8 73.8
+## 2010-10-15 13:49:51 73.7 73.7 73.7 73.7</code></pre>
+</div>
+<div id="example-8" class="section level2">
+<h2>Example 8</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+without header).</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating dates.</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code> series,
+with separate columns depending on column 2.</p>
+<p><strong>Output index:</strong> <code>Date</code>.</p>
+<p><strong>Strategy:</strong> Non-standard <code>na.strings</code>
+format needs to be specified, series is <code>split</code> based on
+second column, and date <code>format</code> (in column 1, default) needs
+to be specified.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="st">13/10/2010      A       23</span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="st">13/10/2010      B       12</span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="st">13/10/2010      C       124</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="st">14/10/2010      A       43</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="st">14/10/2010      B       54</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="st">14/10/2010      C       65</span></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="st">15/10/2010      A       43</span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="st">15/10/2010      B       N.A.</span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a><span class="st">15/10/2010      C       65</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">na.strings =</span> <span class="st">&quot;N.A.&quot;</span>,</span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;%d/%m/%Y&quot;</span>, <span class="at">split =</span> <span class="dv">2</span>)</span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##             A  B   C
+## 2010-10-13 23 12 124
+## 2010-10-14 43 54  65
+## 2010-10-15 43 NA  65</code></pre>
+</div>
+<div id="example-9" class="section level2">
+<h2>Example 9</h2>
+<p><strong>Input class:</strong> Text file/connection (comma-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating date/time.</p>
+<p><strong>Output class:</strong> Univariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>chron</code> (from
+<code>chron</code>) or <code>POSIXct</code>.</p>
+<p><strong>Strategy:</strong> Ignore first two columns by setting
+<code>colClasses</code> to <code>&quot;NULL&quot;</code>. Either produce
+<code>chron</code> index via <code>as.chron()</code> or use all defaults
+to produce <code>POSIXct</code> by setting <code>tz</code>.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&#39;</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="st">&quot;&quot;,&quot;Fish_ID&quot;,&quot;Date&quot;,&quot;R2sqrt&quot;</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a><span class="st">&quot;1&quot;,1646,2006-08-18 08:48:59,0</span></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a><span class="st">&quot;2&quot;,1646,2006-08-18 09:53:20,100</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>  <span class="at">colClasses =</span> <span class="fu">c</span>(<span class="st">&quot;NULL&quot;</span>, <span class="st">&quot;NULL&quot;</span>, <span class="st">&quot;character&quot;</span>, <span class="st">&quot;numeric&quot;</span>),</span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>  <span class="at">FUN =</span> as.chron)</span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>## (08/18/06 08:48:59) (08/18/06 09:53:20) 
+##                   0                 100</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>z2 <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>,</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="at">colClasses =</span> <span class="fu">c</span>(<span class="st">&quot;NULL&quot;</span>, <span class="st">&quot;NULL&quot;</span>, <span class="st">&quot;character&quot;</span>, <span class="st">&quot;numeric&quot;</span>),</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="at">tz =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>z2</span></code></pre></div>
+<pre><code>## 2006-08-18 08:48:59 2006-08-18 09:53:20 
+##                   0                 100</code></pre>
+</div>
+<div id="example-10" class="section level2">
+<h2>Example 10</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with non-matching header).</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating date (column 3) and time (column 4).</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>chron</code> (from
+<code>chron</code>) or <code>POSIXct</code>.</p>
+<p><strong>Strategy:</strong> <code>skip</code> non-matching header and
+extract date/time from two columns <code>index = 3:4</code>. Either
+using sequence of two functions <code>FUN</code> and <code>FUN2</code>
+or employ defaults yielding <code>POSIXct</code>.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="st">&quot; iteration         Datetime    VIC1    NSW1     SA1    QLD1</span></span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="st">1         1 2011-01-01 00:30 5482.09 7670.81 2316.22 5465.13</span></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="st">2         1 2011-01-01 01:00 5178.33 7474.04 2130.30 5218.61</span></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a><span class="st">3         1 2011-01-01 01:30 4975.51 7163.73 2042.39 5058.19</span></span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a><span class="st">4         1 2011-01-01 02:00 5295.36 6850.14 1940.19 4897.96</span></span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="st">5         1 2011-01-01 02:30 5042.64 6587.94 1836.19 4749.05</span></span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a><span class="st">6         1 2011-01-01 03:00 4799.89 6388.51 1786.32 4672.92</span></span>
+<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">skip =</span> <span class="dv">1</span>, <span class="at">index =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a>  <span class="at">FUN =</span> paste, <span class="at">FUN2 =</span> as.chron)</span>
+<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##                     V1 V2      V5      V6      V7      V8
+## (01/01/11 00:30:00)  1  1 5482.09 7670.81 2316.22 5465.13
+## (01/01/11 01:00:00)  2  1 5178.33 7474.04 2130.30 5218.61
+## (01/01/11 01:30:00)  3  1 4975.51 7163.73 2042.39 5058.19
+## (01/01/11 02:00:00)  4  1 5295.36 6850.14 1940.19 4897.96
+## (01/01/11 02:30:00)  5  1 5042.64 6587.94 1836.19 4749.05
+## (01/01/11 03:00:00)  6  1 4799.89 6388.51 1786.32 4672.92</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>z2 <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">skip =</span> <span class="dv">1</span>, <span class="at">index =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">tz =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>z2</span></code></pre></div>
+<pre><code>##                     V1 V2      V5      V6      V7      V8
+## 2011-01-01 00:30:00  1  1 5482.09 7670.81 2316.22 5465.13
+## 2011-01-01 01:00:00  2  1 5178.33 7474.04 2130.30 5218.61
+## 2011-01-01 01:30:00  3  1 4975.51 7163.73 2042.39 5058.19
+## 2011-01-01 02:00:00  4  1 5295.36 6850.14 1940.19 4897.96
+## 2011-01-01 02:30:00  5  1 5042.64 6587.94 1836.19 4749.05
+## 2011-01-01 03:00:00  6  1 4799.89 6388.51 1786.32 4672.92</code></pre>
+</div>
+<div id="example-11" class="section level2">
+<h2>Example 11</h2>
+<p><strong>Input class:</strong> <code>data.frame</code>.</p>
+<p><strong>Input index:</strong> <code>Date</code>.</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>Date</code>.</p>
+<p><strong>Strategy:</strong> Given a <code>data.frame</code> only keep
+last row in each month. Use <code>read.zoo()</code> to convert to
+<code>zoo</code> and then <code>na.locf()</code> and
+<code>duplicated()</code>.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>DF <span class="ot">&lt;-</span> <span class="fu">structure</span>(<span class="fu">list</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>  <span class="at">Date =</span> <span class="fu">structure</span>(<span class="fu">c</span>(<span class="dv">14609</span>, <span class="dv">14638</span>, <span class="dv">14640</span>, <span class="dv">14666</span>, <span class="dv">14668</span>, <span class="dv">14699</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>    <span class="dv">14729</span>, <span class="dv">14757</span>, <span class="dv">14759</span>, <span class="dv">14760</span>), <span class="at">class =</span> <span class="st">&quot;Date&quot;</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a>  <span class="at">A =</span> <span class="fu">c</span>(<span class="fl">4.9</span>, <span class="fl">5.1</span>, <span class="dv">5</span>, <span class="fl">4.8</span>, <span class="fl">4.7</span>, <span class="fl">5.3</span>, <span class="fl">5.2</span>, <span class="fl">5.4</span>, <span class="cn">NA</span>, <span class="fl">4.6</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a>  <span class="at">B =</span> <span class="fu">c</span>(<span class="fl">18.4</span>, <span class="fl">17.7</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">18.3</span>, <span class="fl">19.4</span>, <span class="fl">19.7</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="fl">18.1</span>),</span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a>  <span class="at">C =</span> <span class="fu">c</span>(<span class="fl">32.6</span>, <span class="cn">NA</span>, <span class="fl">32.8</span>, <span class="cn">NA</span>, <span class="fl">33.7</span>, <span class="fl">32.4</span>, <span class="fl">33.6</span>, <span class="cn">NA</span>, <span class="fl">34.5</span>, <span class="cn">NA</span>),</span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a>  <span class="at">D =</span> <span class="fu">c</span>(<span class="dv">77</span>, <span class="cn">NA</span>, <span class="fl">78.7</span>, <span class="cn">NA</span>, <span class="dv">79</span>, <span class="fl">77.8</span>, <span class="dv">79</span>, <span class="fl">81.7</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)),</span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a>  <span class="at">names =</span> <span class="fu">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="at">row.names =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="sc">-</span><span class="dv">10</span><span class="dt">L</span>),</span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a>  <span class="at">class =</span> <span class="st">&quot;data.frame&quot;</span>)</span>
+<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a>DF</span></code></pre></div>
+<pre><code>##          Date   A    B    C    D
+## 1  2009-12-31 4.9 18.4 32.6 77.0
+## 2  2010-01-29 5.1 17.7   NA   NA
+## 3  2010-01-31 5.0   NA 32.8 78.7
+## 4  2010-02-26 4.8   NA   NA   NA
+## 5  2010-02-28 4.7 18.3 33.7 79.0
+## 6  2010-03-31 5.3 19.4 32.4 77.8
+## 7  2010-04-30 5.2 19.7 33.6 79.0
+## 8  2010-05-28 5.4   NA   NA 81.7
+## 9  2010-05-30  NA   NA 34.5   NA
+## 10 2010-05-31 4.6 18.1   NA   NA</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(DF)</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="fu">na.locf</span>(z)[<span class="sc">!</span><span class="fu">duplicated</span>(<span class="fu">as.yearmon</span>(<span class="fu">time</span>(z)), <span class="at">fromLast =</span> <span class="cn">TRUE</span>)]</span></code></pre></div>
+<pre><code>##              A    B    C    D
+## 2009-12-31 4.9 18.4 32.6 77.0
+## 2010-01-31 5.0 17.7 32.8 78.7
+## 2010-02-28 4.7 18.3 33.7 79.0
+## 2010-03-31 5.3 19.4 32.4 77.8
+## 2010-04-30 5.2 19.7 33.6 79.0
+## 2010-05-31 4.6 18.1 34.5 81.7</code></pre>
+</div>
+<div id="example-12" class="section level2">
+<h2>Example 12</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+without header).</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating dates.</p>
+<p><strong>Output class:</strong> Univariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>Date</code>.</p>
+<p><strong>Strategy:</strong> Only keep last point in case of duplicate
+dates.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="st">2009-10-07      0.009378</span></span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a><span class="st">2009-10-19      0.014790</span></span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a><span class="st">2009-10-23      -0.005946</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a><span class="st">2009-10-23      0.009096</span></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a><span class="st">2009-11-08      0.004189</span></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a><span class="st">2009-11-10      -0.004592</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a><span class="st">2009-11-17      0.009397</span></span>
+<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a><span class="st">2009-11-24      0.003411</span></span>
+<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a><span class="st">2009-12-02      0.003300</span></span>
+<span id="cb43-11"><a href="#cb43-11" tabindex="-1"></a><span class="st">2010-01-15      0.010873</span></span>
+<span id="cb43-12"><a href="#cb43-12" tabindex="-1"></a><span class="st">2010-01-20      0.010712</span></span>
+<span id="cb43-13"><a href="#cb43-13" tabindex="-1"></a><span class="st">2010-01-20      0.022237</span></span>
+<span id="cb43-14"><a href="#cb43-14" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb43-15"><a href="#cb43-15" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">aggregate =</span> <span class="cf">function</span>(x) <span class="fu">tail</span>(x, <span class="dv">1</span>))</span>
+<span id="cb43-16"><a href="#cb43-16" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>## 2009-10-07 2009-10-19 2009-10-23 2009-11-08 2009-11-10 2009-11-17 2009-11-24 
+##   0.009378   0.014790   0.009096   0.004189  -0.004592   0.009397   0.003411 
+## 2009-12-02 2010-01-15 2010-01-20 
+##   0.003300   0.010873   0.022237</code></pre>
+</div>
+<div id="example-13" class="section level2">
+<h2>Example 13</h2>
+<p><strong>Input class:</strong> Text file/connection (comma-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code> with labels
+indicating date/time.</p>
+<p><strong>Output class:</strong> Multivariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>POSIXct</code> or
+<code>chron</code> (from <code>chron</code>).</p>
+<p><strong>Strategy:</strong> Dates and times are in standard format,
+hence the default <code>POSIXct</code> can be produced by setting
+<code>tz</code> or, alternatively, <code>chron</code> can be produced by
+setting <code>as.chron()</code> as <code>FUN</code>.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="st">timestamp,time-step-index,value</span></span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="st">2009-11-23 15:58:21,23301,800</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="st">2009-11-23 15:58:29,23309,950</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">tz =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>##                     time.step.index value
+## 2009-11-23 15:58:21           23301   800
+## 2009-11-23 15:58:29           23309   950</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>z2 <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">FUN =</span> as.chron)</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>z2</span></code></pre></div>
+<pre><code>##                     time.step.index value
+## (11/23/09 15:58:21)           23301   800
+## (11/23/09 15:58:29)           23309   950</code></pre>
+</div>
+<div id="example-14" class="section level2">
+<h2>Example 14</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>factor</code>s with labels
+indicating dates (column 1) times (column 2).</p>
+<p><strong>Output class:</strong> Univariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>chron</code> (from
+<code>chron</code>).</p>
+<p><strong>Strategy:</strong> Indicate vector <code>index = 1:2</code>
+and use <code>chron()</code> (which takes two separate arguments for
+dates and times) to produce <code>chron</code> index.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a><span class="st">Date Time Value</span></span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a><span class="st">01/23/2000 10:12:15 12.12</span></span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a><span class="st">01/24/2000 11:10:00 15.00</span></span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">index =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">FUN =</span> chron)</span>
+<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a>z</span></code></pre></div>
+<pre><code>## (01/23/00 10:12:15) (01/24/00 11:10:00) 
+##               12.12               15.00</code></pre>
+</div>
+<div id="example-15" class="section level2">
+<h2>Example 15</h2>
+<p><strong>Input class:</strong> Text file/connection (space-separated
+with header).</p>
+<p><strong>Input index:</strong> <code>numeric</code> year with quarters
+represented by separate columns.</p>
+<p><strong>Output class:</strong> Univariate <code>zoo</code>
+series.</p>
+<p><strong>Output index:</strong> <code>yearqtr</code>.</p>
+<p><strong>Strategy:</strong> First, create a multivariate annual time
+series using the year index. Then, create a regular univariate quarterly
+series by collapsing the annual series to a vector and adding a new
+<code>yearqtr</code> index from scratch.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a>Lines <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a><span class="st">Year   Qtr1  Qtr2  Qtr3  Qtr4   </span></span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="st">1992    566   443   329   341   </span></span>
+<span id="cb51-4"><a href="#cb51-4" tabindex="-1"></a><span class="st">1993    344   212   133   112   </span></span>
+<span id="cb51-5"><a href="#cb51-5" tabindex="-1"></a><span class="st">1994    252   252   199   207</span></span>
+<span id="cb51-6"><a href="#cb51-6" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb51-7"><a href="#cb51-7" tabindex="-1"></a>za <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(<span class="at">text =</span> Lines, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-8"><a href="#cb51-8" tabindex="-1"></a>za</span></code></pre></div>
+<pre><code>##      Qtr1 Qtr2 Qtr3 Qtr4
+## 1992  566  443  329  341
+## 1993  344  212  133  112
+## 1994  252  252  199  207</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a>zq <span class="ot">&lt;-</span> <span class="fu">zooreg</span>(<span class="fu">as.vector</span>(<span class="fu">t</span>(za)), <span class="at">start =</span> <span class="fu">yearqtr</span>(<span class="fu">start</span>(za)), <span class="at">freq =</span> <span class="dv">4</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>zq</span></code></pre></div>
+<pre><code>## 1992 Q1 1992 Q2 1992 Q3 1992 Q4 1993 Q1 1993 Q2 1993 Q3 1993 Q4 1994 Q1 1994 Q2 
+##     566     443     329     341     344     212     133     112     252     252 
+## 1994 Q3 1994 Q4 
+##     199     207</code></pre>
+</div>
+<div id="further-comments" class="section level2">
+<h2>Further comments</h2>
+<p>Multiple files can be read and subsequently merged.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a>filenames <span class="ot">&lt;-</span> <span class="fu">dir</span>(<span class="at">pattern =</span> <span class="st">&quot;csv$&quot;</span>) </span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">read.zoo</span>(filenames, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">fixed =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

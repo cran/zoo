@@ -26,6 +26,8 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 
   ## if time index appears to be already processed, use FUN = identity
   if (is.data.frame(file) && 
+      !identical(index.column, 0) &&
+      !identical(index.column, 0L) &&
       length(index.column) == 1 && 
       !is.character(rval[[index.column]]) &&
       !is.factor(rval[[index.column]]) &&
@@ -35,6 +37,8 @@ read.zoo <- function(file, format = "", tz = "", FUN = NULL,
 
   ## if time index is POSIXlt it is coerced to POSIXct
   if (is.data.frame(file) && 
+      !identical(index.column, 0) &&
+      !identical(index.column, 0L) &&
       length(index.column) == 1 && 
       inherits(rval[[index.column]], "POSIXlt")) rval[[index.column]] <- as.POSIXct(rval[[index.column]])
 

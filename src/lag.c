@@ -32,20 +32,19 @@ Rprintf("zoo_lag\n");
 #endif
   SEXP result;
   R_xlen_t i,j;
-  double *result_real=NULL;
-  int    *result_int=NULL;
 
-  int k=INTEGER(_k)[0] * -1; /* -1 is zoo convention */
-  int k_positive = (k > 0) ? 1 : 0;
+  int k = asInteger(_k) * -1; /* -1 is zoo convention */
   R_xlen_t nr = nrows(x);
   R_xlen_t nc = ncols(x);
   int P=0;
-  int PAD = INTEGER(coerceVector(_pad,INTSXP))[0];
+  int PAD = asInteger(_pad);
 
-  if(k > nr)
-    error("abs(k) must be less than nrow(x)");
+  R_xlen_t k_abs = abs(k);                     /* magnitude of the lag */
+  R_xlen_t k_src = (k > 0) ? 0 : k_abs;        /* offset into x, "nrr stride" units */
+  R_xlen_t k_dst = (k > 0) ? k_abs : 0;        /* offset into result */
+  R_xlen_t k_pad = (k > 0) ? 0 : (nr - k_abs); /* where NA/pad values start */
 
-  if(k < 0 && -1*k > nr)
+  if(k_abs > nr)
     error("abs(k) must be less than nrow(x)");
 
   PROTECT(result = allocVector(TYPEOF(x), 
@@ -55,260 +54,134 @@ Rprintf("zoo_lag\n");
   if(xlength(result) > 0)
     nrr = (R_xlen_t)(xlength(result)/nc);
   else  /* handle zero-length objects */
-    nrr = nr - (PAD ? 0 : abs(k));
+    nrr = nr - (PAD ? 0 : k_abs);
+  R_xlen_t nrk = nrr-k_abs;
 
-  if(k_positive) {
-  switch(TYPEOF(x)) {
-    case REALSXP:
-      result_real = REAL(result);
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++)
-            result_real[i+(j*nrr)] = NA_REAL;
-          memcpy(&REAL(result)[k+(j*nrr)], 
-                 &REAL(x)[(j*nrr)], 
-                 (nrr-k) * sizeof(double)); 
-        } else {
-        memcpy(&REAL(result)[(j*nrr)], 
-               &REAL(x)[(j*nr)], /* original data need the original 'nr' offset */
-               nrr * sizeof(double)); 
-        }
-      }
-      break;
-    case INTSXP:
-      result_int = INTEGER(result);
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++)
-            result_int[i+(j*nrr)] = NA_INTEGER;
-          memcpy(&INTEGER(result)[k+(j*nrr)],
-                 &INTEGER(x)[(j*nrr)],
-                 (nrr-k) * sizeof(int));
-        } else {
-          memcpy(&INTEGER(result)[(j*nrr)],
-                 &INTEGER(x)[(j*nr)],
-                 nrr * sizeof(int));
-        }
-      }
-      break;
-    case LGLSXP:
-      result_int = LOGICAL(result);
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++)
-            result_int[i+(j*nrr)] = NA_INTEGER;
-          memcpy(&LOGICAL(result)[k+(j*nrr)],
-                 &LOGICAL(x)[(j*nrr)],
-                 (nrr-k) * sizeof(int));
-        } else {
-          memcpy(&LOGICAL(result)[(j*nrr)],
-                 &LOGICAL(x)[(j*nr)],
-                 nrr * sizeof(int));
-        }
-      }
-      break;
-    case CPLXSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++) {
-            COMPLEX(result)[i+(j*nrr)].r = NA_REAL;
-            COMPLEX(result)[i+(j*nrr)].i = NA_REAL;
+  switch (TYPEOF(x)) {
+      case REALSXP:
+          for (j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      REAL(result)[k_pad+i+(j*nrr)] = NA_REAL;
+                  }
+                  memcpy(&REAL(result)[k_dst+(j*nrr)], &REAL(x)[k_src+(j*nrr)], sizeof(double) * nrk);
+              } else {
+                  memcpy(&REAL(result)[k_dst+(j*nrr)], &REAL(x)[k_src+(j*nr )], sizeof(double) * nrr);
+              }
           }
-          memcpy(&COMPLEX(result)[k+(j*nrr)],
-                 &COMPLEX(x)[(j*nrr)],
-                 (nrr-k) * sizeof(Rcomplex));
-        } else {
-          memcpy(&COMPLEX(result)[(j*nrr)],
-                 &COMPLEX(x)[(j*nr)],
-                 nrr * sizeof(Rcomplex));
-        }
-      }
-      break;
-    case RAWSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++)
-            RAW(result)[i+(j*nrr)] = (Rbyte) 0;
-          memcpy(&RAW(result)[k+(j*nrr)],
-                 &RAW(x)[(j*nrr)],
-                 (nrr-k) * sizeof(Rbyte));
-        } else {
-          memcpy(&RAW(result)[(j*nrr)],
-                 &RAW(x)[(j*nr)],
-                 nrr * sizeof(Rbyte));
-        }
-      }
-      break;
-    case STRSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = 0; i < k; i++)
-            SET_STRING_ELT(result, i+(j*nrr), NA_STRING);
-          for(i = 0; i < nrr-k; i++) 
-            SET_STRING_ELT(result, k+i+j*nrr, STRING_ELT(x, i+j*nrr));
-        } else {
-          for(i = 0; i < nrr; i++) 
-            SET_STRING_ELT(result, i+j*nrr, STRING_ELT(x, i+j*nr));
-        }
-      }
-      break;
-    default:
-      error("unsupported type");
-      break;
-  }
-  } else
-  if(!k_positive) {
-  k = abs(k);
-  switch(TYPEOF(x)) {
-    case REALSXP:
-      result_real = REAL(result);
-      for(j =0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++)
-            result_real[i+(j*nrr)] = NA_REAL;
-          memcpy(&REAL(result)[(j*nrr)], 
-                 &REAL(x)[k+(j*nrr)], 
-                 (nrr-k) * sizeof(double));
-        } else {
-        memcpy(&REAL(result)[(j*nrr)],
-               &REAL(x)[k+(j*nr)],
-               nrr * sizeof(double));
-        }
-      }
-      break;
-    case INTSXP:
-      result_int = INTEGER(result);
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++)
-            result_int[i+(j*nrr)] = NA_INTEGER;
-          memcpy(&INTEGER(result)[(j*nrr)],
-                 &INTEGER(x)[k+(j*nrr)],
-                 (nrr-k) * sizeof(int));
-        } else {
-          memcpy(&INTEGER(result)[(j*nrr)],
-                 &INTEGER(x)[k+(j*nr)],
-                 nrr * sizeof(int));
-        }
-      }
-      break;
-    case LGLSXP:
-      result_int = LOGICAL(result);
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++)
-            result_int[i+(j*nrr)] = NA_INTEGER;
-          memcpy(&LOGICAL(result)[(j*nrr)],
-                 &LOGICAL(x)[k+(j*nrr)],
-                 (nrr-k) * sizeof(int));
-        } else {
-          memcpy(&LOGICAL(result)[(j*nrr)],
-                 &LOGICAL(x)[k+(j*nr)],
-                 nrr * sizeof(int));
-        }
-      }
-      break;
-    case CPLXSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++) {
-            COMPLEX(result)[i+(j*nrr)].r = NA_REAL;
-            COMPLEX(result)[i+(j*nrr)].i = NA_REAL;
+          break;
+      case INTSXP:
+          for (j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      INTEGER(result)[k_pad+i+(j*nrr)] = NA_INTEGER;
+                  }
+                  memcpy(&INTEGER(result)[k_dst+(j*nrr)], &INTEGER(x)[k_src+(j*nrr)], sizeof(int) * nrk);
+              } else {
+                  memcpy(&INTEGER(result)[k_dst+(j*nrr)], &INTEGER(x)[k_src+(j*nr )], sizeof(int) * nrr);
+              }
           }
-          memcpy(&COMPLEX(result)[(j*nrr)],
-                 &COMPLEX(x)[k+(j*nrr)],
-                 (nrr-k) * sizeof(Rcomplex));
-        } else {
-          memcpy(&COMPLEX(result)[(j*nrr)],
-                 &COMPLEX(x)[k+(j*nr)],
-                 nrr * sizeof(Rcomplex));
-        }
-      }
-      break;
-    case RAWSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++)
-            RAW(result)[i+(j*nrr)] = (Rbyte) 0;
-          memcpy(&RAW(result)[(j*nrr)],
-                 &RAW(x)[k+(j*nrr)],
-                 (nrr-k) * sizeof(Rbyte));
-        } else {
-          memcpy(&RAW(result)[(j*nrr)],
-                 &RAW(x)[k+(j*nr)],
-                 nrr * sizeof(Rbyte));
-        }
-      }
-      break;
-    case STRSXP:
-      for(j = 0; j < nc; j++) {
-        if(PAD) {
-          for(i = nr-k; i < nr; i++)
-            SET_STRING_ELT(result, i+(j*nrr), NA_STRING);
-          for(i = 0; i < nrr-k; i++)
-            SET_STRING_ELT(result, i+(j*nrr), STRING_ELT(x, k+i+(j*nrr)));
-        } else {
-          for(i = 0; i < nr-k; i++)
-            SET_STRING_ELT(result, i+(j*nrr), STRING_ELT(x, k+i+(j*nr)));
-        }
-      }
-      break;
-    default:
-      error("unsupported type");
-      break;
-  }
+          break;
+      case LGLSXP:
+          for (j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      LOGICAL(result)[k_pad+i+(j*nrr)] = NA_LOGICAL;
+                  }
+                  memcpy(&LOGICAL(result)[k_dst+(j*nrr)], &LOGICAL(x)[k_src+(j*nrr)], sizeof(int) * nrk);
+              } else {
+                  memcpy(&LOGICAL(result)[k_dst+(j*nrr)], &LOGICAL(x)[k_src+(j*nr )], sizeof(int) * nrr);
+              }
+          }
+          break;
+      case CPLXSXP:
+          for (j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      COMPLEX(result)[k_pad+i+(j*nrr)].r = NA_REAL;
+                      COMPLEX(result)[k_pad+i+(j*nrr)].i = NA_REAL;
+                  }
+                  memcpy(&COMPLEX(result)[k_dst+(j*nrr)], &COMPLEX(x)[k_src+(j*nrr)], sizeof(Rcomplex) * nrk);
+              } else {
+                  memcpy(&COMPLEX(result)[k_dst+(j*nrr)], &COMPLEX(x)[k_src+(j*nr )], sizeof(Rcomplex) * nrr);
+              }
+          }
+          break;
+      case RAWSXP:
+          for(j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      RAW(result)[k_pad+i+(j*nrr)] = (Rbyte)0;
+                  }
+                  memcpy(&RAW(result)[k_dst+(j*nrr)], &RAW(x)[k_src+(j*nrr)], sizeof(Rbyte) * nrk);
+              } else {
+                  memcpy(&RAW(result)[k_dst+(j*nrr)], &RAW(x)[k_src+(j*nr )], sizeof(Rbyte) * nrr);
+              }
+          }
+          break;
+      case STRSXP:
+          for(j = 0; j < nc; j++) {
+              if (PAD) {
+                  for (i = 0; i < k_abs; i++) {
+                      SET_STRING_ELT(result, k_pad+i+(j*nrr), NA_STRING);
+                  }
+                  for (i = 0; i < nrr-k_abs; i++) {
+                      SET_STRING_ELT(result, k_dst+i+(j*nrr), STRING_ELT(x, i+(j*nrr)));
+                  }
+              } else {
+                  for(i = 0; i < nrr; i++) {
+                      SET_STRING_ELT(result, k_dst+i+(j*nrr), STRING_ELT(x, i+(j*nr )));
+                  }
+              }
+          }
+          break;
+      default:
+          error("unsupported type");
+          break;
   }
 
-  copyMostAttrib(x,result);
+  copyMostAttrib(x, result);  /* copy all attr *exept* names, dim, dimnames */
   if(!PAD) {
-    // likely unneeded as copyMostAttrib will cover
-  //  setAttrib(result, install("index"), getAttrib(x, install("index")));
-  //} else {
-    SEXP index, newindex;
-    PROTECT(index = getAttrib(x, install("index"))); P++;
-    if(isS4(index)) {
+    /* need to shorten the index because the result was not padded with NA */
+    SEXP idx_x    = PROTECT(getAttrib(x, zoo_symbol_index)); P++;
+    SEXP idx_data = idx_x;
+    if (isS4(idx_x)) {
       /* should make this
          1) generic for any S4 object if possible
          2) test for timeDate as this is important
       */
-      if(STRING_ELT(getAttrib(index, R_ClassSymbol),0)!=mkChar("timeDate"))
+      SEXP idx_class = PROTECT(getAttrib(idx_x, R_ClassSymbol)); P++;
+      if (STRING_ELT(idx_class, 0) != mkChar("timeDate"))
         error("'S4' objects must be of class 'timeDate'");
-      index = GET_SLOT(index, install("Data"));
+      idx_data = PROTECT(GET_SLOT(idx_x, zoo_symbol_timeDate_Data)); P++;
     }
-    PROTECT(newindex = allocVector(TYPEOF(index), nrr)); P++;
-    switch(TYPEOF(index)) {
+    int idx_type = TYPEOF(idx_data);
+    SEXP newindex = PROTECT(allocVector(idx_type, nrr)); P++;
+    R_xlen_t k_idx = (k > 0) ? k_abs : 0;
+    switch (idx_type) {
       case REALSXP:
-        if(k_positive) {
-          memcpy(REAL(newindex), &REAL(index)[k], nrr * sizeof(double));
-        } else {
-          memcpy(REAL(newindex), REAL(index), nrr * sizeof(double));
-        }
+        memcpy(REAL(newindex), &REAL(idx_data)[k_idx], nrr * sizeof(double));
         break;
       case INTSXP:
-        if(k_positive) {
-        memcpy(INTEGER(newindex), &INTEGER(index)[k], nrr * sizeof(int));
-        } else {
-        memcpy(INTEGER(newindex), INTEGER(index), nrr * sizeof(int));
-        }
+        memcpy(INTEGER(newindex), &INTEGER(idx_data)[k_idx], nrr * sizeof(int));
         break;
       default:
+          error("unsupported index type");
         break;
     }
-    if(isS4(getAttrib(x, install("index")))) {
-      /* need to assure that this is timeDate */
-      SEXP tmp = PROTECT(getAttrib(x, install("index"))); P++;
+    if (isS4(idx_x)) {
       SEXP class = PROTECT(MAKE_CLASS("timeDate")); P++;
       SEXP timeDate = PROTECT(NEW_OBJECT(class)); P++;
-      copyMostAttrib(index,newindex);
-      SET_SLOT(timeDate,install("Data"),newindex);
-      SEXP format = PROTECT(GET_SLOT(tmp, install("format"))); P++;
-      SET_SLOT(timeDate,install("format"), format);
-      SEXP finCenter = PROTECT(GET_SLOT(tmp, install("FinCenter"))); P++;
-      SET_SLOT(timeDate,install("FinCenter"), finCenter);
-      setAttrib(result, install("index"), timeDate);
+      copyMostAttrib(idx_data, newindex);
+      SET_SLOT(timeDate, zoo_symbol_timeDate_Data,newindex);
+      SEXP format = PROTECT(GET_SLOT(idx_x, zoo_symbol_timeDate_format)); P++;
+      SET_SLOT(timeDate, zoo_symbol_timeDate_format, format);
+      SEXP finCenter = PROTECT(GET_SLOT(idx_x, zoo_symbol_timeDate_FinCenter)); P++;
+      SET_SLOT(timeDate, zoo_symbol_timeDate_FinCenter, finCenter);
+      setAttrib(result, zoo_symbol_index, timeDate);
     } else {
-      copyMostAttrib(index, newindex);
-      setAttrib(result, install("index"), newindex);
+      copyMostAttrib(idx_data, newindex);
+      setAttrib(result, zoo_symbol_index, newindex);
     }
   } 
 
@@ -327,7 +200,7 @@ Rprintf("zoo_lag\n");
 }
 
 SEXP zoo_lagts (SEXP x, SEXP _k, SEXP _pad) {
-  int k_pos = INTEGER(_k)[0]*-1; /* change zoo default negative handling */
+  int k_pos = asInteger(_k)*-1; /* change zoo default negative handling */
   SEXP k = PROTECT(ScalarInteger(k_pos));
   SEXP ans = zoo_lag (x, k, _pad);
   UNPROTECT(1);

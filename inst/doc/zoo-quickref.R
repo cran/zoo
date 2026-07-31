@@ -1,8 +1,4 @@
-### R code from vignette source 'zoo-quickref.Rnw'
-
-###################################################
-### code chunk number 1: preliminaries
-###################################################
+## ----preliminaries, include=FALSE---------------------------------------------
 library("zoo")
 library("tseries")
 online <- FALSE ## if set to FALSE the local copy of
@@ -11,131 +7,80 @@ options(prompt = "R> ")
 Sys.setenv(TZ = "GMT")
 suppressWarnings(RNGversion("3.5.0"))
 
+## ----setwd, eval=FALSE--------------------------------------------------------
+# library("zoo")
+# setwd(file.path(system.file(package = "zoo"), "doc"))
 
-###################################################
-### code chunk number 2: read.zoo
-###################################################
+## ----read.zoo-----------------------------------------------------------------
 Sys.setlocale("LC_TIME", "C")
 inrusd <- read.zoo("demo1.txt", sep = "|", format="%d %b %Y")
 
-
-###################################################
-### code chunk number 3: read.table
-###################################################
+## ----read.table---------------------------------------------------------------
 tmp <- read.table("demo2.txt", sep = ",")
 z <- zoo(tmp[, 3:4], as.Date(as.character(tmp[, 2]), format="%d %b %Y"))
 colnames(z) <- c("Nifty", "Junior")
 
-
-###################################################
-### code chunk number 4: extract dates
-###################################################
+## ----extract dates------------------------------------------------------------
 time(z)
 
-
-###################################################
-### code chunk number 5: start and end
-###################################################
+## ----start and end------------------------------------------------------------
 start(z)
 end(inrusd)
 
-
-###################################################
-### code chunk number 6: convert to plain matrix
-###################################################
+## ----convert to plain matrix--------------------------------------------------
 plain <- coredata(z)
 str(plain)
 
-
-###################################################
-### code chunk number 7: intersection
-###################################################
+## ----intersection-------------------------------------------------------------
 m <- merge(inrusd, z, all = FALSE)
 
-
-###################################################
-### code chunk number 8: union
-###################################################
+## ----union--------------------------------------------------------------------
 m <- merge(inrusd, z)
 
-
-###################################################
-### code chunk number 9: merge with lag
-###################################################
+## ----merge with lag-----------------------------------------------------------
 merge(inrusd, lag(inrusd, -1))
 
-
-###################################################
-### code chunk number 10: plotting1
-###################################################
+## ----plotting1,fig.height=8,fig.width=6---------------------------------------
 plot(m)
 
-
-###################################################
-### code chunk number 11: plotting2
-###################################################
+## ----plotting2,fig.height=4,fig.width=6---------------------------------------
 plot(m[, 2:3], plot.type = "single", col = c("red", "blue"), lwd = 2)
 
+## ----tinyplot, eval=requireNamespace("tinyplot", quietly = TRUE), fig.height=6, fig.width=6----
+library("tinyplot")
+tinyplot(z, facet = Series ~ 1, theme = "clean2",
+  palette = "Dark 3", lwd = 2, legend = FALSE)
 
-###################################################
-### code chunk number 12: select range of dates
-###################################################
+## ----select range of dates----------------------------------------------------
 window(z, start = as.Date("2005-02-15"), end = as.Date("2005-02-28"))
 
-
-###################################################
-### code chunk number 13: select one date
-###################################################
+## ----select one date----------------------------------------------------------
 m[as.Date("2005-03-10")]
 
-
-###################################################
-### code chunk number 14: impute NAs by interpolation
-###################################################
+## ----impute NAs by interpolation----------------------------------------------
 interpolated <- na.approx(m)
 
-
-###################################################
-### code chunk number 15: impute NAs by LOCF
-###################################################
+## ----impute NAs by LOCF-------------------------------------------------------
 m <- na.locf(m)
 m
 
-
-###################################################
-### code chunk number 16: compute returns
-###################################################
+## ----compute returns function-------------------------------------------------
 prices2returns <- function(x) 100*diff(log(x))
 
-
-###################################################
-### code chunk number 17: column-wise returns
-###################################################
+## ----column-wise returns------------------------------------------------------
 r <- prices2returns(m)
 
-
-###################################################
-### code chunk number 18: rolling standard deviations
-###################################################
+## ----rolling standard deviations----------------------------------------------
 rollapply(r, 10, sd)
 
-
-###################################################
-### code chunk number 19: last day of month
-###################################################
+## ----last day of month--------------------------------------------------------
 prices2returns(aggregate(m, as.yearmon, tail, 1))
 
-
-###################################################
-### code chunk number 20: last day of week
-###################################################
+## ----last day of week---------------------------------------------------------
 nextfri <- function(x) 7 * ceiling(as.numeric(x-5+4) / 7) + as.Date(5-4)
 prices2returns(aggregate(na.locf(m), nextfri, tail, 1))
 
-
-###################################################
-### code chunk number 21: four second mark
-###################################################
+## ----four second mark---------------------------------------------------------
 zsec <- structure(1:10, index = structure(c(1234760403.968, 1234760403.969, 
 1234760403.969, 1234760405.029, 1234760405.029, 1234760405.03, 
 1234760405.03, 1234760405.072, 1234760405.073, 1234760405.073
@@ -144,10 +89,7 @@ zsec <- structure(1:10, index = structure(c(1234760403.968, 1234760403.969,
 to4sec <- function(x) as.POSIXct(4*ceiling(as.numeric(x)/4), origin = "1970-01-01")
 aggregate(zsec, to4sec, tail, 1)
 
-
-###################################################
-### code chunk number 22: one second grid
-###################################################
+## ----one second grid----------------------------------------------------------
 # tmp is zsec with time discretized into one second bins
 tmp <- zsec
 st <- start(tmp)
@@ -173,16 +115,10 @@ intraday.discretise <- function(b, Nsec) {
 intraday.discretise(zsec, 1)
 
 
-
-###################################################
-### code chunk number 23: tseries
-###################################################
+## ----tseries------------------------------------------------------------------
 library("tseries")
 
-
-###################################################
-### code chunk number 24: data handling if offline
-###################################################
+## ----data handling if offline, includ=FALSE-----------------------------------
 if(online) {
   msft <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31")
   msft2 <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31",
@@ -192,41 +128,23 @@ if(online) {
   load("msft2004.rda")
 }
 
+## ----get.hist.quote daily series, eval=FALSE----------------------------------
+# msft <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31")
 
-###################################################
-### code chunk number 25: get.hist.quote daily series (eval = FALSE)
-###################################################
-## msft <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31")
+## ----get.hist.quote monthly series, eval=FALSE--------------------------------
+# msft2 <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31",
+#   compression = "m", quote = "Close")
 
-
-###################################################
-### code chunk number 26: get.hist.quote monthly series (eval = FALSE)
-###################################################
-## msft2 <- get.hist.quote(instrument = "MSFT", start = "2004-01-01", end = "2004-12-31",
-##   compression = "m", quote = "Close")
-
-
-###################################################
-### code chunk number 27: change index to yearmon
-###################################################
+## ----change index to yearmon--------------------------------------------------
 time(msft2) <- as.yearmon(time(msft2))
 
-
-###################################################
-### code chunk number 28: compute same series via aggregate
-###################################################
+## ----compute same series via aggregate----------------------------------------
 msft3 <- aggregate(msft[, "Close"], as.yearmon, tail, 1)
 
-
-###################################################
-### code chunk number 29: compute returns
-###################################################
+## ----compute returns----------------------------------------------------------
 r <- prices2returns(msft3)
 
-
-###################################################
-### code chunk number 30: summaries
-###################################################
+## ----summaries----------------------------------------------------------------
 date1 <- seq(as.Date("2001-01-01"), as.Date("2002-12-1"), by = "day")
 len1 <- length(date1)
 set.seed(1) # to make it reproducible
@@ -267,19 +185,12 @@ data1w <- ag(data1, nexttue, c("mean", "sd"))
 head(data1q)
 head(data1w)
 
-
-###################################################
-### code chunk number 31: is.weekend convenience function
-###################################################
+## ----is.weekend convenience function------------------------------------------
 is.weekend <- function(x) ((as.numeric(x)-2) %% 7) < 2
 
-
-###################################################
-### code chunk number 32: is.weekend based on POSIXlt
-###################################################
+## ----is.weekend based on POSIXlt----------------------------------------------
 is.weekend <- function(x) {
   x <- as.POSIXlt(x)
   x$wday > 5 | x$wday < 1
 }
-
 

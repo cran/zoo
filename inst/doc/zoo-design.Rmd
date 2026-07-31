@@ -1,0 +1,84 @@
+---
+title: "zoo Design"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{zoo Design}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{zoo}
+  %\VignetteKeywords{irregular time series, ordered observations, time index}
+  %\VignettePackage{zoo}
+---
+
+This is a set of design principles that - albeit not having been explicitly set out
+initially - have guided the development of the R `zoo` package.
+
+
+## zoo works with any ordered index class
+
+... having the prescribed methods, see [?zoo](https://zeileis.codeberg.page/zoo/man/zoo.html) and
+Zeileis and Grothendieck (2005, _Journal of Statistical Software_, [doi:10.18637/jss.v014.i06](https://doi.org/10.18637/jss.v014.i06)).
+Specific index classes are not hard-coded in functions (with
+a few exceptions necessitated by external interfaces such as reading
+and interfacing with `ts`) but rather all index operations are only done
+via the allowed methods.
+
+
+## zoo is invisible
+
+As far as possible new names (e.g., for functions or methods
+and their arguments) are not introduced.
+New functionality is added as methods to generics from base R
+allowing reuse of those names. When names are added, thought is put
+into the name since `zoo` is so miserly about adding them.  For example,
+the `read.zoo` name is obviously derived from `read.table` and the names
+`na.locf` or `na.approx` are in analogy to other `na.*` functions
+frome base R.
+
+
+## zoo is consistent with base R
+
+The idea is to make the usage of `zoo` completely natural to someone who already has experience with R
+(in particular with the `ts` class).  Certainly, `zoo` contains extensions
+to base R, but they should be as consistent as possible and have a natural
+"look and feel".
+
+
+## zoo is infrastructure
+
+`zoo` tries to do basic things well, e.g.,
+data reading, handling, aggregation, transformation, etc. However, it does not
+provide time series modeling functionality - `zoo` rather encourages add-on
+packages. A list of current packages employing `zoo` can be found on the Comprehensive
+R Archive Network (CRAN) and in the `zoo` FAQ, see `vignette("zoo-faq", package = "zoo")`.
+
+
+## zoo interfaces to all other time series packages
+
+... on CRAN (or at least all of the more popular ones and some of the relatively unknown
+ones as well). Thus, time series information can be passed back and forth relatively easily
+between `zoo` and other time series classes and hence combinations of various
+functionalities are facilitated.
+
+
+## zoo includes extensive documentation
+
+In addition to the standard `help()`
+pages, `zoo` provides a set of vignettes, see `vignette(package = "zoo")` for a list.
+Standard help and vignettes are also available on the project web page at
+<https://zeileis.codeberg.page/zoo/>.
+Furthermore, the `zoo` Development Team members also post frequently
+on StackOverflow and the R mailing lists whose archives hence contain many useful code snippets etc.
+
+
+## zoo long had no bug list since all bugs are fixed (almost) immediately
+
+Over the years, `zoo` has grown into a mature package. Nevertheless, there are always still bugs
+(or border cases that are not handled well). When reported to the development team,
+these typically get fixed quickly. Reports can be made via e-mail to the maintainer
+list or reported in the code repository at Codeberg.org: <https://codeberg.org/zeileis/zoo/issues>.
+
+
+## zoo includes formal regression testing
+
+... using R's own test system (in `zoo/tests/`).
+

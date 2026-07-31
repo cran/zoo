@@ -47,7 +47,7 @@ as.zoo.mcmc <- function(x, ...)
 }
 
 as.zoo.timeSeries <- function(x, ...) {
-  zoo(as.matrix(x), timeSeries::time(x), ...)  
+  zoo(as.matrix(x), time(x), ...)  
 }
 
 as.zoo.xts <- function(x, ...) {

@@ -3,7 +3,7 @@
 
 \title{Plotting zoo Objects with tinyplot}
 
-\details{
+\description{
   Convenience interface for visualizing zoo objects with tinyplot.
 }
 
@@ -20,7 +20,7 @@
   \item{type, facet.args, ylab, \dots}{further arguments passed to \code{tinyplot}.}
 }
 
-\description{
+\details{
   The approach is similar to that in \code{\link{autoplot.zoo}}
   (based on ggplot2) and uses \code{\link{fortify.zoo}} (with \code{melt = TRUE})
   to convert the zoo object into a data frame and then uses a suitable

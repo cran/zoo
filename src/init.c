@@ -23,6 +23,14 @@
 #include <zoo.h>
 #include <R_ext/Rdynload.h>
 
+/* define 'symbol' variables that are declared extern in zoo.h */
+SEXP zoo_symbol_index;
+SEXP zoo_symbol_oclass;
+SEXP zoo_symbol_frequency;
+SEXP zoo_symbol_timeDate_format;
+SEXP zoo_symbol_timeDate_Data;
+SEXP zoo_symbol_timeDate_FinCenter;
+
 static const
 R_CallMethodDef callMethods[] = {
   {"zoo_lag",               (DL_FUNC) &zoo_lag,                 3},
@@ -30,8 +38,28 @@ R_CallMethodDef callMethods[] = {
   {NULL,                    NULL,                               0}
 };
 
+/*
+ * Taken from R/src/main/names.c
+ *   "Set up a set of globals so that a symbol table search can be
+ *    avoided when matching something like dim or dimnames."
+ *
+ * This also prevents flags from rchk's maacheck (Multiple-Allocating-
+ * Arguments) tool for calls like:
+ *   setAttrib(result, xts_IndexSymbol, getAttrib(x, xts_IndexSymbol));
+ */
+static void SymbolShortcuts(void)
+{
+  zoo_symbol_index = install("index");
+  zoo_symbol_oclass = install("oclass");
+  zoo_symbol_frequency = install("frequency");
+  zoo_symbol_timeDate_format = install("format");
+  zoo_symbol_timeDate_Data = install("Data");
+  zoo_symbol_timeDate_FinCenter = install("FinCenter");
+}
+
 void R_init_zoo(DllInfo *info)
 {
+  SymbolShortcuts();
   R_registerRoutines(info,
                      NULL,
                      callMethods,

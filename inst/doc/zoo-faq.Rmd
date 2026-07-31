@@ -1,0 +1,582 @@
+---
+title: "zoo FAQ"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{zoo FAQ}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{zoo,chron,timeDate,timeSeries}
+  %\VignetteKeywords{irregular time series, ordered observations, time index, daily data, weekly data, returns}
+  %\VignettePackage{zoo}
+---
+
+```{r preliminaries, include=FALSE}
+library("zoo")
+Sys.setenv(TZ = "GMT")
+suppressWarnings(RNGversion("3.5.0"))
+```
+
+## 1. I know that duplicate times are not allowed but my data has them. What do I do?
+
+`zoo` objects should not normally contain duplicate times.
+If you try to create such an object using
+`zoo` or `read.zoo` then warnings will be issued but
+the objects will be created.   The user then has the opportunity
+to fix them up -- typically by using `aggregate.zoo`
+or `duplicated`.  
+
+Merging is not well defined for duplicate series with duplicate
+times and rather than give an undesired or unexpected result,
+`merge.zoo` issues an error message if it encounters
+such illegal objects.   Since `merge.zoo`
+is the workhorse behind many `zoo` functions, a significant
+portion of `zoo` will not accept
+duplicates among the times.  
+
+Typically duplicates are eliminated by
+(1) averaging over them, (2) taking the last among each run of duplicates
+or (3) interpolating the duplicates and deleting ones on the end that
+cannot be interpolated.  These three approaches are shown here
+using the `aggregate.zoo` function.  Another way to do this
+is to use the `aggregate` argument of `read.zoo` which 
+will aggregate the zoo object read in by `read.zoo` all in one step.
+
+Note that in the example code below that `identity` is the identity 
+function (i.e. it just returns its argument).  It 
+is an R core function:
+
+A `"zoo"` series with duplicated indexes
+```{r duplicates1}
+z <- suppressWarnings(zoo(1:8, c(1, 2, 2, 2, 3, 4, 5, 5)))
+z
+```
+Fix it up by averaging duplicates:
+```{r duplicates2}
+aggregate(z, identity, mean)
+```
+Or, fix it up by taking last in each set of duplicates:
+```{r duplicates3}
+aggregate(z, identity, tail, 1)
+```
+Fix it up via interpolation of duplicate times
+```{r duplicates4}
+time(z) <- na.approx(ifelse(duplicated(time(z)), NA, time(z)), na.rm = FALSE)
+```
+If there is a run of equal times at end they
+wind up as `NA`s and we cannot have `NA` times.
+```{r duplicates5}
+z[!is.na(time(z))]
+```
+
+The `read.zoo` command has an `aggregate` argument that
+supports arbitrary summarization.  For example, in the following
+we take the last value among any duplicate times and sum the volumes
+among all duplicate times.  We do this by reading the data twice,
+once for each aggregate function.  In this example, the first three
+columns are junk that we wish to suppress which is why we specified
+`colClasses`; however, in most cases that argument would not
+be necessary.
+```{r duplicates, keep.source = TRUE}
+Lines <- "1|BHARTIARTL|EQ|18:15:05|600|1
+2|BHARTIARTL|EQ|18:15:05|600|99
+3|GLENMARK|EQ|18:15:05|238.1|5
+4|HINDALCO|EQ|18:15:05|43.75|100
+5|BHARTIARTL|EQ|18:15:05|600|1
+6|BHEL|EQ|18:15:05|1100|11
+7|HINDALCO|EQ|18:15:06|43.2|1
+8|CHAMBLFERT|EQ|18:15:06|46|10
+9|CHAMBLFERT|EQ|18:15:06|46|90
+10|BAJAUTOFIN|EQ|18:15:06|80|100"
+
+library("zoo")
+library("chron")
+
+tail1 <- function(x) tail(x, 1)
+cls <- c("NULL", "NULL", "NULL", "character", "numeric", "numeric")
+nms <- c("", "", "", "time", "value", "volume")
+
+z <- read.zoo(text = Lines, aggregate = tail1,
+  FUN = times, sep = "|", colClasses = cls, col.names = nms)
+
+z2 <- read.zoo(text = Lines, aggregate = sum,
+  FUN = times, sep = "|", colClasses = cls, col.names = nms)
+
+z$volume <- z2$volume
+z
+```
+
+If the reason for the duplicate times is that the data is stored in long
+format then use `read.zoo` (particlarly the `split` argument)
+to convert it to wide format.  Wide format is typically a time series
+whereas long format is not so wide format is the suitable one for zoo.
+
+```{r readsplit, source = TRUE}
+Lines <- "Date Stock Price
+2000-01-01 IBM 10
+2000-01-02 IBM 11
+2000-01-01 ORCL 12
+2000-01-02 ORCL 13"
+
+stocks <- read.zoo(text = Lines, header = TRUE, split = "Stock")
+stocks
+```
+
+
+## 2. When I try to specify a log axis to `plot.zoo` a warning is issued.  What is wrong?
+
+Arguments that are part of `...` are passed to the `panel` 
+function and
+the default `panel` function, `lines`, does not accept `log`.  
+Either 
+ignore the warning, use `suppressWarnings` 
+(see `?suppressWarnings`) or create
+your own panel function which excludes the `log`:
+
+```{r log-plot, fig.height=5, fig.width=5}
+z <- zoo(1:100)
+plot(z, log = "y", panel = function(..., log) lines(...))
+```
+
+
+## 3. How do I create right and a left vertical axes in `plot.zoo`?
+
+The following shows an example of creating a plot containing a single
+panel and both left and right axes.  
+
+```{r plot-axes, fig.height=5, fig.width=5}
+set.seed(1)
+z.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
+z <- zoo(cbind(left = rnorm(5), right = rnorm(5, sd = 0.2)), z.Date)
+
+plot(z[,1], xlab = "Time", ylab = "")
+opar <- par(usr = c(par("usr")[1:2], range(z[,2])))
+lines(z[,2], lty = 2)
+
+axis(side = 4)
+legend("bottomright", lty = 1:2, legend = colnames(z), bty="n")
+par(opar)
+```
+
+
+## 4. I have data frame with both numeric and factor columns.  How do I convert that to a `"zoo"` object?
+
+A `"zoo"` object may be (1) a numeric vector, (2) a numeric matrix or 
+(3) a factor but may not contain both a numeric vector and factor.  
+The underlying reason for this constraint is that `"zoo"` was
+intended to generalize R's `"ts"` class, which is also based on
+matrices, to irregularly spaced series with an arbitrary index class.
+The main reason to stick to matrices is that operations on matrices in
+R are much faster than on data frames.
+
+If you have a data frame with both numeric and factor variables that you want to
+convert to `"zoo"`, you can do one of the following.
+
+Use two `"zoo"` variables instead:
+
+```{r factor1}
+DF <- data.frame(time = 1:4, x = 1:4, f = factor(letters[c(1, 1, 2, 2)]))
+zx <- zoo(DF$x, DF$time)
+zf <- zoo(DF$f, DF$time)
+```
+
+These could also be held in a `"data.frame"` again:
+
+```{r factor2}
+DF2 <- data.frame(x = zx, f = zf)
+```
+
+Or convert the factor to numeric and create a single `"zoo"` series:
+
+```{r factor3}
+z <- zoo(data.matrix(DF[-1]), DF$time)
+```
+
+
+## 5. Why does lag give slightly different results on a `"zoo"` and a `"zooreg"` series which are otherwise the same?
+
+To be definite let us consider the following examples, noting how 
+both `lag` and `diff` give a different answer with the same 
+input except its class is `"zoo"` in one case and `"zooreg"` in 
+another:
+
+```{r lags}
+z <- zoo(11:15, as.Date("2008-01-01") + c(-4, 1, 2, 3, 6))
+zr <- as.zooreg(z)
+
+lag(z)
+lag(zr)
+
+diff(log(z))
+diff(log(zr))
+```
+
+`lag.zoo` and `lag.zooreg` work differently.  For `"zoo"`
+objects the lagged version is obtained by moving values 
+to the adjacent time point that exists in the series but for `"zooreg"` 
+objects the time is lagged by `deltat`, the time between adjacent
+regular times.
+
+A key implication is that `"zooreg"` can lag a point to a time point
+that did not previously exist in the series and, in particular, can lag
+a series outside of the original time range whereas that is not possible
+in a `"zoo"` series.
+
+Note that `lag.zoo` has an `na.pad=` argument which in some
+cases may be what is being sought here.
+
+The difference between `diff.zoo` and `diff.zooreg` stems from
+the fact that `diff(x)` is defined in terms of `lag` like
+this: `x-lag(x,-1)`.
+
+
+## 6. How do I subtract the mean of each month from a `"zoo"` series?
+
+Suppose we have a daily series.
+To subtract the mean of Jan 2007 from each day in that month,
+subtract the mean of Feb 2007 from each day in that month, etc.
+try this:
+
+```{r subtract-monthly-means}
+set.seed(123)
+z <- zoo(rnorm(100), as.Date("2007-01-01") + seq(0, by = 10, length = 100))
+z.demean1 <- z - ave(z, as.yearmon(time(z)))
+```
+
+This first generates some artificial data and then employs `ave` to compute
+monthly means.
+
+To subtract the mean of all Januaries from each January, etc.
+try this:
+
+```{r subtract-monthly-means2}
+z.demean2 <- z - ave(z, format(time(z), "%m"))
+```
+
+
+## 7. How do I create a monthly series but still keep track of the dates?
+
+Create a S3 subclass of `"yearmon"` called `"yearmon2"` that 
+stores the dates as names on the time vector.  It will be sufficient to create
+an `as.yearmon2` generic together with an
+`as.yearmon2.Date` methods as well as the inverse:
+`as.Date.yearmon2`.
+
+```{r yearmon2}
+as.yearmon2 <- function(x, ...) UseMethod("as.yearmon2")
+as.yearmon2.Date <- function(x, ...) {
+  y <- as.yearmon(with(as.POSIXlt(x, tz = "GMT"), 1900 + year + mon/12))
+  names(y) <- x
+  structure(y, class = c("yearmon2", class(y)))
+}
+```
+
+`as.Date.yearmon2` is inverse of `as.yearmon2.Date`
+
+```{r yearmon2-inverse}
+as.Date.yearmon2 <- function(x, frac = 0, ...) {
+  if (!is.null(names(x))) return(as.Date(names(x)))
+  x <- unclass(x)
+  year <- floor(x + .001)
+  month <- floor(12 * (x - year) + 1 + .5 + .001)
+  dd.start <- as.Date(paste(year, month, 1, sep = "-")) 
+  dd.end <- dd.start + 32 - as.numeric(format(dd.start + 32, "%d"))
+  as.Date((1-frac) * as.numeric(dd.start) + frac * as.numeric(dd.end),
+    origin = "1970-01-01")
+}
+```
+
+This new class will act the same as `"yearmon"` 
+stores and allows recovery of the dates using `as.Date` and
+`aggregate.zoo`. 
+
+```{r yearmon2-example}
+dd <- seq(as.Date("2000-01-01"), length = 5, by = 32)
+z <- zoo(1:5, as.yearmon2(dd))
+z
+aggregate(z, as.Date, identity) 
+```
+
+
+## 8. How are axes added to a plot created using `plot.zoo`?
+
+On single panel plots `axis` or `Axis` can be used just as with any 
+classic graphics plot in R.
+
+The following example adds custom axis for single panel plot. 
+It labels months but uses the larger year for January.
+Months, quarters and years should have successively larger ticks.
+
+```{r single-panel, fig.height=5, fig.width=5}
+z <- zoo(0:500, as.Date(0:500))
+plot(z, xaxt = "n")
+tt <- time(z)
+m <- unique(as.Date(as.yearmon(tt)))
+jan <- format(m, "%m") == "01"
+mlab <- substr(months(m[!jan]), 1, 1)
+axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+
+abline(v = m, col = grey(0.8), lty = 2)
+```
+
+A multivariate series can either be generated as (1) multiple single panel
+plots:
+
+```{r multiplesingleplot, fig.height=9, fig.width=9}
+z3 <- cbind(z1 = z, z2 = 2*z, z3 = 3*z)
+opar <- par(mfrow = c(2, 2))
+tt <- time(z)
+m <- unique(as.Date(as.yearmon(tt)))
+jan <- format(m, "%m") == "01"
+mlab <- substr(months(m[!jan]), 1, 1)
+for(i in 1:ncol(z3)) {
+  plot(z3[,i], xaxt = "n", ylab = colnames(z3)[i], ylim = range(z3))
+  axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+  axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+  axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+}
+par(opar)
+```
+
+or (2) as a multipanel plot.  In this case any custom axis must be
+placed in a panel function.
+
+```{r multipanelplot, fig.height=9, fig.width=9}
+plot(z3, screen = 1:3, xaxt = "n", nc = 2, ylim = range(z3),
+  panel = function(...) {
+    lines(...)
+    panel.number <- parent.frame()$panel.number
+    nser <- parent.frame()$nser
+    # place axis on bottom panel of each column only
+    if (panel.number %% 2 == 0 || panel.number == nser) { 
+      tt <- list(...)[[1]]
+      m <- unique(as.Date(as.yearmon(tt)))
+      jan <- format(m, "%m") == "01"
+      mlab <- substr(months(m[!jan]), 1, 1)
+      axis(side = 1, at = m[!jan], labels = mlab, tcl = -0.3, cex.axis = 0.7)
+      axis(side = 1, at = m[jan], labels = format(m[jan], "%y"), tcl = -0.7)
+      axis(side = 1, at = unique(as.Date(as.yearqtr(tt))), labels = FALSE)
+    }
+})
+```
+
+
+## 9. Why is nothing plotted except axes when I plot an object with many `NA`s?
+
+Isolated points surrounded by `NA` values do not form lines:
+
+```{r plot-with-na, fig.height=5, fig.width=5}
+z <- zoo(c(1, NA, 2, NA, 3))
+plot(z)
+```
+
+So try one of the following:
+
+Plot points rather than lines.
+
+```{r plot-with-na1, fig.height=5, fig.width=5}
+plot(z, type = "p") 
+```
+
+Omit `NA`s and plot that.
+
+```{r plot-with-na2, fig.height=5, fig.width=5}
+plot(na.omit(z))
+```
+
+Fill in the `NA`s with interpolated values.
+
+```{r plot-with-na3, fig.height=5, fig.width=5}
+plot(na.approx(z))
+```
+
+Plot points with lines superimposed.
+
+```{r plot-with-na4, fig.height=5, fig.width=5}
+plot(z, type = "p")
+lines(na.omit(z))
+```
+
+Note that this is not specific to `zoo`.  If we
+plot in R without `zoo` we get the same behavior.
+
+
+## 10. Does `zoo` work with Rmetrics?
+
+Yes.  `timeDate` class objects from the `timeDate` package can be used
+directly as the index of a `zoo` series and `as.timeSeries.zoo` and
+`as.zoo.timeSeries` can convert back and forth between objects of
+class `zoo` and class `timeSeries` from the `timeSeries` package.
+
+```{r Rmetrics, fig.height=5, fig.width=5}
+library("timeDate")
+dts <- c("1989-09-28", "2001-01-15", "2004-08-30", "1990-02-09")
+tms <- c(  "23:12:55",   "10:34:02",   "08:30:00",   "11:18:23")
+td <- timeDate(paste(dts, tms), format = "%Y-%m-%d %H:%M:%S")
+
+library("zoo")
+z <- zoo(1:4, td)
+zz <- merge(z, lag(z))
+plot(zz)
+
+library("timeSeries")
+zz
+as.timeSeries(zz)
+as.zoo(as.timeSeries(zz))
+```
+
+```{r Rmetrics-detach, include=FALSE}
+detach("package:timeSeries")
+detach("package:timeDate")
+```
+
+
+## 11. What other packages use `zoo`?
+
+The CRAN page of the package at <https://CRAN.R-project.org/package=zoo> lists
+all reverse dependencies on CRAN, stratified by _Depends_, _Imports_, _Suggests_,
+_Linking to_, and _Enhances_.
+
+These can also be queried from within R using the `tools` package:
+
+```{r CRAN_package_db, eval=FALSE}
+db <- tools::CRAN_package_db()
+db[db$Package == "zoo", "Reverse depends"]
+```
+
+
+## 12. Why does `ifelse` not work as I expect?
+
+The ordinary R `ifelse` function only works with zoo objects if all three arguments are zoo objects with the same time index.
+`zoo` provides an `ifelse.zoo` function that should be used instead.  The `.zoo` part must be written out since `ifelse` is not generic.
+
+```{r ifelse}
+z <- zoo(c(1, 5, 10, 15))
+# wrong !!!
+ifelse(diff(z) > 4, -z, z)
+
+# ok
+ifelse.zoo(diff(z) > 4, -z, z)
+
+# or if we merge first we can use ordinary ifelse
+xm <- merge(z, dif = diff(z))
+with(xm, ifelse(dif > 4, -z, z))
+
+# or in this case we could also use orindary ifelse if we 
+# use fill = NA to ensure all three have same index
+ifelse(diff(z, fill = NA) > 4, -z, z)
+```
+
+
+## 13. In a series which is regular except for a few missing times or for which we wish to align to a grid how is it filled or aligned?
+
+```{r fillin}
+# April is missing
+zym <- zoo(1:5, as.yearmon("2000-01-01") + c(0, 1, 2, 4, 5)/12)
+g <- seq(start(zym), end(zym), by = 1/12)
+na.locf(zym, xout = g)
+```
+
+A variation of this is where the grid is of a different date/time class than
+the original series.  In that case use the `x` argument.  In the example
+that follows the series `z` is of `"Date"` class whereas the grid
+is of `"yearmon"` class:
+
+```{r fillin-2}
+z <- zoo(1:3, as.Date(c("2000-01-15", "2000-03-3", "2000-04-29")))
+g <- seq(as.yearmon(start(z)), as.yearmon(end(z)), by = 1/12)
+na.locf(z, x = as.yearmon, xout = g)
+```
+
+Here is a `chron` example where we wish to create a 10 minute grid:
+
+```{r fillin-3, keep.source=TRUE}
+Lines <- "Time,Value
+2009-10-09 5:00:00,210
+2009-10-09 5:05:00,207
+2009-10-09 5:17:00,250
+2009-10-09 5:30:00,193
+2009-10-09 5:41:00,205
+2009-10-09 6:00:00,185"
+
+library("chron")
+z <- read.zoo(text = Lines, FUN = as.chron, sep = ",", header = TRUE)
+g <- seq(start(z), end(z), by = times("00:10:00"))
+na.locf(z, xout = g)
+```
+
+
+## What is the difference between `as.Date` in zoo and `as.Date` in the core of R?
+
+zoo has extended the `origin` argument of `as.Date.numeric` so that it
+has a default of `origin="1970-01-01"` (whereas in the core of R it has no 
+default and must always be specified).  
+Note that this is a strictly upwardly compatible 
+extensions to R and any usage of `as.Date` in R will also work in zoo.  
+
+This makes it more convenient to use as.Date as a function input. For example,
+one can shorten this:
+
+```{r date}
+z <- zoo(1:2, c("2000-01-01", "2000-01-02"))
+aggregate(z, function(x) as.Date(x, origin = "1970-01-01"))
+```
+to just this:
+
+```{r date-2}
+aggregate(z, as.Date) 
+```
+
+As another example, one can shorten
+
+```{r date-3}
+Lines <- "2000-01-01 12:00:00,12
+2000-01-02 12:00:00,13"
+read.zoo(text = Lines, sep = ",", FUN = function(x) as.Date(x, origin = "1970-01-01"))
+```
+to this:
+
+```{r date-4}
+read.zoo(text = Lines, sep = ",", FUN = as.Date)
+```
+Note to package developers of packages that use zoo: Other packages that work
+with zoo and define `as.Date` methods
+should either import `zoo` or else should fully export their
+`as.Date` methods in their `NAMESPACE` file, 
+e.g. `export(as.Date.X)`, in order that those methods be registered
+with `zoo`'s `as.Date` generic and not just the 
+`as.Date` generic in `base`.
+
+
+## 15. How can I speed up zoo?
+
+The main area where you might notice slowness is if you do indexing of zoo
+objects in an inner loop.  In that case extract the data and time components
+prior to the loop.  Since most calculations in R use the whole object 
+approach there are relatively few instances of this.  
+
+For example, the following
+shows two ways of performing a rolling sum using only times nearer than 3 before
+the current time.  The second one eliminates the zoo indexing to
+get a speedup:
+
+```{r indexing}
+n <- 50
+z <- zoo(1:n, c(1:3, seq(4, by = 2, length = n-3)))
+
+system.time({
+	zz <- sapply(seq_along(z), 
+		function(i) sum(z[time(z) <= time(z)[i] & time(z) > time(z)[i] - 3]))
+	z1 <- zoo(zz, time(z))
+})
+
+system.time({
+	zc <- coredata(z)
+	tt <- time(z)
+	zr <- sapply(seq_along(zc), 
+		function(i) sum(zc[tt <= tt[i] & tt > tt[i] - 3]))
+	z2 <- zoo(zr, tt)
+})
+
+identical(z1, z2) 
+```

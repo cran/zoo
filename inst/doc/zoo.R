@@ -387,5 +387,3 @@ as.Date(index(zr3), frac = 1)
 ###################################################
 index(zr3) <- as.POSIXct(index(zr3))
 as.irts(zr3)
-
-

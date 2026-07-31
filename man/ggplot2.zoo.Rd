@@ -14,7 +14,7 @@
 
 \title{Convenience Functions for Plotting zoo Objects with ggplot2}
 
-\details{
+\description{
   Convenience interface for visualizing zoo objects with ggplot2.
   \code{autoplot.zoo} uses \code{fortify.zoo} (with \code{melt = TRUE})
   to convert the zoo object into a data frame and then uses a suitable
@@ -66,7 +66,7 @@
   \item{n}{Approximate number of axis ticks.}
 }
 
-\description{
+\details{
   \code{fortify.zoo} takes a zoo object and converts it into a data frame
   (intended for ggplot2). \code{autoplot.zoo} takes a zoo object and returns a
   ggplot2 object. It essentially uses the mapping \code{aes(x = Time, y = Value, group = Series)}

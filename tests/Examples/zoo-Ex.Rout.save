@@ -1005,7 +1005,7 @@ Warning in merge.zoo(x, y1, y2, all = TRUE) :
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: na.StructTS
-> ### Title: Fill NA or specified positions.
+> ### Title: Replace NA by Kalman Filter
 > ### Aliases: na.StructTS na.StructTS.zoo na.StructTS.ts
 > ### Keywords: ts
 > 
@@ -1228,7 +1228,7 @@ detaching ‘package:chron’
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: na.fill
-> ### Title: Fill NA or specified positions.
+> ### Title: Fill NA or Specified Positions
 > ### Aliases: na.fill na.fill0 na.fill.ts na.fill.zoo na.fill.default
 > ### Keywords: ts
 > 

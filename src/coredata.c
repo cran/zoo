@@ -22,6 +22,7 @@
 
 #include <R.h>
 #include <Rinternals.h>
+#include <zoo.h>
 
 SEXP zoo_coredata (SEXP x, SEXP copyAttr)
 {
@@ -71,12 +72,12 @@ SEXP zoo_coredata (SEXP x, SEXP copyAttr)
   }
   if( asLogical(copyAttr)) {
     copyMostAttrib(x,result);
-    SEXP oclass = PROTECT(getAttrib(x, install("oclass"))); P++;
-    setAttrib(result, install("class"), oclass);
+    SEXP oclass = PROTECT(getAttrib(x, zoo_symbol_oclass)); P++;
+    setAttrib(result, R_ClassSymbol, oclass);
   }
-  setAttrib(result, install("index"),     R_NilValue);
-  setAttrib(result, install("oclass"),    R_NilValue);
-  setAttrib(result, install("frequency"), R_NilValue);
+  setAttrib(result, zoo_symbol_index,     R_NilValue);
+  setAttrib(result, zoo_symbol_oclass,    R_NilValue);
+  setAttrib(result, zoo_symbol_frequency, R_NilValue);
 
   UNPROTECT(P);
   return result;

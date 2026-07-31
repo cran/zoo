@@ -1,0 +1,144 @@
+---
+title: "zoo Reference Card"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{zoo Reference Card}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{zoo}
+  %\VignetteKeywords{irregular time series, ordered observations, time index}
+  %\VignettePackage{zoo}
+---
+
+## Creation
+
+* [zoo(x, order.by)](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Creation of a `"zoo"` object from the observations `x` (a vector or a matrix) and an index `order.by` by which the observations are ordered.
+
+  For computations on arbitrary index classes, methods to the following generic functions are assumed to work: combining `c()`, querying length `length()`, subsetting `[`, ordering `ORDER()` and value matching `MATCH()`. For pretty printing an `as.character` and/or `index2char` method might be helpful.
+
+
+## Creation of regular series
+
+* [zoo(x, order.by, freq)](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Works as above but creates a `"zooreg"` object which inherits from `"zoo"` if the frequency `freq` complies with the index `order.by`. An `as.numeric` method has to be available for the index class.
+* [zooreg(x, start, end, freq)](https://zeileis.codeberg.page/zoo/man/zooreg.html):
+  Creates a `"zooreg"` series with a numeric index as above and has (almost) the same interface as `ts()`.                              |
+
+
+## Standard methods
+
+* [plot](https://zeileis.codeberg.page/zoo/man/plot.zoo.html):
+  Plotting. Alternatives:
+  [xyplot](https://zeileis.codeberg.page/zoo/man/xyplot.zoo.html) (`lattice`),
+  [autoplot](https://zeileis.codeberg.page/zoo/man/ggplot2.zoo.html) (`ggplot2`),
+  [tinyplot](https://zeileis.codeberg.page/zoo/man/tinyplot.zoo.html).
+* [lines](https://zeileis.codeberg.page/zoo/man/plot.zoo.html):
+  Adding a `"zoo"` series to a plot.
+* [print](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Printing.
+* [summary](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Summarizing (column-wise).
+* [str](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Displaying structure of `"zoo"` objects.
+* [head, tail](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Head and tail of `"zoo"` objects.
+
+
+## Import/export
+
+* [read.zoo](https://zeileis.codeberg.page/zoo/man/read.zoo.html):
+  Reads `"zoo"` objects from text files, e.g., in CSV format (comma-separated values).
+* [write.zoo](https://zeileis.codeberg.page/zoo/man/read.zoo.html):
+  Writes `"zoo"` objects to text files such, e.g., in CSV format.
+
+
+## Coercion
+
+* [as.zoo](https://zeileis.codeberg.page/zoo/man/as.zoo.html):
+  Coercion to `"zoo"` is available for objects of class `"ts"`, `"xts"`, `"timeSeries"`, and many others.
+* [as.*class*.zoo](https://zeileis.codeberg.page/zoo/man/as.zoo.html):
+  Coercion from `"zoo"` to other classes. Includes methods for *class* in `"matrix"`, `"vector"`, `"data.frame"`, `"list"`, `"ts"`, `"xts"`, `"timeSeries"`, and several others.
+* [is.zoo](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Querying wether an object is of class `"zoo"`.
+
+
+## Merging and binding
+
+* [merge](https://zeileis.codeberg.page/zoo/man/merge.zoo.html):
+  Union, intersection, left join, right join along indexes.
+* [cbind](https://zeileis.codeberg.page/zoo/man/merge.zoo.html):
+  Column binding along the intersection of the index.
+* [c, rbind](https://zeileis.codeberg.page/zoo/man/merge.zoo.html):
+  Combining/row binding (indexes may not overlap).
+* [aggregate](https://zeileis.codeberg.page/zoo/man/aggregate.zoo.html):
+  Compute summary statistics along a coarser grid of indexes
+
+
+## Mathematical operations
+
+* [Ops](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Group generic functions performed along the intersection of indexes.
+* [t](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Transposing (coerces to `"matrix"` before).
+* [cumsum](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Compute (columnwise) cumulative quantities: sums `cumsum()`, products `cumprod()`, maximum `cummax()`, minimum `cummin()`.
+
+
+## Extracting and replacing data and index
+
+* [index, time](https://zeileis.codeberg.page/zoo/man/index.html):
+  Extract the index of a series.
+* [index<-, time<-](https://zeileis.codeberg.page/zoo/man/index.html):
+  Replace the index of a series.
+* [coredata, coredata<-](https://zeileis.codeberg.page/zoo/man/coredata.html):
+  Extract and replace the data associated with a `"zoo"` object.
+* [lag](https://zeileis.codeberg.page/zoo/man/lag.zoo.html):
+  Lagged observations.
+* [diff](https://zeileis.codeberg.page/zoo/man/lag.zoo.html):
+  Arithmetic and geometric differences.
+* [start, end](https://zeileis.codeberg.page/zoo/man/index.html):
+  Querying start and end of a series.
+* [window, window<-](https://zeileis.codeberg.page/zoo/man/window.zoo.html):
+  Subsetting of `"zoo"` objects using their index.
+
+
+## `NA` handling
+
+* [na.omit](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Omit `NA`s.
+* [na.contiguous](https://zeileis.codeberg.page/zoo/man/zoo.html):
+  Compute longest sequence of non-`NA` observations.
+* [na.fill](https://zeileis.codeberg.page/zoo/man/na.fill.html):
+  Impute `NA`s by filling gaps with specific values.
+* [na.locf](https://zeileis.codeberg.page/zoo/man/na.locf.html):
+  Impute `NA`s by carrying forward the last observation.
+* [na.approx, na.spline](https://zeileis.codeberg.page/zoo/man/na.approx.html):
+  Impute `NA`s by interpolation.
+* [na.trim](https://zeileis.codeberg.page/zoo/man/na.trim.html):
+  Remove leading and/or trailing `NA`s.
+
+
+## Rolling analytics
+
+* [rollapply](https://zeileis.codeberg.page/zoo/man/rollapply.html):
+  Apply a function to rolling margin of an array.
+* [rollmean](https://zeileis.codeberg.page/zoo/man/rollmean.html):
+  More efficient functions for computing the rolling mean, median and maximum are `rollmean()`, `rollmedian()` and `rollmax()`, respectively.
+
+
+## Methods for regular series
+
+* [is.regular](https://zeileis.codeberg.page/zoo/man/is.regular.html):
+  Checks whether a series is weakly (or strictly if `strict = TRUE`) regular.
+* [frequency, deltat](https://zeileis.codeberg.page/zoo/man/frequency.html):
+  Extracts the frequency or its reciprocal value respectively from a series, for `"zoo"` series the functions try to determine the regularity and frequency in a data-driven way.
+* [cycle](https://zeileis.codeberg.page/zoo/man/zooreg.html):
+  Gives the position in the cycle of a regular series.
+
+
+## Time classes for monthly and quarterly data
+
+* [yearmon](https://zeileis.codeberg.page/zoo/man/yearmon.html):
+  Time index class for monthly data.
+* [yearqtr](https://zeileis.codeberg.page/zoo/man/yearqtr.html):
+  Time index class for quarterly data.

@@ -15,6 +15,14 @@ Copyright Jeffrey A. Ryan 2010
 #ifndef _Zoo
 #define _Zoo
 
+/* internal symbols */
+extern SEXP zoo_symbol_index;
+extern SEXP zoo_symbol_oclass;
+extern SEXP zoo_symbol_frequency;
+extern SEXP zoo_symbol_timeDate_format;
+extern SEXP zoo_symbol_timeDate_Data;
+extern SEXP zoo_symbol_timeDate_FinCenter;
+
 SEXP zoo_lag (SEXP x, SEXP _k, SEXP _pad);
 SEXP zoo_coredata (SEXP x, SEXP copyAttr);
 #endif

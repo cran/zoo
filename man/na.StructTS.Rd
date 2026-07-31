@@ -2,7 +2,7 @@
 \alias{na.StructTS}
 \alias{na.StructTS.zoo}
 \alias{na.StructTS.ts}
-\title{Fill NA or specified positions.}
+\title{Replace NA by Kalman Filter}
 \description{
 Generic function for filling \code{NA} values using seasonal Kalman filter.}
 \usage{

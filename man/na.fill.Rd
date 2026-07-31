@@ -4,7 +4,7 @@
 \alias{na.fill.ts}
 \alias{na.fill.zoo}
 \alias{na.fill.default}
-\title{Fill NA or specified positions.}
+\title{Fill NA or Specified Positions}
 \description{
 Generic function for filling \code{NA} values or specified positions.
 }
