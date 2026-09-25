@@ -6,7 +6,6 @@
 \alias{as.zoo.factor}
 \alias{summary.zoo}
 \alias{str.zoo}
-\alias{is.zoo}
 \alias{[.zoo}
 \alias{[<-.zoo}
 \alias{$.zoo}
@@ -21,26 +20,12 @@
 \alias{cummin.zoo}
 \alias{cummax.zoo}
 \alias{mean.zoo}
-\alias{median.zoo}
 \alias{na.contiguous}
 \alias{na.contiguous.data.frame}
 \alias{na.contiguous.list}
 \alias{na.contiguous.default}
 \alias{na.contiguous.zoo}
 \alias{scale.zoo}
-\alias{xtfrm.zoo}
-\alias{names.zoo}
-\alias{names<-.zoo}
-\alias{quantile.zoo}
-\alias{rev.zoo}
-\alias{transform.zoo}
-\alias{ifelse.zoo}
-\alias{dim<-.zoo}
-
-\alias{index2char}
-\alias{index2char.default}
-\alias{index2char.numeric}
-\alias{index2char.POSIXt}
 
 \title{Z's Ordered Observations}
 \description{
@@ -51,6 +36,7 @@ time series.
 \usage{
 zoo(x = NULL, order.by = index(x), frequency = NULL,
   calendar = getOption("zoo.calendar", TRUE))
+
 \method{print}{zoo}(x, style = , quote = FALSE, \dots) 
 }
 \arguments{
@@ -225,7 +211,7 @@ available for the mean, maximum and median respectively.
 The \pkg{zoo} package has an \code{as.Date} \code{numeric} method
 which is similar to the one in the core of \R except that the
 \code{origin} argument defaults to January 1, 1970 (whereas the one
-in the core of \R has no default).
+in the core of \R long had no default).
 
 Note that since \code{zoo} uses date/time classes from base \R and 
 other packages, it may inherit bugs or problems with those date/time classes.

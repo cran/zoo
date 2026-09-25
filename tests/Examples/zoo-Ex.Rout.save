@@ -1,6 +1,6 @@
 
-R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
-Copyright (C) 2024 The R Foundation for Statistical Computing
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -142,10 +142,9 @@ The following objects are masked from ‘package:base’:
          0         91        182        274 
 > 
 > # This is the same except it uses the last day of the quarter.
-> # It requires R 2.6.0 which introduced the fromLast= argument.
-> ## Not run: 
-> ##D z.day[!duplicated(as.yearqtr(time(z.day)), fromLast = TRUE)]
-> ## End(Not run)
+> z.day[!duplicated(as.yearqtr(time(z.day)), fromLast = TRUE)]
+2000-03-31 2000-06-30 2000-09-30 2000-10-27 
+        90        181        273        300 
 > 
 > # The aggregated series above are of class "zoo" (because z.day
 > # was "zoo"). To create a regular series of class "zooreg",
@@ -156,7 +155,7 @@ The following objects are masked from ‘package:base’:
 > 
 > 
 > ## aggregate on month and extend to monthly time series
-> if(require(chron)) {
+> if(require("chron")) {
 + y <- zoo(matrix(11:15, nrow = 5, ncol = 2), chron(c(15, 20, 80, 100, 110)))
 + colnames(y) <- c("A", "B")
 + 
@@ -296,17 +295,52 @@ Jan 2000 Feb 2000 Mar 2000 Apr 2000 May 2000 Jun 2000
 
 detaching ‘package:chron’
 
+> nameEx("as.Date")
+> ### * as.Date
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: as.Date
+> ### Title: Coercion to the Date Class
+> ### Aliases: as.Date as.Date.numeric as.Date.ts as.Date.yearmon
+> ###   as.Date.yearqtr
+> ### Keywords: utilities chron
+> 
+> ### ** Examples
+> 
+> ## day zero (epoch): Jan 1, 1970
+> as.Date(0)
+[1] "1970-01-01"
+> 
+> ## conversion of July 2000 to date (beginning, mid or end of month)
+> ym <- yearmon(2000.5)
+> as.Date(ym, frac = 0)
+[1] "2000-07-01"
+> as.Date(ym, frac = 0.5)
+[1] "2000-07-16"
+> as.Date(ym, frac = 1)
+[1] "2000-07-31"
+> 
+> ## conversion of quarterly time series to dates (beginning of the months)
+> x <- ts(1:4, start = 2000, freq = 4)
+> as.Date(x)
+[1] "2000-01-01" "2000-04-01" "2000-07-01" "2000-10-01"
+> 
+> 
+> 
+> cleanEx()
 > nameEx("as.zoo")
 > ### * as.zoo
 > 
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: as.zoo
-> ### Title: Coercion from and to zoo
+> ### Title: Coercion from and to zoo and zooreg
 > ### Aliases: as.zoo as.zoo.default as.zoo.data.frame as.zoo.fts as.zoo.its
 > ###   as.zoo.irts as.zoo.matrix as.zoo.mcmc as.zoo.tis as.zoo.xts
 > ###   as.zoo.zoo as.matrix.zoo as.vector.zoo as.data.frame.zoo as.list.zoo
-> ###   as.list.ts as.zoo.ts as.ts.zoo
+> ###   as.list.ts as.zoo.ts as.ts.zoo as.zooreg as.zooreg.default
+> ###   as.zooreg.ts as.zooreg.its as.zooreg.xts as.zoo.zooreg as.zooreg.zoo
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -487,83 +521,157 @@ Frequency = 3
 > 
 > ### ** Examples
 > 
-> if(require("ggplot2") && require("scales")) {
-+ suppressWarnings(RNGversion("3.5.0"))
-+ set.seed(1)
-+ 
-+ ## example data
-+ x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
-+ x <- zoo(rnorm(5), x.Date)
-+ xlow <- x - runif(5)
-+ xhigh <- x + runif(5)
-+ z <- cbind(x, xlow, xhigh)
-+ 
-+ ## univariate plotting
-+ autoplot(x)
-+ ## by hand
-+ ggplot(aes(x = Index, y = Value), data = fortify(x, melt = TRUE)) +
+> ## Don't show: 
+>  if(!requireNamespace("ggplot2") ||
++               !requireNamespace("scales")) {
++   if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
++     stop("not all packages required for the example are installed")
++   } else q() }
+Loading required namespace: ggplot2
+> ## End(Don't show)
+> library("ggplot2")
+> library("scales")
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
+> ## example data
+> x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
+> x <- zoo(rnorm(5), x.Date)
+> xlow <- x - runif(5)
+> xhigh <- x + runif(5)
+> z <- cbind(x, xlow, xhigh)
+> 
+> ## univariate plotting
+> autoplot(x)
+> ## by hand
+> ggplot(aes(x = Index, y = Value), data = fortify(x, melt = TRUE)) +
 +   geom_line() + xlab("Index") + ylab("x")
-+ ## adding series one at a time
-+ last_plot() + geom_line(aes(x = Index, y = xlow), colour = "red", data = fortify(xlow))
-+ ## add ribbon for high/low band
-+ ggplot(aes(x = Index, y = x, ymin = xlow, ymax = xhigh), data = fortify(x)) +
+> ## adding series one at a time
+> last_plot() + geom_line(aes(x = Index, y = xlow), colour = "red", data = fortify(xlow))
+> ## add ribbon for high/low band
+> ggplot(aes(x = Index, y = x, ymin = xlow, ymax = xhigh), data = fortify(x)) +
 +   geom_ribbon(fill = "darkgray") + geom_line()
-+ 
-+ ## multivariate plotting in multiple or single panels
-+ autoplot(z)                      ## multiple without color/linetype
-+ autoplot(z, facets = Series ~ .) ## multiple with series-dependent color/linetype
-+ autoplot(z, facets = NULL)       ## single with series-dependent color/linetype
-+ ## by hand with color/linetype and with/without facets
-+ ggz <- ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
+Don't know how to automatically pick scale for object of type <zoo>. Defaulting
+to continuous.
+Don't know how to automatically pick scale for object of type <zoo>. Defaulting
+to continuous.
+> 
+> ## multivariate plotting in multiple or single panels
+> autoplot(z)                      ## multiple without color/linetype
+> autoplot(z, facets = Series ~ .) ## multiple with series-dependent color/linetype
+> autoplot(z, facets = NULL)       ## single with series-dependent color/linetype
+> ## by hand with color/linetype and with/without facets
+> ggz <- ggplot(aes(x = Index, y = Value, group = Series, colour = Series, linetype = Series),
 +   data = fortify(z, melt = TRUE)) + geom_line() + xlab("Index") + ylab("")
-+ ggz
-+ ggz + facet_grid(Series ~ .)
-+ ## variations
-+ autoplot(z, geom = "point")
-+ autoplot(z, facets = NULL) + geom_point()
-+ autoplot(z, facets = NULL) + scale_colour_grey() + theme_bw()
-+ 
-+ ## for "ts" series via coercion
-+ autoplot(as.zoo(EuStockMarkets))
-+ autoplot(as.zoo(EuStockMarkets), facets = NULL)
-+ 
-+ autoplot(z) + 
+> ggz
+> ggz + facet_grid(Series ~ .)
+> ## variations
+> autoplot(z, geom = "point")
+> autoplot(z, facets = NULL) + geom_point()
+> autoplot(z, facets = NULL) + scale_colour_grey() + theme_bw()
+> 
+> ## for "ts" series via coercion
+> autoplot(as.zoo(EuStockMarkets))
+> autoplot(as.zoo(EuStockMarkets), facets = NULL)
+> 
+> autoplot(z) + 
 + 	aes(colour = NULL, linetype = NULL) +
 + 	facet_grid(Series ~ ., scales = "free_y")
-+ 
-+ autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
-+ 
-+ z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
-+ autoplot(z.yq)
-+ 
-+ ## mimic matplot
-+ data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
-+ autoplot(zoo(data), facet = NULL) + geom_point()
-+ ## with different line types
-+ autoplot(zoo(data), facet = NULL) + geom_point() + aes(linetype = Series)
-+ 
-+ ## illustrate just fortify() method
-+ z <- zoo(data)
-+ fortify(z)
-+ fortify(z, melt = TRUE)
-+ fortify(z, melt = TRUE, names = c("Time", NA, "Data"))
-+ fortify(z, melt = TRUE, names = c(Index = "Time"))
-+ 
-+ ## with/without splitting
-+ z <- zoo(cbind(a.A = 1:2, a.B = 2:3, b.A = 3:4, c.B = 4:5))
-+ fortify(z)
-+ fortify(z, melt = TRUE, sep = ".", names = list(Series = c("Lower", "Upper")))
-+ 
-+ ## scale_x_yearmon with custom discrete breaks
-+ df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
-+ ggdf <- ggplot(df, aes(x = dates, y = values)) +
+> 
+> autoplot(z) + aes(colour = NULL, linetype = NULL) + facet_free() # same
+> 
+> z.yq <- zooreg(rnorm(50), as.yearqtr("2000-1"), freq = 4)
+> autoplot(z.yq)
+> 
+> ## mimic matplot
+> data <- cbind(A = c(6, 1, NA, NA), B = c(16, 4, 1, NA), C = c(25, 7, 2, 1))
+> autoplot(zoo(data), facet = NULL) + geom_point()
+Warning: Removed 3 rows containing missing values or values outside the scale range
+(`geom_line()`).
+Warning: Removed 3 rows containing missing values or values outside the scale range
+(`geom_point()`).
+> ## with different line types
+> autoplot(zoo(data), facet = NULL) + geom_point() + aes(linetype = Series)
+Warning: Removed 3 rows containing missing values or values outside the scale range
+(`geom_line()`).
+Warning: Removed 3 rows containing missing values or values outside the scale range
+(`geom_point()`).
+> 
+> ## illustrate just fortify() method
+> z <- zoo(data)
+> fortify(z)
+  Index  A  B  C
+1     1  6 16 25
+2     2  1  4  7
+3     3 NA  1  2
+4     4 NA NA  1
+> fortify(z, melt = TRUE)
+   Index Series Value
+1      1      A     6
+2      2      A     1
+3      3      A    NA
+4      4      A    NA
+5      1      B    16
+6      2      B     4
+7      3      B     1
+8      4      B    NA
+9      1      C    25
+10     2      C     7
+11     3      C     2
+12     4      C     1
+> fortify(z, melt = TRUE, names = c("Time", NA, "Data"))
+   Time Series Data
+1     1      A    6
+2     2      A    1
+3     3      A   NA
+4     4      A   NA
+5     1      B   16
+6     2      B    4
+7     3      B    1
+8     4      B   NA
+9     1      C   25
+10    2      C    7
+11    3      C    2
+12    4      C    1
+> fortify(z, melt = TRUE, names = c(Index = "Time"))
+   Time Series Value
+1     1      A     6
+2     2      A     1
+3     3      A    NA
+4     4      A    NA
+5     1      B    16
+6     2      B     4
+7     3      B     1
+8     4      B    NA
+9     1      C    25
+10    2      C     7
+11    3      C     2
+12    4      C     1
+> 
+> ## with/without splitting
+> z <- zoo(cbind(a.A = 1:2, a.B = 2:3, b.A = 3:4, c.B = 4:5))
+> fortify(z)
+  Index a.A a.B b.A c.B
+1     1   1   2   3   4
+2     2   2   3   4   5
+> fortify(z, melt = TRUE, sep = ".", names = list(Series = c("Lower", "Upper")))
+  Index Lower Upper Value
+1     1     a     A     1
+2     2     a     A     2
+3     1     a     B     2
+4     2     a     B     3
+5     1     b     A     3
+6     2     b     A     4
+7     1     c     B     4
+8     2     c     B     5
+> 
+> ## scale_x_yearmon with custom discrete breaks
+> df <-  data.frame(dates = as.yearmon("2018-08") + 0:6/12, values = c(2:6, 0, 1))
+> ggdf <- ggplot(df, aes(x = dates, y = values)) +
 +   geom_bar(position = "dodge", stat = "identity") + theme_light() +
 +   xlab("Month") + ylab("Values")
-+ ggdf ## with default scale_x_yearmon
-+ ggdf + scale_x_yearmon(breaks = df$dates) ## with custom discrete breaks
-+ }
-Loading required package: ggplot2
-Loading required package: scales
+> ggdf ## with default scale_x_yearmon
+> ggdf + scale_x_yearmon(breaks = df$dates) ## with custom discrete breaks
 > 
 > 
 > 
@@ -579,7 +687,7 @@ detaching ‘package:scales’, ‘package:ggplot2’
 > ### Name: index
 > ### Title: Extracting/Replacing the Index of Objects
 > ### Aliases: index index.default index.zoo index.ts time.zoo index<-
-> ###   index<-.zoo time<- time<-.zoo start.zoo end.zoo
+> ###   index<-.zoo time<- time<-.zoo start.zoo end.zoo index2char
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2372,43 +2480,47 @@ Warning in rbind(1, c(1, 2), c(1, 2, 3), c(1, 2, 3, 4), c(2, 3, 4, 0), c(3,  :
 > 
 > ### ** Examples
 > 
-> if(require("tinyplot")) {
-+ suppressWarnings(RNGversion("3.5.0"))
-+ set.seed(1)
-+ 
-+ ## example data
-+ x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
-+ x <- zoo(rnorm(5), x.Date)
-+ xlow <- x - runif(5)
-+ xhigh <- x + runif(5)
-+ z <- cbind(x, xlow, xhigh)
-+ 
-+ ## univariate plotting
-+ tinyplot(x)
-+ 
-+ ## multivariate plotting in multiple or single panels
-+ tinyplot(z)                    ## multiple without color/linetype with free scales
-+ tinyplot(z, facet.args = NULL) ## multiple without color/linetype with same scale
-+ tinyplot(z, facet = ~ Series)  ## multiple with series-dependent color/linetype
-+ tinyplot(z, facet = NULL)      ## single with series-dependent color/linetype
-+ 
-+ ## by hand with color/linetype and with/without facets
-+ d <- fortify.zoo(z, melt = TRUE)
-+ tinyplot(Value ~ Index | Series, data = d, type = "l")
-+ tinyplot(Value ~ Index | Series, facet = "by", data = d, type = "l")
-+ tinyplot(Value ~ Index | Series, facet = "by", data = d, type = "l", facet.args = list(free = TRUE))
-+ 
-+ ## EuStockMarkets data (coerced from "ts")
-+ eusm <- as.zoo(EuStockMarkets)
-+ tinyplot(eusm)
-+ tinytheme("clean2")
-+ tinyplot(eusm, facet = NULL)
-+ tinyplot(eusm, facet = ~ Series)
-+ tinyplot(eusm, facet = ~ Series, facet.args = NULL)
-+ tinytheme() ## reset
-+ 
-+ }
-Loading required package: tinyplot
+> ## Don't show: 
+>  if(!requireNamespace("tinyplot")) {
++   if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
++     stop("not all packages required for the example are installed")
++   } else q() }
+Loading required namespace: tinyplot
+> ## End(Don't show)
+> library("tinyplot")
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> 
+> ## example data
+> x.Date <- as.Date(paste(2003, 02, c(1, 3, 7, 9, 14), sep = "-"))
+> x <- zoo(rnorm(5), x.Date)
+> xlow <- x - runif(5)
+> xhigh <- x + runif(5)
+> z <- cbind(x, xlow, xhigh)
+> 
+> ## univariate plotting
+> tinyplot(x)
+> 
+> ## multivariate plotting in multiple or single panels
+> tinyplot(z)                    ## multiple without color/linetype with free scales
+> tinyplot(z, facet.args = NULL) ## multiple without color/linetype with same scale
+> tinyplot(z, facet = ~ Series)  ## multiple with series-dependent color/linetype
+> tinyplot(z, facet = NULL)      ## single with series-dependent color/linetype
+> 
+> ## by hand with color/linetype and with/without facets
+> d <- fortify.zoo(z, melt = TRUE)
+> tinyplot(Value ~ Index | Series, data = d, type = "l")
+> tinyplot(Value ~ Index | Series, facet = "by", data = d, type = "l")
+> tinyplot(Value ~ Index | Series, facet = "by", data = d, type = "l", facet.args = list(free = TRUE))
+> 
+> ## EuStockMarkets data (coerced from "ts")
+> eusm <- as.zoo(EuStockMarkets)
+> tinyplot(eusm)
+> tinytheme("clean2")
+> tinyplot(eusm, facet = NULL)
+> tinyplot(eusm, facet = ~ Series)
+> tinyplot(eusm, facet = ~ Series, facet.args = NULL)
+> tinytheme() ## reset
 > 
 > 
 > 
@@ -2524,7 +2636,7 @@ detaching ‘package:tinyplot’
 > flush(stderr()); flush(stdout())
 > 
 > ### Name: xblocks
-> ### Title: Plot contiguous blocks along x axis.
+> ### Title: Plot Contiguous Blocks along x Axis
 > ### Aliases: xblocks xblocks.default xblocks.zoo xblocks.ts
 > ### Keywords: dplot
 > 
@@ -2612,122 +2724,121 @@ detaching ‘package:tinyplot’
 > ### Title: Plot zoo Series with Lattice
 > ### Aliases: xyplot.zoo xyplot.its xyplot.tis llines.zoo llines.its
 > ###   llines.tis lpoints.zoo lpoints.its lpoints.tis ltext.zoo ltext.its
-> ###   ltext.tis panel.lines.zoo panel.lines.ts panel.lines.its
-> ###   panel.lines.tis panel.points.zoo panel.points.ts panel.points.its
-> ###   panel.points.tis panel.text.zoo panel.text.ts panel.text.its
-> ###   panel.text.tis panel.plot.default panel.plot.custom
-> ###   panel.segments.zoo panel.segments.ts panel.segments.its
-> ###   panel.segments.tis panel.rect.zoo panel.rect.ts panel.rect.its
-> ###   panel.rect.tis panel.polygon.zoo panel.polygon.ts panel.polygon.its
-> ###   panel.polygon.tis
+> ###   ltext.tis panel.segments.zoo panel.rect.zoo panel.polygon.zoo
 > ### Keywords: hplot ts
 > 
 > ### ** Examples
 > 
-> if(require("lattice") & require("grid")) {
-+ 
-+ suppressWarnings(RNGversion("3.5.0"))
-+ set.seed(1)
-+ z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
-+ 
-+ # plot z using same Y axis on all plots
-+ xyplot(z, scales = list(y = list(relation = "same", alternating = FALSE)))
-+  
-+ # plot a double-line-width running mean on the panel of b.
-+ # Also add a grid.
-+ # We show two ways to do it. 
-+ 
-+ # change strip background to levels of grey
-+ # If you like the defaults, this can be omitted.
-+ strip.background <- trellis.par.get("strip.background")
-+ trellis.par.set(strip.background = list(col = grey(7:1/8)))
-+ 
-+ 
-+ # Number 1.  Using trellis.focus.
-+ print( xyplot(z) )
-+ trellis.focus("panel", 1, 2, highlight = FALSE)
-+ # (or just trellis.focus() for interactive use)
-+ z.mean <- rollmean(z, 3)
-+ panel.lines(z.mean[,2], lwd = 2)
-+ panel.grid(h = 10, v = 10, col = "grey", lty = 3)
-+ trellis.unfocus()
-+ 
-+ # Number 2. Using a custom panel routine.
-+ xyplot(z, panel = function(x, y, ...) {
+> ## Don't show: 
+>  if(!requireNamespace("lattice") ||
++               !requireNamespace("grid")) {
++   if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
++     stop("not all packages required for the example are installed")
++   } else q() }
+> ## End(Don't show)
+> library("lattice")
+> library("grid")
+> suppressWarnings(RNGversion("3.5.0"))
+> set.seed(1)
+> z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
+> 
+> # plot z using same Y axis on all plots
+> xyplot(z, scales = list(y = list(relation = "same", alternating = FALSE)))
+>  
+> # plot a double-line-width running mean on the panel of b.
+> # Also add a grid.
+> # We show two ways to do it. 
+> 
+> # change strip background to levels of grey
+> # If you like the defaults, this can be omitted.
+> strip.background <- trellis.par.get("strip.background")
+> trellis.par.set(strip.background = list(col = grey(7:1/8)))
+> 
+> 
+> # Number 1.  Using trellis.focus.
+> print( xyplot(z) )
+> trellis.focus("panel", 1, 2, highlight = FALSE)
+> # (or just trellis.focus() for interactive use)
+> z.mean <- rollmean(z, 3)
+> panel.lines(z.mean[,2], lwd = 2)
+NULL
+> panel.grid(h = 10, v = 10, col = "grey", lty = 3)
+> trellis.unfocus()
+> 
+> # Number 2. Using a custom panel routine.
+> xyplot(z, panel = function(x, y, ...) {
 +     if (packet.number() == 2) {
 +         panel.grid(h = 10, v = 10, col = "grey", lty = 3)
 +         panel.lines(rollmean(zoo(y, x), 3), lwd = 2)
 +     }
 +     panel.xyplot(x, y, ...)
 + })
-+ 
-+ # plot a light grey rectangle "behind" panel b
-+ trellis.focus("panel", 1, 2)
-+ grid.rect(x = 2, w = 1, default.units = "native", 
+> 
+> # plot a light grey rectangle "behind" panel b
+> trellis.focus("panel", 1, 2)
+> grid.rect(x = 2, w = 1, default.units = "native", 
 +   gp = gpar(fill = "light grey"))
-+ # do.call("panel.xyplot", trellis.panelArgs())
-+ do.call("panel.lines", trellis.panelArgs()[1:2])
-+ trellis.unfocus()
-+ # a better method is to use a custom panel function.
-+ # see also panel.xblocks() and layer() in the latticeExtra package.
-+ 
-+ # same but make first panel twice as large as others
-+ lopt <- list(layout.heights = list(panel = list(x = c(2,1,1))))
-+ xyplot(z, lattice.options = lopt)
-+ # add a grid
-+ update(trellis.last.object(), type = c("l", "g"))
-+ 
-+ # Plot all in one panel.
-+ xyplot(z, screens = 1)
-+ # Same with default styles and auto.key:
-+ xyplot(z, superpose = TRUE)
-+ 
-+ # Plot first two columns in first panel and third column in second panel.
-+ # Plot first series using points, second series using lines and third
-+ #  series via overprinting both lines and points
-+ # Use colors 1, 2 and 3 for the three series (1=black, 2=red, 3=green)
-+ # Make 2nd (lower) panel 3x the height of the 1st (upper) panel
-+ # Also make the strip background orange.
-+ p <- xyplot(z, screens = c(1,1,2), type = c("p", "l", "o"), col = 1:3,
+> # do.call("panel.xyplot", trellis.panelArgs())
+> do.call("panel.lines", trellis.panelArgs()[1:2])
+NULL
+> trellis.unfocus()
+> # a better method is to use a custom panel function.
+> # see also panel.xblocks() and layer() in the latticeExtra package.
+> 
+> # same but make first panel twice as large as others
+> lopt <- list(layout.heights = list(panel = list(x = c(2,1,1))))
+> xyplot(z, lattice.options = lopt)
+> # add a grid
+> update(trellis.last.object(), type = c("l", "g"))
+> 
+> # Plot all in one panel.
+> xyplot(z, screens = 1)
+> # Same with default styles and auto.key:
+> xyplot(z, superpose = TRUE)
+> 
+> # Plot first two columns in first panel and third column in second panel.
+> # Plot first series using points, second series using lines and third
+> #  series via overprinting both lines and points
+> # Use colors 1, 2 and 3 for the three series (1=black, 2=red, 3=green)
+> # Make 2nd (lower) panel 3x the height of the 1st (upper) panel
+> # Also make the strip background orange.
+> p <- xyplot(z, screens = c(1,1,2), type = c("p", "l", "o"), col = 1:3,
 +   par.settings = list(strip.background = list(col = "orange")))
-+ print(p, panel.height = list(y = c(1, 3), units = "null"))
-+ 
-+ # Example of using a custom axis
-+ # Months are labelled with smaller ticks for weeks and even smaller
-+ # ticks for days.
-+ Days <- seq(from = as.Date("2006-1-1"), to = as.Date("2006-8-8"), by = "day")
-+ z1 <- zoo(seq(length(Days))^2, Days)
-+ Months <- Days[format(Days, "%d") == "01"]
-+ Weeks <- Days[format(Days, "%w") == "0"]
-+ print( xyplot(z1, scales = list(x = list(at = Months))) )
-+ trellis.focus("panel", 1, 1, clip.off = TRUE)
-+ panel.axis("bottom", check.overlap = TRUE, outside = TRUE, labels = FALSE, 
+> print(p, panel.height = list(y = c(1, 3), units = "null"))
+> 
+> # Example of using a custom axis
+> # Months are labelled with smaller ticks for weeks and even smaller
+> # ticks for days.
+> Days <- seq(from = as.Date("2006-1-1"), to = as.Date("2006-8-8"), by = "day")
+> z1 <- zoo(seq(length(Days))^2, Days)
+> Months <- Days[format(Days, "%d") == "01"]
+> Weeks <- Days[format(Days, "%w") == "0"]
+> print( xyplot(z1, scales = list(x = list(at = Months))) )
+> trellis.focus("panel", 1, 1, clip.off = TRUE)
+> panel.axis("bottom", check.overlap = TRUE, outside = TRUE, labels = FALSE, 
 +   tck = .7, at = as.numeric(Weeks))
-+ panel.axis("bottom", check.overlap = TRUE, outside = TRUE, labels = FALSE, 
+> panel.axis("bottom", check.overlap = TRUE, outside = TRUE, labels = FALSE, 
 +   tck = .4, at = as.numeric(Days))
-+ trellis.unfocus()
-+ 
-+ trellis.par.set(strip.background = strip.background)
-+ 
-+ # separate the panels and suppress the ticks on very top
-+ xyplot(z, between = list(y = 1), scales = list(tck = c(1,0)))
-+ 
-+ # left strips but no top strips
-+ xyplot(z, screens = colnames(z), strip = FALSE, strip.left = TRUE)
-+ 
-+ # plot list of zoo objects using different x scales
-+ z.l <- list(
+> trellis.unfocus()
+> 
+> trellis.par.set(strip.background = strip.background)
+> 
+> # separate the panels and suppress the ticks on very top
+> xyplot(z, between = list(y = 1), scales = list(tck = c(1,0)))
+> 
+> # left strips but no top strips
+> xyplot(z, screens = colnames(z), strip = FALSE, strip.left = TRUE)
+> 
+> # plot list of zoo objects using different x scales
+> z.l <- list(
 + 	zoo(cbind(a = rnorm(10), b = rnorm(10)), as.Date("2006-01-01") + 0:9),
 + 	zoo(cbind(c = rnorm(10), d = rnorm(10)), as.Date("2006-12-01") + 0:9)
 + )
-+ zm <- do.call(merge, z.l)
-+ xlim <- lapply(zm, function(x) range(time(na.omit(x))))
-+ xyplot(zm, xlim = xlim, scale = list(relation = "free"))
-+ # to avoid merging see xyplot.list() in the latticeExtra package.
-+ 
-+ }
-Loading required package: lattice
-Loading required package: grid
+> zm <- do.call(merge, z.l)
+> xlim <- lapply(zm, function(x) range(time(na.omit(x))))
+> xyplot(zm, xlim = xlim, scale = list(relation = "free"))
+> # to avoid merging see xyplot.list() in the latticeExtra package.
+> 
 > 
 > ## Not run: 
 > ##D ## playwith (>= 0.9)
@@ -2776,13 +2887,13 @@ detaching ‘package:grid’, ‘package:lattice’
 > ### Aliases: yearmon as.yearmon as.yearmon.default as.yearmon.numeric
 > ###   as.yearmon.integer as.yearmon.date as.yearmon.dates as.yearmon.Date
 > ###   as.yearmon.timeDate as.yearmon.jul as.yearmon.POSIXt
-> ###   as.yearmon.character as.yearmon.factor as.Date as.Date.numeric
-> ###   as.Date.ts as.Date.yearmon as.POSIXct.yearmon as.POSIXlt.yearmon
-> ###   as.list.yearmon as.numeric.yearmon as.character.yearmon
-> ###   as.data.frame.yearmon c.yearmon cycle.yearmon format.yearmon
-> ###   is.numeric.yearmon mean.yearmon print.yearmon range.yearmon
-> ###   summary.yearmon unique.yearmon [.yearmon [[.yearmon MATCH.yearmon
-> ###   Ops.yearmon Summary.yearmon Sys.yearmon -.yearmon xtfrm.yearmon
+> ###   as.yearmon.character as.yearmon.factor as.POSIXct.yearmon
+> ###   as.POSIXlt.yearmon as.list.yearmon as.numeric.yearmon
+> ###   as.character.yearmon as.data.frame.yearmon c.yearmon cycle.yearmon
+> ###   format.yearmon is.numeric.yearmon mean.yearmon print.yearmon
+> ###   range.yearmon summary.yearmon unique.yearmon [.yearmon [[.yearmon
+> ###   MATCH.yearmon Ops.yearmon Summary.yearmon Sys.yearmon -.yearmon
+> ###   xtfrm.yearmon
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -2924,7 +3035,7 @@ Feb 2000  NA   6
 > ###   as.yearqtr.integer as.yearqtr.date as.yearqtr.dates as.yearqtr.Date
 > ###   as.yearqtr.timeDate as.yearqtr.jul as.yearqtr.POSIXt
 > ###   as.yearqtr.character as.yearqtr.factor as.yearqtr.yearqtr
-> ###   as.Date.yearqtr as.POSIXct.yearqtr as.POSIXlt.yearqtr as.list.yearqtr
+> ###   as.POSIXct.yearqtr as.POSIXlt.yearqtr as.list.yearqtr
 > ###   as.numeric.yearqtr as.character.yearqtr as.data.frame.yearqtr
 > ###   c.yearqtr cycle.yearqtr format.yearqtr is.numeric.yearqtr
 > ###   mean.yearqtr print.yearqtr range.yearqtr summary.yearqtr
@@ -2990,13 +3101,10 @@ Feb 2000  NA   6
 > ### Name: zoo
 > ### Title: Z's Ordered Observations
 > ### Aliases: zoo with.zoo range.zoo print.zoo as.zoo.factor summary.zoo
-> ###   str.zoo is.zoo [.zoo [<-.zoo $.zoo $<-.zoo subset.zoo head.zoo
-> ###   tail.zoo Ops.zoo t.zoo cumsum.zoo cumprod.zoo cummin.zoo cummax.zoo
-> ###   mean.zoo median.zoo na.contiguous na.contiguous.data.frame
-> ###   na.contiguous.list na.contiguous.default na.contiguous.zoo scale.zoo
-> ###   xtfrm.zoo names.zoo names<-.zoo quantile.zoo rev.zoo transform.zoo
-> ###   ifelse.zoo dim<-.zoo index2char index2char.default index2char.numeric
-> ###   index2char.POSIXt
+> ###   str.zoo [.zoo [<-.zoo $.zoo $<-.zoo subset.zoo head.zoo tail.zoo
+> ###   Ops.zoo t.zoo cumsum.zoo cumprod.zoo cummin.zoo cummax.zoo mean.zoo
+> ###   na.contiguous na.contiguous.data.frame na.contiguous.list
+> ###   na.contiguous.default na.contiguous.zoo scale.zoo
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -3214,9 +3322,8 @@ e 15      NA
 > ### Name: zooreg
 > ### Title: Regular zoo Series
 > ### Aliases: zooreg frequency.zooreg frequency.zoo deltat.zooreg deltat.zoo
-> ###   cycle.zooreg cycle.zoo as.zooreg as.zooreg.default as.zooreg.ts
-> ###   as.zooreg.its as.zooreg.xts as.ts.zooreg as.zoo.zooreg as.zooreg.zoo
-> ###   index<-.zooreg time<-.zooreg lag.zooreg
+> ###   cycle.zooreg cycle.zoo as.ts.zooreg index<-.zooreg time<-.zooreg
+> ###   lag.zooreg
 > ### Keywords: ts
 > 
 > ### ** Examples
@@ -3316,7 +3423,7 @@ NA  1  2  3 NA  6
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.15 0.064 2.219 0 0 
+Time elapsed:  12.277 0.164 12.45 0 0 
 > grDevices::dev.off()
 null device 
           1 

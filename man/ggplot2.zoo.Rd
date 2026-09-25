@@ -35,6 +35,9 @@
   yearqtr_trans(format = "\%Y-\%q", n = 5)
   scale_x_yearqtr(\dots, format = "\%Y-\%q", n = 5)
   scale_y_yearqtr(\dots, format = "\%Y-\%q", n = 5)
+
+  scale_type.yearmon(x)
+  scale_type.yearqtr(x)
 }
 
 \arguments{
@@ -64,6 +67,7 @@
   \item{scales}{As in \code{\link[ggplot2]{facet_grid}} except it defaults to \code{"free_y"}.}
   \item{format}{A format acceptable to \link{format.yearmon} or \link{format.yearqtr}.}
   \item{n}{Approximate number of axis ticks.}
+  \item{x}{an object of class \code{"yearmon"} or \code{"yearqtr"}.}
 }
 
 \details{
@@ -93,7 +97,13 @@
 }
 
 \examples{
-if(require("ggplot2") && require("scales")) {
+\dontshow{ if(!requireNamespace("ggplot2") ||
+              !requireNamespace("scales")) {
+  if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
+    stop("not all packages required for the example are installed")
+  } else q() }}
+library("ggplot2")
+library("scales")
 suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 
@@ -167,6 +177,5 @@ ggdf <- ggplot(df, aes(x = dates, y = values)) +
   xlab("Month") + ylab("Values")
 ggdf ## with default scale_x_yearmon
 ggdf + scale_x_yearmon(breaks = df$dates) ## with custom discrete breaks
-}
 }
 

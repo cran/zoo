@@ -32,7 +32,11 @@
 }
 
 \examples{
-if(require("tinyplot")) {
+\dontshow{ if(!requireNamespace("tinyplot")) {
+  if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
+    stop("not all packages required for the example are installed")
+  } else q() }}
+library("tinyplot")
 suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 
@@ -66,7 +70,5 @@ tinyplot(eusm, facet = NULL)
 tinyplot(eusm, facet = ~ Series)
 tinyplot(eusm, facet = ~ Series, facet.args = NULL)
 tinytheme() ## reset
-
-}
 }
 

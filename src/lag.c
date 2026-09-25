@@ -41,7 +41,7 @@ Rprintf("zoo_lag\n");
 
   R_xlen_t k_abs = abs(k);                     /* magnitude of the lag */
   R_xlen_t k_src = (k > 0) ? 0 : k_abs;        /* offset into x, "nrr stride" units */
-  R_xlen_t k_dst = (k > 0) ? k_abs : 0;        /* offset into result */
+  R_xlen_t k_dst = (k > 0 && PAD) ? k_abs : 0; /* offset into result */
   R_xlen_t k_pad = (k > 0) ? 0 : (nr - k_abs); /* where NA/pad values start */
 
   if(k_abs > nr)
@@ -55,7 +55,7 @@ Rprintf("zoo_lag\n");
     nrr = (R_xlen_t)(xlength(result)/nc);
   else  /* handle zero-length objects */
     nrr = nr - (PAD ? 0 : k_abs);
-  R_xlen_t nrk = nrr-k_abs;
+  R_xlen_t n_copy = nr - k_abs;
 
   switch (TYPEOF(x)) {
       case REALSXP:
@@ -64,10 +64,8 @@ Rprintf("zoo_lag\n");
                   for (i = 0; i < k_abs; i++) {
                       REAL(result)[k_pad+i+(j*nrr)] = NA_REAL;
                   }
-                  memcpy(&REAL(result)[k_dst+(j*nrr)], &REAL(x)[k_src+(j*nrr)], sizeof(double) * nrk);
-              } else {
-                  memcpy(&REAL(result)[k_dst+(j*nrr)], &REAL(x)[k_src+(j*nr )], sizeof(double) * nrr);
               }
+              memcpy(&REAL(result)[k_dst+(j*nrr)], &REAL(x)[k_src+(j*nr)], sizeof(double) * n_copy);
           }
           break;
       case INTSXP:
@@ -76,10 +74,8 @@ Rprintf("zoo_lag\n");
                   for (i = 0; i < k_abs; i++) {
                       INTEGER(result)[k_pad+i+(j*nrr)] = NA_INTEGER;
                   }
-                  memcpy(&INTEGER(result)[k_dst+(j*nrr)], &INTEGER(x)[k_src+(j*nrr)], sizeof(int) * nrk);
-              } else {
-                  memcpy(&INTEGER(result)[k_dst+(j*nrr)], &INTEGER(x)[k_src+(j*nr )], sizeof(int) * nrr);
               }
+              memcpy(&INTEGER(result)[k_dst+(j*nrr)], &INTEGER(x)[k_src+(j*nr)], sizeof(int) * n_copy);
           }
           break;
       case LGLSXP:
@@ -88,10 +84,8 @@ Rprintf("zoo_lag\n");
                   for (i = 0; i < k_abs; i++) {
                       LOGICAL(result)[k_pad+i+(j*nrr)] = NA_LOGICAL;
                   }
-                  memcpy(&LOGICAL(result)[k_dst+(j*nrr)], &LOGICAL(x)[k_src+(j*nrr)], sizeof(int) * nrk);
-              } else {
-                  memcpy(&LOGICAL(result)[k_dst+(j*nrr)], &LOGICAL(x)[k_src+(j*nr )], sizeof(int) * nrr);
               }
+              memcpy(&LOGICAL(result)[k_dst+(j*nrr)], &LOGICAL(x)[k_src+(j*nr)], sizeof(int) * n_copy);
           }
           break;
       case CPLXSXP:
@@ -101,10 +95,8 @@ Rprintf("zoo_lag\n");
                       COMPLEX(result)[k_pad+i+(j*nrr)].r = NA_REAL;
                       COMPLEX(result)[k_pad+i+(j*nrr)].i = NA_REAL;
                   }
-                  memcpy(&COMPLEX(result)[k_dst+(j*nrr)], &COMPLEX(x)[k_src+(j*nrr)], sizeof(Rcomplex) * nrk);
-              } else {
-                  memcpy(&COMPLEX(result)[k_dst+(j*nrr)], &COMPLEX(x)[k_src+(j*nr )], sizeof(Rcomplex) * nrr);
               }
+              memcpy(&COMPLEX(result)[k_dst+(j*nrr)], &COMPLEX(x)[k_src+(j*nr)], sizeof(Rcomplex) * n_copy);
           }
           break;
       case RAWSXP:
@@ -113,10 +105,8 @@ Rprintf("zoo_lag\n");
                   for (i = 0; i < k_abs; i++) {
                       RAW(result)[k_pad+i+(j*nrr)] = (Rbyte)0;
                   }
-                  memcpy(&RAW(result)[k_dst+(j*nrr)], &RAW(x)[k_src+(j*nrr)], sizeof(Rbyte) * nrk);
-              } else {
-                  memcpy(&RAW(result)[k_dst+(j*nrr)], &RAW(x)[k_src+(j*nr )], sizeof(Rbyte) * nrr);
               }
+              memcpy(&RAW(result)[k_dst+(j*nrr)], &RAW(x)[k_src+(j*nr)], sizeof(Rbyte) * n_copy);
           }
           break;
       case STRSXP:
@@ -125,13 +115,9 @@ Rprintf("zoo_lag\n");
                   for (i = 0; i < k_abs; i++) {
                       SET_STRING_ELT(result, k_pad+i+(j*nrr), NA_STRING);
                   }
-                  for (i = 0; i < nrr-k_abs; i++) {
-                      SET_STRING_ELT(result, k_dst+i+(j*nrr), STRING_ELT(x, i+(j*nrr)));
-                  }
-              } else {
-                  for(i = 0; i < nrr; i++) {
-                      SET_STRING_ELT(result, k_dst+i+(j*nrr), STRING_ELT(x, i+(j*nr )));
-                  }
+              }
+              for(i = 0; i < n_copy; i++) {
+                  SET_STRING_ELT(result, k_dst+i+(j*nrr), STRING_ELT(x, k_src+i+(j*nr)));
               }
           }
           break;

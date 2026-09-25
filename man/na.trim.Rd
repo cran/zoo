@@ -10,6 +10,7 @@ Generic function for removing leading and trailing \code{NA}s.
 na.trim(object, \dots)
 \method{na.trim}{default}(object, sides = c("both", "left", "right"), 
 	is.na = c("any", "all"), maxgap = Inf, \dots)
+\method{na.trim}{ts}(object, \dots)
 }
 \arguments{
   \item{object}{an object.}

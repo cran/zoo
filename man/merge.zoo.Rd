@@ -13,6 +13,10 @@ versions of database \emph{join} operations.
 \method{merge}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
   check.names = FALSE, retclass = c("zoo", "list", "data.frame"),
   drop = TRUE, sep = ".")
+
+\method{cbind}{zoo}(\dots, all = TRUE, fill = NA, suffixes = NULL,
+  drop = FALSE, sep = ".")
+\method{rbind}{zoo}(\dots, deparse.level = 1)
 }
 
 \arguments{
@@ -35,6 +39,8 @@ versions of database \emph{join} operations.
     in the \code{Merge} method, the latter in the \code{cbind} method.}
   \item{sep}{character. Separator character that should be used when
     pasting \code{suffixes} to column names for making them unique.}
+  \item{deparse.level}{integer controlling the construction of labels in th
+    case of non-matrix-like arguments, see \code{\link[base]{rbind}}.}
 }
 
 \details{

@@ -10,6 +10,8 @@
 \alias{time<-.zoo}
 \alias{start.zoo}
 \alias{end.zoo}
+\alias{index2char}
+
 \title{Extracting/Replacing the Index of Objects}
 \description{
 Generic functions for extracting the index of an object
@@ -18,6 +20,9 @@ and replacing it.
 \usage{
 index(x, \dots)
 index(x) <- value
+time(x) <- value
+
+index2char(x, \dots)
 }
 \arguments{
   \item{x}{an object.}
@@ -37,6 +42,9 @@ Methods are available for \code{"zoo"} objects only, see examples below.
 
 The start and end of the index/time can be queried by using
 the methods of \code{start} and \code{end}.
+
+The \code{index2char} function is a helper function that helps
+to print the index of \code{"zoo"} objects.
 }
 
 \seealso{\code{\link{time}}, \code{\link{zoo}}}

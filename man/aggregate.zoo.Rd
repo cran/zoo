@@ -90,10 +90,7 @@ z.qtr2 <- aggregate(z.day, first.of.quarter, mean)
 z.day[!duplicated(as.yearqtr(time(z.day)))]
 
 # This is the same except it uses the last day of the quarter.
-# It requires R 2.6.0 which introduced the fromLast= argument.
-\dontrun{
 z.day[!duplicated(as.yearqtr(time(z.day)), fromLast = TRUE)]
-}
 
 # The aggregated series above are of class "zoo" (because z.day
 # was "zoo"). To create a regular series of class "zooreg",
@@ -104,7 +101,7 @@ zr.qtr2 <- aggregate(z.day, as.yearqtr, mean, frequency = 4)
 
 
 ## aggregate on month and extend to monthly time series
-if(require(chron)) {
+if(require("chron")) {
 y <- zoo(matrix(11:15, nrow = 5, ncol = 2), chron(c(15, 20, 80, 100, 110)))
 colnames(y) <- c("A", "B")
 

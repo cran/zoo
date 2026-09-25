@@ -19,6 +19,7 @@ a (more complex) object and replacing it.
 \usage{
 coredata(x, \dots)
 coredata(x) <- value
+\method{coredata}{default}(x, \dots)
 }
 
 \arguments{

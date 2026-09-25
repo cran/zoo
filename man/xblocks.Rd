@@ -3,9 +3,7 @@
 \alias{xblocks.default}
 \alias{xblocks.zoo}
 \alias{xblocks.ts}
-\title{
-  Plot contiguous blocks along x axis.
-}
+\title{Plot Contiguous Blocks along x Axis}
 \description{
   Plot contiguous blocks along x axis. A typical use would be to
   highlight events or periods of missing data.

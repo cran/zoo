@@ -13,7 +13,6 @@
 \alias{as.yearqtr.character}
 \alias{as.yearqtr.factor}
 \alias{as.yearqtr.yearqtr}
-\alias{as.Date.yearqtr}
 \alias{as.POSIXct.yearqtr}
 \alias{as.POSIXlt.yearqtr}
 \alias{as.list.yearqtr}
@@ -45,9 +44,16 @@
 
 \usage{
 yearqtr(x)
+
 as.yearqtr(x, \dots)
+
+\method{as.yearqtr}{default}(x, \dots)
+
 \method{as.yearqtr}{character}(x, format, \dots)
+
 \method{format}{yearqtr}(x, format = "\%Y Q\%q", \dots)
+
+Sys.yearqtr()
 }
 
 \arguments{
@@ -62,7 +68,7 @@ as.yearqtr(x, \dots)
   \code{"yearqtr"}: \code{"\%C"}, \code{"\%Y"}, \code{"\%y"} and \code{"\%q"}, if present,
   are replaced with the century, year, last two digits of the year, 
   and quarter (i.e. a number between 1 and 4), respectively.}
-  \item{\dots}{arguments passed ot other methods.}
+  \item{\dots}{arguments passed to methods, often via \code{\link{as.Date}}.}
 }
 
 \details{

@@ -11,34 +11,9 @@
 \alias{ltext.zoo}
 \alias{ltext.its}
 \alias{ltext.tis}
-%% Deprecated:
-\alias{panel.lines.zoo}
-\alias{panel.lines.ts}
-\alias{panel.lines.its}
-\alias{panel.lines.tis}
-\alias{panel.points.zoo}
-\alias{panel.points.ts}
-\alias{panel.points.its}
-\alias{panel.points.tis}
-\alias{panel.text.zoo}
-\alias{panel.text.ts}
-\alias{panel.text.its}
-\alias{panel.text.tis}
-\alias{panel.plot.default}
-\alias{panel.plot.custom}
-%% Unnecessary?:
 \alias{panel.segments.zoo}
-\alias{panel.segments.ts}
-\alias{panel.segments.its}
-\alias{panel.segments.tis}
 \alias{panel.rect.zoo}
-\alias{panel.rect.ts}
-\alias{panel.rect.its}
-\alias{panel.rect.tis}
 \alias{panel.polygon.zoo}
-\alias{panel.polygon.ts}
-\alias{panel.polygon.its}
-\alias{panel.polygon.tis}
 
 \title{Plot zoo Series with Lattice}
 
@@ -48,21 +23,20 @@
 }
 
 \usage{
-\method{xyplot}{zoo}(x, data, ...)
+\method{xyplot}{zoo}(x, data, \dots)
 
-\method{llines}{zoo}(x, y = NULL, ...)
-\method{lpoints}{zoo}(x, y = NULL, ...)
-\method{ltext}{zoo}(x, y = NULL, ...)
+\method{llines}{zoo}(x, y = NULL, \dots)
+\method{lpoints}{zoo}(x, y = NULL, \dots)
+\method{ltext}{zoo}(x, y = NULL, \dots)
 
-panel.segments.zoo(x0, x1, ...)
-panel.rect.zoo(x0, x1, ...)
-panel.polygon.zoo(x, ...)
+panel.segments.zoo(x0, x1, \dots)
+panel.rect.zoo(x0, x1, \dots)
+panel.polygon.zoo(x, \dots)
 }
 
 \arguments{
   \item{x, x0, x1}{time series object of class \code{"zoo"}, \code{"its"} or 
-  \code{"tis"}.  For \code{panel.plot.default} it should be a numeric
-  vector.}
+  \code{"tis"}.}
   \item{y}{numeric vector or matrix.}
   \item{data}{not used.}
   \item{\dots}{
@@ -135,8 +109,13 @@ panel.polygon.zoo(x, ...)
   \code{\link{plot.ts}}, \code{\link{barplot}}, \code{\link{plot.zoo}}}
 
 \examples{
-if(require("lattice") & require("grid")) {
-
+\dontshow{ if(!requireNamespace("lattice") ||
+              !requireNamespace("grid")) {
+  if(interactive() || is.na(Sys.getenv("_R_CHECK_PACKAGE_NAME_", NA))) {
+    stop("not all packages required for the example are installed")
+  } else q() }}
+library("lattice")
+library("grid")
 suppressWarnings(RNGversion("3.5.0"))
 set.seed(1)
 z <- zoo(cbind(a = 1:5, b = 11:15, c = 21:25) + rnorm(5))
@@ -236,7 +215,6 @@ xlim <- lapply(zm, function(x) range(time(na.omit(x))))
 xyplot(zm, xlim = xlim, scale = list(relation = "free"))
 # to avoid merging see xyplot.list() in the latticeExtra package.
 
-}
 
 \dontrun{
 ## playwith (>= 0.9)

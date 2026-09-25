@@ -15,6 +15,9 @@
 
 \usage{
 MATCH(x, table, nomatch = NA, \dots)
+
+\method{MATCH}{default}(x, table, nomatch = NA, \dots)
+
 \method{MATCH}{times}(x, table, nomatch = NA, units = "sec", eps = 1e-10, \dots)
 }
 \arguments{

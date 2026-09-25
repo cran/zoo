@@ -24,6 +24,9 @@ read.zoo(file, format = "", tz = "", FUN = NULL,
 write.zoo(x, file = "", index.name = "Index", row.names = FALSE, col.names = NULL,
   FUN = format, \dots)
 
+read.table.zoo(file, format = "", tz = "", FUN = NULL,
+  regular = FALSE, index.column = 1, drop = TRUE, FUN2 = NULL, 
+  split = NULL, aggregate = FALSE, \dots)
 read.csv.zoo(\dots, read = read.csv)
 read.csv2.zoo(\dots, read = read.csv2)
 read.delim.zoo(\dots, read = read.delim)

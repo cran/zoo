@@ -48,6 +48,15 @@ rollmeanr(..., align = "right")
 rollmaxr(..., align = "right")
 rollmedianr(..., align = "right")
 rollsumr(..., align = "right")
+
+\method{rollmean}{default}(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
+  align = c("center", "left", "right"), ...)
+\method{rollmax}{default}(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
+  align = c("center", "left", "right"), ...)
+\method{rollmedian}{default}(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
+  align = c("center", "left", "right"), ...)
+\method{rollsum}{default}(x, k, fill = if (na.pad) NA, na.pad = FALSE, 
+  align = c("center", "left", "right"), ...)
 }
 
 \arguments{

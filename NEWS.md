@@ -1,3 +1,15 @@
+## zoo 1.9-1 (2026-09-18)
+
+- The `lag_zoo` function with `na.pad = FALSE` returned wrong values and
+  read uninitialized memory. It has been fixed now.
+
+- Added documentation of the usage for many methods that are fully exported
+  (typically for historical reasons).
+
+- Improve various examples in the manual pages, especially making sure that
+  all plots are displayed for the different visualization functions.
+
+
 ## zoo 1.9-0 (2026-07-30)
 
 * Code repository changed from R-Forge to Codeberg at:

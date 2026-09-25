@@ -17,19 +17,33 @@
 \alias{as.list.ts}
 \alias{as.zoo.ts}
 \alias{as.ts.zoo}
+\alias{as.zooreg}
+\alias{as.zooreg.default}
+\alias{as.zooreg.ts}
+\alias{as.zooreg.its}
+\alias{as.zooreg.xts}
+\alias{as.zoo.zooreg}
+\alias{as.zooreg.zoo}
 
-\title{Coercion from and to zoo}
+\title{Coercion from and to zoo and zooreg}
 \description{
 Methods for coercing \code{"zoo"} objects to other classes and
 a generic function \code{as.zoo} for coercing objects to class \code{"zoo"}.
 }
 \usage{
 as.zoo(x, \dots)
+
+\method{as.zoo}{default}(x, \dots)
+
+as.zooreg(x, frequency = NULL, \dots)
+
+\method{as.zooreg}{default}(x, frequency = NULL, \dots)
 }
 \arguments{
   \item{x}{an object,}
-  \item{\dots}{further arguments passed to \code{\link{zoo}} when the return
-    object is created.}
+  \item{\dots}{further arguments passed to \code{\link{zoo}}
+    when the return object is created.}
+  \item{frequency}{the number of observations per unit of time.}
 }
 
 \details{

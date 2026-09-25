@@ -12,10 +12,6 @@
 \alias{as.yearmon.POSIXt}
 \alias{as.yearmon.character}
 \alias{as.yearmon.factor}
-\alias{as.Date}
-\alias{as.Date.numeric}
-\alias{as.Date.ts}
-\alias{as.Date.yearmon}
 \alias{as.POSIXct.yearmon}
 \alias{as.POSIXlt.yearmon}
 \alias{as.list.yearmon}
@@ -46,9 +42,26 @@
 }
 \usage{
 yearmon(x)
+
+as.yearmon(x, \dots)
+
+\method{as.yearmon}{default}(x, \dots)
+
+\method{as.yearmon}{character}(x, format = "", \dots)
+
+\method{format}{yearmon}(x, format = "\%b \%Y", \dots)
+
+Sys.yearmon()
 }
 \arguments{
-  \item{x}{numeric (interpreted as being \dQuote{in years}).}
+  \item{x}{for \code{yearmon} a numeric (interpreted as being 
+  \dQuote{in years}).  For \code{as.yearmon} another date class
+  object.  For the \code{"yearmon"} method of \code{format} an 
+  object of class \code{"yearmon"} or if called as \code{format.yearmon}
+  then an object with an \code{as.yearmon} method that can be coerced 
+  to \code{"yearmon"}.}
+  \item{format}{character string specifying format.}
+  \item{\dots}{arguments passed to methods, often via \code{\link{as.Date}}.}
 }
 \details{
   The \code{"yearmon"} class is used to represent monthly data. Internally it holds

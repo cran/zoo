@@ -845,7 +845,7 @@ eliminates the zoo indexing to get a speedup:</p>
 <span id="cb78-7"><a href="#cb78-7" tabindex="-1"></a>    z1 <span class="ot">&lt;-</span> <span class="fu">zoo</span>(zz, <span class="fu">time</span>(z))</span>
 <span id="cb78-8"><a href="#cb78-8" tabindex="-1"></a>})</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.014   0.000   0.014</code></pre>
+##   0.010   0.000   0.009</code></pre>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" tabindex="-1"></a><span class="fu">system.time</span>({</span>
 <span id="cb80-2"><a href="#cb80-2" tabindex="-1"></a>    zc <span class="ot">&lt;-</span> <span class="fu">coredata</span>(z)</span>
 <span id="cb80-3"><a href="#cb80-3" tabindex="-1"></a>    tt <span class="ot">&lt;-</span> <span class="fu">time</span>(z)</span>
